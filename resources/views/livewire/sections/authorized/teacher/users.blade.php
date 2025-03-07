@@ -5,7 +5,7 @@
             wireModel="userFilter" 
             type="text" 
             icon="alternate_email" 
-            placeholder="Buscar usuario..." 
+            placeholder="Buscar usuario..."
         />
 
         @if(Auth::user()->role->name == 'Profesor') 
@@ -99,7 +99,7 @@
         </table>
 
         <div class="mt-5">
-            {{ $this->users->links() }}
+            {{ $this->users->links()}}
         </div>
     </div>  
 

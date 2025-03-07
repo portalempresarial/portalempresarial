@@ -90,8 +90,15 @@ class Users extends Component {
     public function mount() {
         $this->roles = Role::where('name', '!=', 'Administrador')->get();
     }
+
+    public function updatingSearch() {
+        $this->resetPage();
+    }
     
     public function render() { 
+
+        $this->updatingSearch();
+        
         $this->users = User::where('name', 'like', '%' . $this->userFilter . '%')
         ->when(Auth::user()->role->name == 'Profesor', function ($query) {
             return $query->where('center_id', Auth::user()->center_id);

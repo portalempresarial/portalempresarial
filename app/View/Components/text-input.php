@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class text-input extends Component
+class textInput extends Component
 {
     /**
      * Create a new component instance.
@@ -15,7 +15,7 @@ class text-input extends Component
     {
         //
     }
-
+    
     /**
      * Get the view / contents that represent the component.
      */
