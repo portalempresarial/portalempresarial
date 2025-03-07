@@ -4,7 +4,7 @@
         <x-text-input  
             wireModel="userFilter" 
             type="text" 
-            icon="search" 
+            icon="alternate_email" 
             placeholder="Buscar usuario..." 
         />
 
