@@ -4,6 +4,8 @@ namespace App\Livewire\Sections\Authorized\Teacher;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
 use Livewire\Component;
+use App\Models\Order;
+use App\Models\OrderProduct;
 
 class Companies extends Component {
     protected $companies; 
@@ -64,4 +66,20 @@ class Companies extends Component {
         
         return view('livewire.sections.authorized.teacher.companies');
     }
+
+    public function deleteCompany(string $id) {
+        $company = Company::findOrFail($id);
+
+        $orders = Order::where('buyer_company_id', $company->id)
+            ->orWhere('seller_company_id', $company->id)
+            ->get();
+
+        foreach ($orders as $order) {
+            OrderProduct::where('order_id', $order->id)->delete();
+            $order->delete(); // Eliminar la orden correctamente
+        }
+
+        $company->delete();
+    }
+
 }
