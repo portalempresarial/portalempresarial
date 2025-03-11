@@ -97,7 +97,7 @@ class Users extends Component {
     
     public function render() { 
 
-        $this->updatingSearch();
+        if($this->userFilter) $this->updatingSearch();
         
         $this->users = User::where('name', 'like', '%' . $this->userFilter . '%')
         ->when(Auth::user()->role->name == 'Profesor', function ($query) {
