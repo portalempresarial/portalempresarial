@@ -8,6 +8,6 @@
     @endif value="{{ $value ?? false ? $value : '' }}" @if ($disabled ?? false)
         disabled
     @endif @if ($numeric ?? false)
-        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
+        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g);"
     @endif type="{{ $type ?? false ? $type : 'text' }}" class="flex-1 py-2 bg-transparent text-black" placeholder="{{ $placeholder ?? false ? $placeholder : '' }}" />
 </div>

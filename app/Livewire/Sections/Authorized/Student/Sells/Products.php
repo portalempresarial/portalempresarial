@@ -39,7 +39,7 @@ class Products extends Component {
     public function storeProduct() {
         $this->validate([
             'category' => 'required|integer|exists:product_categories,id',
-            'price' => 'required|numeric|min:1',
+            'price' => 'required|numeric|min:0.01',
             'reference' => 'required|string|min:3',
             'label' => 'required|string|min:3|max:40|regex:/^[a-zA-Z0-9\s]+$/u',
             'description' => 'nullable|string|min:3|max:255',
@@ -49,7 +49,7 @@ class Products extends Component {
             'category.exists' => 'La categoría no existe.',
             'price.required' => 'El precio es requerido.',
             'price.numeric' => 'El precio debe ser un número.',
-            'price.min' => 'El precio debe ser mínimo 1.',
+            'price.min' => 'El precio debe ser mínimo 0.01.',
             'reference.required' => 'La referencia es requerida.',
             'reference.string' => 'La referencia debe ser un texto.',
             'reference.min' => 'La referencia debe tener mínimo 3 caracteres.',
