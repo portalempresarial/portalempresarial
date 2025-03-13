@@ -10,7 +10,7 @@
             <option value=""></option>
 
             @foreach ($options as $value)
-                <option value="{{ $value['value'] }}">{{ $value['label'] }}</option>
+                <option value="{{ $value['value'] }}" >{{ $value['label'] }}</option>
             @endforeach
         </select>
     </div>

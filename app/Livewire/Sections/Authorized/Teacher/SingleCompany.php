@@ -205,6 +205,11 @@ class SingleCompany extends Component {
     }
 
     public function addEmployee() {
+         if (!$this->employee_id) {
+            toastr()->error("Debes seleccionar un trabajador antes de contratarlo.");
+            return;
+        }
+
         $this->validate([
             'employee_id' => 'required|exists:users,id',
             'employee_dept' => 'required|string|max:255',
@@ -291,6 +296,10 @@ class SingleCompany extends Component {
             toastr()->error("¡Vaya! Algo salió mal. Inténtalo de nuevo más tarde.");
         }
     }
+    
+
+    public $user = [];
+    public $user_filter;
 
     // @ Global render
     public function render() {
@@ -303,6 +312,13 @@ class SingleCompany extends Component {
         $this->employees = CompanyEmployee::where('company_id', $this->company->id)->whereRelation('user', 'name', 'like', '%' . $this->employee_filter . '%')->get();
 
         $this->wholesalers = Wholesaler::where('center_id', $this->company->center_id)->get(); 
+
+        $studentRole = Role::where('name', 'Estudiante')->first();
+        $this->users = User::where('role_id', $studentRole->id)
+                   ->where('name', 'like', '%' . $this->user_filter . '%')
+                   ->limit(10)
+                   ->get();
+
 
         return view('livewire.sections.authorized.teacher.single-company');
     }

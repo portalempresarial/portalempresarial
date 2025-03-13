@@ -367,30 +367,40 @@
     <x-modal wire:model="employee_modal" styles="flex flex-col gap-2">
         @error('employee_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
 
-        <?php 
-            $users = []; 
-            $studentRole = Role::where('name', 'Estudiante')->first();
+        <section class="flex mt-5 items-center justify-between gap-5 flex-wrap">
+            <div class="flex items-center bg-white gap-3 border border-black transition-all w-full flex-1 rounded px-3">
+                <x-icon label="search" />
+    
+                <input wire:model.live="user_filter" type="text" class="flex-1 py-2 bg-transparent text-black" placeholder="..." />
+            </div>   
+    
+            <x-button wireClick="handleEmployeeModal" icon="person" content="Contratar" />
+        </section>
 
-            if($studentRole) {
-                $users = User::where('role_id', $studentRole->id)->where('center_id', $company->center_id)->get(); 
-            } 
+        <div class="relative overflow-x-auto mt-10">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                    <tr> 
+                        <th scope="col" class="px-6 py-3">
+                            Alumno
+                        </th>
+                    </tr> 
+                </thead>
+    
+                <tbody class="space-y-4">
+                    @foreach ($this->users as $user)
+                        <tr class="rounded-lg border border-black">  
+                            <td class="px-6 py-4 text-ellipsis truncate hover:cursor-pointer text-black 
+                                    {{ $this->employee_id === $user->id ? 'bg-blue-700 text-white' : 'bg-white' }}" 
+                                wire:click="$set('employee_id', {{ $user->id }})">
+                                {{ $user->name }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
 
-            $userOptions = []; 
-
-            foreach ($users as $value) {
-                $userOptions[] = [
-                    "value" => $value['id'],
-                    "label" => $value['name']
-                ];
-            }
-        ?>
-
-        <x-selector 
-            wireModel="employee_id" 
-            label="Alumno"
-            styles="mb-2"
-            :options="$userOptions"
-        />
+            </table>
+        </div>
 
         @error('employee_dept') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
 
