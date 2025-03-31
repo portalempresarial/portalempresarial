@@ -8,17 +8,19 @@ use Illuminate\View\Component;
 
 class button extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
+    public $wireClick;
+    public $icon;
+    public $styles;
+    public $content;
+
+    public function __construct($wireClick = null, $icon = null, $styles = null, $content = null)
     {
-        //
+        $this->wireClick = $wireClick;
+        $this->icon = $icon;
+        $this->styles = $styles;
+        $this->content = $content;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
     public function render(): View|Closure|string
     {
         return view('components.button');

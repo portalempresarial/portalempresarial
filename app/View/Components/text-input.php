@@ -1,25 +1,40 @@
 <?php
-
 namespace App\View\Components;
 
-use Closure;
-use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class textInput extends Component
+class TextInput extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
-    {
-        //
+    public $styles;
+    public $wireModel;
+    public $type;
+    public $icon;
+    public $placeholder;
+    public $value;
+    public $disabled;
+    public $numeric;
+
+    public function __construct(
+        $styles = null,
+        $wireModel = null,
+        $type = 'text',
+        $icon = null,
+        $placeholder = null,
+        $value = null,
+        $disabled = false,
+        $numeric = false
+    ) {
+        $this->styles = $styles;
+        $this->wireModel = $wireModel;
+        $this->type = $type;
+        $this->icon = $icon;
+        $this->placeholder = $placeholder;
+        $this->value = $value;
+        $this->disabled = $disabled;
+        $this->numeric = $numeric;
     }
-    
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
+
+    public function render()
     {
         return view('components.text-input');
     }
