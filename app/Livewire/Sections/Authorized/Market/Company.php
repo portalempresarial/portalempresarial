@@ -1,26 +1,27 @@
 <?php
 
 namespace App\Livewire\Sections\Authorized\Market;
+
 use Livewire\Component;
 use App\Models\Company as CompanyModel;
-use App\Models\Product;  
+use App\Models\Product;
 use Livewire\Attributes\Url;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Request;
 use App\Models\CartProduct;
 
-class Company extends Component {
-    #[Url] 
+class Company extends Component
+{
+    #[Url]
     public $filter, $category;
 
-    public $company, $selected_product, $selected_counter = 1; 
+    public $company, $selected_product, $selected_counter = 1;
 
     protected $products = [];
 
-    public function addToCart() {
-        $onCart = CartProduct::where('user_id', auth()->user()->id)->where('product_id', $this->selected_product->id)->first(); 
+    public function addToCart()
+    {
+        $onCart = CartProduct::where('user_id', auth()->user()->id)->where('product_id', $this->selected_product->id)->first();
 
-        if(!$onCart) {
+        if (!$onCart) {
             CartProduct::create([
                 'user_id' => auth()->user()->id,
                 'product_id' => $this->selected_product->id,
@@ -37,20 +38,29 @@ class Company extends Component {
         $this->reset(['selected_product', 'selected_counter']);
     }
 
-    public function updatedSelectedProduct($value) {
-        $this->selected_counter = 0;
+    public function updatedSelectedCounter($value)
+    {
+        $this->selected_counter = max(1, (int)$value);
     }
 
-    public function mount($company, $product = false) {
+    public function validateCounter()
+    {
+        $this->selected_counter = max(1, (int) $this->selected_counter);
+    }
+
+
+    public function mount($company, $product = false)
+    {
         $this->company = CompanyModel::where('name', str_replace('-', ' ', $company))->firstOrFail();
 
-        if($product) {
+        if ($product) {
             $this->selected_product = Product::where('label', str_replace('-', ' ', $product))->firstOrFail();
         }
     }
 
-    public function render() {
-        if($this->company) {
+    public function render()
+    {
+        if ($this->company) {
             $queryBuilder = Product::query();
 
             if ($this->filter) {
