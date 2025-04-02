@@ -39,31 +39,35 @@ class Market extends Component {
 
     public function render() {
         $queryBuilder = Product::query();
-
+    
         if ($this->product_filter) {
             $queryBuilder->where('label', 'LIKE', '%' . $this->product_filter . '%');
         }
-
+    
         if ($this->sector) {
             $queryBuilder->whereHas('company', function ($query) {
                 $query->where('sector', $this->sector);
             });
         }
-
+    
         $queryBuilder->whereHas('company', function ($query) {
             $query->where('status', 'active');
         });
-
+    
         if ($this->company) {
             $queryBuilder->where('company_id', (int) $this->company);
         }
-
-        $this->products = $queryBuilder->get();
-
-        $this->companiesList = Company::where('status', 'active')
-            ->select('id', 'name')
+    
+        $products = $queryBuilder->get();
+    
+        // Filtrar empresas que tienen productos correspondientes
+        $companiesList = Company::where('status', 'active')
+            ->whereIn('id', $products->pluck('company_id')->unique())
             ->get();
     
-        return view('livewire.sections.authorized.market');
+        return view('livewire.sections.authorized.market', [
+            'products' => $products,
+            'companiesList' => $companiesList,
+        ]);
     }
 }

@@ -147,4 +147,13 @@
             @endforeach
         </div>
     </section>
+    <style>
+        *::-webkit-scrollbar {
+            display: none;
+        }   
+        
+        * {
+            scrollbar-width: none;
+        }    
+    </style>
 </main>
