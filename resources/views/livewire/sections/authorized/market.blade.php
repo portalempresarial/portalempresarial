@@ -174,5 +174,9 @@ foreach ($companiesList as $company) {
                 </div>
             </div>
         @endforeach
+        
+        <div class="mt-5">
+            {{ $companiesList->links() }}
+        </div>
     </div>
 </section>

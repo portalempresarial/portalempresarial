@@ -35,36 +35,40 @@ class Market extends Component {
         ]
     ]; 
 
-    protected $products = []; 
-
-    public function render() {
-        $queryBuilder = Product::query();
+    protected $products = [];
     
+    public function updating($property) {
+        $this->resetPage();
+    }
+
+    public function render()
+    {
+        $queryBuilder = Product::query();
+
         if ($this->product_filter) {
             $queryBuilder->where('label', 'LIKE', '%' . $this->product_filter . '%');
         }
-    
+
         if ($this->sector) {
             $queryBuilder->whereHas('company', function ($query) {
                 $query->where('sector', $this->sector);
             });
         }
-    
+
         $queryBuilder->whereHas('company', function ($query) {
             $query->where('status', 'active');
         });
-    
+
         if ($this->company) {
             $queryBuilder->where('company_id', (int) $this->company);
         }
-    
+
         $products = $queryBuilder->get();
-    
-        // Filtrar empresas que tienen productos correspondientes
+
         $companiesList = Company::where('status', 'active')
             ->whereIn('id', $products->pluck('company_id')->unique())
-            ->get();
-    
+            ->paginate(5);
+
         return view('livewire.sections.authorized.market', [
             'products' => $products,
             'companiesList' => $companiesList,
