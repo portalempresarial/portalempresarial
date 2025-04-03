@@ -3,41 +3,43 @@
 namespace App\Livewire\Sections\Authorized;
 
 use Livewire\Component;
-use App\Models\Product; 
-use App\Models\Company; 
+use App\Models\Product;
+use App\Models\Company;
 use Livewire\WithPagination;
 use Livewire\Attributes\Url;
 
-class Market extends Component {
+class Market extends Component
+{
     use WithPagination;
 
-    #[Url] 
+    #[Url]
     public $product_filter, $sector, $company;
 
     protected $companiesList = [];
 
     public $marketQuestions = [
         [
-            "index" => "english_availability", 
-            "title" => "Damos respuesta en inglés", 
+            "index" => "english_availability",
+            "title" => "Damos respuesta en inglés",
         ],
         [
             "index" => "vacations",
-            "title" => "Estamos de vacaciones", 
-        ], 
+            "title" => "Estamos de vacaciones",
+        ],
         [
             "index" => "messages",
-            "title" => "Mensajería unificada", 
-        ], 
+            "title" => "Mensajería unificada",
+        ],
         [
             "index" => "public_email",
-            "title" => "Email público", 
+            "title" => "Email público",
         ]
-    ]; 
+    ];
 
     protected $products = [];
-    
-    public function updating($property) {
+
+    public function updating($property)
+    {
         $this->resetPage();
     }
 

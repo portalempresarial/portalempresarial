@@ -64,7 +64,7 @@ foreach ($companiesList as $company) {
 
     <div class="flex-1 flex flex-col gap-10">
         @foreach ($companiesList as $company)
-            <div class="bg-white shadow-md rounded-md p-5">
+            <div class="p-5 border border-gray-300 rounded-md shadow-md bg-white mx-24">
                 <div class="flex items-center gap-5">
                     @if ($company->icon)
                         <img class="max-w-[70px] rounded-sm h-[50px]"
@@ -72,7 +72,7 @@ foreach ($companiesList as $company) {
                     @endif
                     <h2>
                         <a href="/market/company/{{ str_replace(' ', '-', $company->name) }}"
-                            class="text-xl text-blue-500 hover:text-blue-700 transition-all">
+                            class="text-xl text-blue-500 font-bold hover:text-blue-700 transition-all">
                             {{ $company->name }}
                         </a>
     
@@ -93,7 +93,7 @@ foreach ($companiesList as $company) {
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
                     <!-- Mostrar los primeros 8 productos -->
                     @foreach ($visibleProducts as $product)
-                        <div class="bg-neutral-100 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:bg-blue-500 hover:text-white">
+                        <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'" class="bg-gray-100 border border-gray-300 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
                             <div class="flex justify-between w-full">
                                 <div class="flex flex-col">
                                     <!-- Nombre del producto -->
@@ -126,7 +126,7 @@ foreach ($companiesList as $company) {
                     <div x-data="{ showMore: false }" class="col-span-full">
                         <div x-show="showMore" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             @foreach ($hiddenProducts as $product)
-                                <div class="bg-neutral-100 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:bg-blue-500 hover:text-white">
+                                <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'" class="bg-gray-100 border border-gray-300 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
                                     <div class="flex justify-between w-full">
                                         <div class="flex flex-col">
                                             <!-- Nombre del producto -->
@@ -159,7 +159,7 @@ foreach ($companiesList as $company) {
                         <!-- Botón "Ver más" -->
                         @if ($hiddenProducts->count() > 0)
                         <div class="flex justify-center text-center">
-                            <button @click="showMore = !showMore" class="mt-4 p-2 shadow-md rounded-md bg-blue-500 text-white hover:bg-blue-700 font-semibold transition-all flex items-center justify-center gap-2">
+                            <button @click="showMore = !showMore" class="mt-4 p-2 shadow-md rounded-md bg-blue-500 text-white hover:bg-blue-700 hover:scale-105 font-semibold transition-all flex items-center justify-center gap-2">
                                 <span x-show="!showMore">Ver más productos</span>
                                 <span x-show="showMore">Ver menos productos</span>
                                 <span :class="{'rotate-180': showMore}" class="transition-transform duration-300">
