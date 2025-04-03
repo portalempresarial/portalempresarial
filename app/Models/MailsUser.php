@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class MailsUser extends Model
+{
+    use HasFactory;
+
+    protected $table = 'mails_users'; // Asegúrate de especificar la tabla correcta
+
+    protected $fillable = [
+        'message_id',
+        'recipient_id',
+        'read_at',
+    ];
+
+    /**
+     * Relación con el modelo Mails
+     */
+    public function mail()
+    {
+        return $this->belongsTo(Mails::class, 'message_id');
+    }
+
+    /**
+     * Relación con el modelo User
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'recipient_id');
+    }
+}
