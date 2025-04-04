@@ -14,7 +14,7 @@
         </div>
 
         <div class="flex mt-10 gap-5 items-center">
-            <img class="max-w-[50px] rounded-sm h-[50px]" src="{{ asset('storage/companies/' . $company->icon) }}" />
+            <img class="max-w-[50px] rounded-md-sm h-[50px]" src="{{ asset('storage/companies/' . $company->icon) }}" />
 
             <section>
                 <h1 class="text-2xl font-bold">{{ $company->name }}</h1>
@@ -59,7 +59,7 @@
         @if ($selected_product)
             <div class="bg-white shadow-sm rounded-md flex-wrap p-5 flex items-center gap-10">
                 @if ($selected_product->image)
-                    <img class="sm:max-w-[100px] rounded-sm sm:h-[100px]"
+                    <img class="sm:max-w-[100px] rounded-md-sm sm:h-[100px]"
                         src="{{ asset('storage/companies/' . $selected_product['company_id'] . '/products/' . $selected_product['image']) }}" />
                 @endif
 
@@ -141,7 +141,7 @@
                         </p>
 
                         @if ($product->image)
-                            <img class="max-w-[70px] rounded-sm h-[50px]"
+                            <img class="max-w-[70px] rounded-md-sm h-[50px]"
                                 src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" />
                         @endif
                     </section>
@@ -154,7 +154,7 @@
 
                     <section class="mt-7 flex items-center gap-3">
                         @if ($product->company->icon)
-                            <img class="max-w-[30px] rounded-sm h-[15px]"
+                            <img class="max-w-[30px] rounded-md-sm h-[15px]"
                                 src="{{ asset('storage/companies/' . $product->company->icon) }}" />
                         @endif
 

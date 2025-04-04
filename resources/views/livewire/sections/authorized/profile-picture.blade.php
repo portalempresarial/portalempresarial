@@ -2,7 +2,7 @@
     <div wire:loading wire:target="image">Subiendo...</div>
 
     <div class="flex items-center mt-3 justify-center w-full">
-        <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50">
+        <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-md cursor-pointer bg-gray-50">
             <div class="flex flex-col items-center justify-center pt-5 pb-6">
                 @if($image)
                     <img src="{{ $image->temporaryUrl() }}" class="w-20 h-20 mb-5">

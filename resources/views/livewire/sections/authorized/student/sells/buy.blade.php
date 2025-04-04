@@ -40,9 +40,9 @@
                     </td>
                     <td class="py-4 text-ellipsis truncate pl-5"> 
                         @if ($order->status == 'pending')
-                            <span class="text-orange-500 lowercase bg-orange-100 px-2 py-1 rounded border border-orange-500">pendiente</span>
+                            <span class="text-orange-500 lowercase bg-orange-100 px-2 py-1 rounded-md border border-orange-500">pendiente</span>
                         @else
-                            <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded border border-green-500">gestionada</span>
+                            <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded-md border border-green-500">gestionada</span>
                         @endif
                     </td>
                     <td class="py-4 text-ellipsis truncate pl-5">

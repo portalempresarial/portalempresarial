@@ -11,7 +11,7 @@
         placeholder="Dirección de correo" 
     /> 
 
-    <button wire:click="recover" class="mt-5 bg-blue-500 hover:bg-blue-700 transition-all text-white w-full py-2 rounded">
+    <button wire:click="recover" class="mt-5 bg-blue-500 hover:bg-blue-700 transition-all text-white w-full py-2 rounded-md">
         Enviar código
     </button>
 </div>

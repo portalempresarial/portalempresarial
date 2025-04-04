@@ -1,7 +1,7 @@
 <main x-data>
     {{-- @ Navigator --}}
     <section class="flex mt-5 items-center justify-between gap-5 flex-wrap">
-        <div class="flex items-center bg-white gap-3 border border-black transition-all w-full flex-1 rounded px-3">
+        <div class="flex items-center bg-white gap-3 border border-black transition-all w-full flex-1 rounded-md px-3">
             <x-icon label="search" />
 
             <input wire:model.live="filter" type="text" class="flex-1 py-2 bg-transparent text-black" placeholder="..." />
@@ -45,7 +45,7 @@
                     <tr class="bg-white border-b">
                         <td class="py-4 text-ellipsis truncate pl-5 w-[30px]">
                             @if ($company['icon'])
-                                <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/companies/' . $company['icon']) }}" />
+                                <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/companies/' . $company['icon']) }}" />
                             @endif
                         </td>
 
@@ -71,9 +71,9 @@
 
                         <td class="px-6 py-4 text-ellipsis truncate">
                             @if ($company['status'] == 'active')
-                                <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded border border-green-500">Activa</span>
+                                <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded-md border border-green-500">Activa</span>
                             @else
-                                <span class="text-red-500 lowercase bg-red-100 px-2 py-1 rounded border border-red-500">Inactiva</span>
+                                <span class="text-red-500 lowercase bg-red-100 px-2 py-1 rounded-md border border-red-500">Inactiva</span>
                             @endif
                         </td>
 

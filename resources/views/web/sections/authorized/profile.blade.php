@@ -3,7 +3,7 @@
 @section('body')
     <main class="w-full p-10 flex gap-10 flex-col overflow-y-scroll">
         <div 
-            class="h-[100px] rounded w-full" 
+            class="h-[100px] rounded-md w-full" 
             style="background-image: url(https://www.monlau.com/estudis-professionals/wp-content/uploads/sites/3/2020/02/recepci%C3%B3-1.jpg)"
         ></div>
 
@@ -38,7 +38,7 @@
                 @livewire('sections.authorized.profile-picture')
             </section>
 
-            <section class="px-0 lg:px-10 w-full lg:w-[400px] rounded border-0 lg:border-l">
+            <section class="px-0 lg:px-10 w-full lg:w-[400px] rounded-md border-0 lg:border-l">
                 <h2 class="text-2xl font-extrabold text-blue-500">
                     {{ Auth::user()->name }}
                 </h2>
@@ -52,9 +52,9 @@
 
                             <td class="py-4">
                                 @if (Auth::user()->status == 'active')
-                                    <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded border border-green-500">Activa</span>
+                                    <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded-md border border-green-500">Activa</span>
                                 @else
-                                    <span class="text-red-500 lowercase bg-red-100 px-2 py-1 rounded border border-red-500">Inactiva</span>
+                                    <span class="text-red-500 lowercase bg-red-100 px-2 py-1 rounded-md border border-red-500">Inactiva</span>
                                 @endif
                             </td>
                         </tr>
@@ -64,9 +64,9 @@
 
                             <td class="py-4">
                                 @if (Auth::user()->email_verified_at)
-                                    <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded border border-green-500">Confirmado</span>
+                                    <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded-md border border-green-500">Confirmado</span>
                                 @else
-                                    <span class="text-red-500 lowercase bg-red-100 px-2 py-1 rounded border border-red-500">Sin validar</span>
+                                    <span class="text-red-500 lowercase bg-red-100 px-2 py-1 rounded-md border border-red-500">Sin validar</span>
                                 @endif
                             </td>
                         </tr>

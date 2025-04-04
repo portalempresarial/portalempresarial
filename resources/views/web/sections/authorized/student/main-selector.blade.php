@@ -18,7 +18,7 @@
                 Selecciona la empresa con la que deseas trabajar
             </p>
 
-            <div class="border flex flex-col rounded mt-10 divide-y divide-solid">
+            <div class="border flex flex-col rounded-md mt-10 divide-y divide-solid">
                 @foreach (Auth::user()->companies as $option)
                     <div onclick="window.location.href = '/student/{{ str_replace(' ', '-', $option->company->name) }}/dashboard'" class="px-5 py-4 text-md flex select-none group hover:bg-blue-500 cursor-pointer hover:text-white transition-all flex-col">
                         {{ $option->company->name }}

@@ -10,7 +10,7 @@
             <button 
                 x-on:click="page = '{{ $page }}'" 
                 :class="{ 'bg-blue-500 text-white': page === '{{ $page }}', 'bg-gray-100': page !== '{{ $page }}' }"
-                class="transition-all px-5 py-2 rounded text-ellipsis truncate min-w-[150px]"
+                class="transition-all px-5 py-2 rounded-md text-ellipsis truncate min-w-[150px]"
             >{{ $page }}</button>
         @endforeach
     </section>
@@ -162,7 +162,7 @@
         <div wire:loading wire:target="image" class="w-full mt-5">Subiendo...</div>
 
         <div class="flex items-center mt-10 justify-center w-full">
-            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50">
+            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-md cursor-pointer bg-gray-50">
                 <div class="flex flex-col items-center justify-center pt-5 pb-6">
                     @if($image)
                         <img src="{{ $image->temporaryUrl() }}" class="w-20 h-20 mb-5">
@@ -199,13 +199,13 @@
 
         <div class="flex items-center gap-10 mt-3">
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-blue-500 w-[10px] rounded-full"></div>
+                <div class="h-[10px] bg-blue-500 w-[10px] rounded-md-full"></div>
 
                 Docente asignado
             </div>
 
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-gray-300 w-[10px] rounded-full"></div>
+                <div class="h-[10px] bg-gray-300 w-[10px] rounded-md-full"></div>
 
                 Sin asignar
             </div>
@@ -213,9 +213,9 @@
 
         <div class="flex flex-wrap gap-3 mt-10">
             @foreach ($teachers as $teacher)
-                <div wire:click="toggleTeacher('{{ $teacher->id }}')" class="{{ $this->userIsTeacher($teacher->id) ? 'bg-blue-500 text-white' : 'bg-gray-100' }} px-5 py-2 flex items-center gap-3 rounded cursor-pointer">
+                <div wire:click="toggleTeacher('{{ $teacher->id }}')" class="{{ $this->userIsTeacher($teacher->id) ? 'bg-blue-500 text-white' : 'bg-gray-100' }} px-5 py-2 flex items-center gap-3 rounded-md cursor-pointer">
                     @if ($teacher['profile_url'])
-                        <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $teacher['profile_url']) }}" />
+                        <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $teacher['profile_url']) }}" />
                     @endif
     
                     {{ $teacher->name }}
@@ -252,7 +252,7 @@
         class="mt-10"
     > 
         <section class="flex mt-5 items-center justify-between gap-5 flex-wrap">
-            <div class="flex items-center bg-white gap-3 border border-black transition-all w-full flex-1 rounded px-3">
+            <div class="flex items-center bg-white gap-3 border border-black transition-all w-full flex-1 rounded-md px-3">
                 <x-icon label="search" />
     
                 <input wire:model.live="employee_filter" type="text" class="flex-1 py-2 bg-transparent text-black" placeholder="..." />
@@ -338,13 +338,13 @@
 
         <div class="flex items-center gap-10 mt-3">
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-blue-500 w-[10px] rounded-full"></div>
+                <div class="h-[10px] bg-blue-500 w-[10px] rounded-md-full"></div>
 
                 Mayorista asignado
             </div>
 
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-gray-300 w-[10px] rounded-full"></div>
+                <div class="h-[10px] bg-gray-300 w-[10px] rounded-md-full"></div>
 
                 Sin asignar
             </div>
@@ -352,9 +352,9 @@
 
         <div class="flex flex-wrap gap-3 mt-10">
             @foreach ($wholesalers as $wholesaler)
-                <div wire:click="toggleWholesaler('{{ $wholesaler->id }}')" class="{{ $this->isWholesalerAssigned($wholesaler->id) ? 'bg-blue-500 text-white' : 'bg-gray-100' }} px-5 py-2 flex items-center gap-3 rounded cursor-pointer">
+                <div wire:click="toggleWholesaler('{{ $wholesaler->id }}')" class="{{ $this->isWholesalerAssigned($wholesaler->id) ? 'bg-blue-500 text-white' : 'bg-gray-100' }} px-5 py-2 flex items-center gap-3 rounded-md cursor-pointer">
                     @if ($wholesaler->icon)
-                        <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" />
+                        <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" />
                     @endif
                     
                     {{ $wholesaler->name }}
@@ -368,7 +368,7 @@
         @error('employee_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
 
         <section class="flex mt-5 items-center justify-between gap-5 flex-wrap">
-            <div class="flex items-center bg-white gap-3 border border-black transition-all w-full flex-1 rounded px-3">
+            <div class="flex items-center bg-white gap-3 border border-black transition-all w-full flex-1 rounded-md px-3">
                 <x-icon label="search" />
     
                 <input wire:model.live="user_filter" type="text" class="flex-1 py-2 bg-transparent text-black" placeholder="..." />
@@ -389,7 +389,7 @@
     
                 <tbody class="space-y-4">
                     @foreach ($this->users as $user)
-                        <tr class="rounded-lg border border-black">  
+                        <tr class="rounded-md border border-black">  
                             <td class="px-6 py-4 text-ellipsis truncate hover:cursor-pointer text-black 
                                     {{ $this->employee_id === $user->id ? 'bg-blue-700 text-white' : 'bg-white' }}" 
                                 wire:click="$set('employee_id', {{ $user->id }})">

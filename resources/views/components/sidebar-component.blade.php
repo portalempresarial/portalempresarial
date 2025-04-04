@@ -66,7 +66,7 @@
         @endif
 
         @if (request()->is("*teacher*view*")) 
-            <div onclick="window.location.href = '/teacher/companies/{{ str_replace(' ', '-', $name) }}/'" class="flex items-center gap-3 text-sm rounded px-3 py-2 group cursor-pointer hover:bg-blue-500 hover:text-white transition-all">
+            <div onclick="window.location.href = '/teacher/companies/{{ str_replace(' ', '-', $name) }}/'" class="flex items-center gap-3 text-sm rounded-md px-3 py-2 group cursor-pointer hover:bg-blue-500 hover:text-white transition-all">
                 <span class="material-symbols-outlined text-blue-500 group-hover:text-white transition-all">admin_panel_settings</span>
 
                 Volver atrás
@@ -74,7 +74,7 @@
             
             @foreach ($elements as $element)
                 @if (Auth::user()->role && Auth::user()->role->name != "Estudiante" && "Estudiante" == $element['role'])
-                    <div onclick="window.location.href = '/teacher/companies/{{ str_replace(' ', '-', $name) }}/view/{{ $element['route'] }}'" class="flex items-center gap-3 text-sm rounded px-3 py-2 group cursor-pointer hover:bg-blue-500 hover:text-white transition-all">
+                    <div onclick="window.location.href = '/teacher/companies/{{ str_replace(' ', '-', $name) }}/view/{{ $element['route'] }}'" class="flex items-center gap-3 text-sm rounded-md px-3 py-2 group cursor-pointer hover:bg-blue-500 hover:text-white transition-all">
                         <span class="material-symbols-outlined text-blue-500 group-hover:text-white transition-all">{{ $element['icon'] }}</span>
 
                         {{ $element['label'] }}
@@ -103,7 +103,7 @@
                         }
                     @endphp
 
-                    <div onclick="window.location.href = '{{ $route }}'" class="flex items-center gap-3 text-sm rounded px-3 py-2 group cursor-pointer hover:bg-blue-500 hover:text-white transition-all">
+                    <div onclick="window.location.href = '{{ $route }}'" class="flex items-center gap-3 text-sm rounded-md px-3 py-2 group cursor-pointer hover:bg-blue-500 hover:text-white transition-all">
                         <span class="material-symbols-outlined text-blue-500 group-hover:text-white transition-all">{{ $element['icon'] }}</span>
 
                         {{ $element['label'] }}
@@ -112,7 +112,7 @@
             @endforeach
         @endif
 
-        <div onclick="window.location.href = '/market'" class="flex items-center gap-3 text-sm rounded px-3 py-2 group cursor-pointer hover:bg-blue-500 hover:text-white transition-all">
+        <div onclick="window.location.href = '/market'" class="flex items-center gap-3 text-sm rounded-md px-3 py-2 group cursor-pointer hover:bg-blue-500 hover:text-white transition-all">
             <span class="material-symbols-outlined text-blue-500 group-hover:text-white transition-all">shopping_cart</span>
 
             Market

@@ -160,7 +160,7 @@
             <span class="text-red-500 text-sm">{{ $message }}</span> 
         @enderror
 
-        <textarea wire:model.live="content" class="border border-black transition-all w-full flex-1 mt-2 rounded p-2.5 min-h-[150px] max-h-[300px]"></textarea>
+        <textarea wire:model.live="content" class="border border-black transition-all w-full flex-1 mt-2 rounded-md p-2.5 min-h-[150px] max-h-[300px]"></textarea>
         
         <section class="flex items-center w-full gap-3">
             <x-button wireClick="create('draft')" styles="flex items-center justify-center flex-1 bg-gray-400 hover:bg-gray-700" content="Guardar borrador" /> 
