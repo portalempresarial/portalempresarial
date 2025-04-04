@@ -1,14 +1,14 @@
 <x-modal wire:model="managing" styles="flex flex-col gap-3"> 
     <h2 class="text-lg flex items-center gap-3">
         @if ($current_order  && $current_order->seller->icon)
-            <img class="max-w-[30px] rounded-sm h-[15px]" src="{{ asset('storage/companies/' . $current_order->seller->icon) }}" />
+            <img class="max-w-[30px] rounded-md-sm h-[15px]" src="{{ asset('storage/companies/' . $current_order->seller->icon) }}" />
         @endif
 
         {{ $current_order ? $current_order->seller->name : '' }}
     </h2>
 
     <div class="mb-4">
-        <span class="text-green-500 bg-green-100 text-xs px-2 py-1 rounded border border-green-500 uppercase">{{ $current_order ? $current_order->serial : '' }}</span>
+        <span class="text-green-500 bg-green-100 text-xs px-2 py-1 rounded-md border border-green-500 uppercase">{{ $current_order ? $current_order->serial : '' }}</span>
     </div>
 
     <table class="w-full text-sm text-left text-gray-500">

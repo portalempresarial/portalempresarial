@@ -5,7 +5,7 @@
             <button 
                 x-on:click="page = '{{ $page }}'" 
                 :class="{ 'bg-blue-500 text-white': page === '{{ $page }}', 'bg-gray-100': page !== '{{ $page }}' }"
-                class="transition-all px-5 py-2 rounded text-ellipsis truncate min-w-[150px]"
+                class="transition-all px-5 py-2 rounded-md text-ellipsis truncate min-w-[150px]"
             >{{ $page }}</button>
         @endforeach
     </section>
@@ -23,7 +23,7 @@
                     @if ($announce->user)
                         <section class="flex items-center gap-3">
                             @if ($announce->user['profile_url'])
-                                <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $announce->user['profile_url']) }}" />
+                                <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $announce->user['profile_url']) }}" />
                             @endif
 
                             <span class="text-sm flex-1">
@@ -58,7 +58,7 @@
                     @if ($announce->user)
                         <section class="flex items-center gap-3">
                             @if ($announce->user['profile_url'])
-                                <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $announce->user['profile_url']) }}" />
+                                <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $announce->user['profile_url']) }}" />
                             @endif
 
                             <span class="text-sm">

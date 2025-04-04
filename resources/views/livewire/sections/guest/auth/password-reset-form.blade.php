@@ -23,7 +23,7 @@
         placeholder="Repetir contraseña" 
     />
 
-    <button wire:click="confirm('{{ $token }}')" class="mt-5 bg-blue-500 hover:bg-blue-700 transition-all text-white w-full py-2 rounded">
+    <button wire:click="confirm('{{ $token }}')" class="mt-5 bg-blue-500 hover:bg-blue-700 transition-all text-white w-full py-2 rounded-md">
         Confirmar cambio
     </button>
 </div>

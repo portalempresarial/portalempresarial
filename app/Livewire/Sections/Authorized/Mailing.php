@@ -43,6 +43,11 @@ class Mailing extends Component
 
     public function toggleNewEmail()
     {
+        if ($this->newEmail) {
+            $this->reset(['newEmail', 'subject', 'body', 'recipients', 'attachments']);
+            return;
+        }
+
         $this->newEmail = true;
         $this->selectedEmail = null;
         $this->reset(['subject', 'body', 'recipients', 'attachments']);

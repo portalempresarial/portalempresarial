@@ -10,23 +10,23 @@
                 {{-- @ Company information --}}
                 <section class="flex items-center gap-3">
                     @if ($company->icon)
-                        <img class="max-w-[30px] rounded-sm h-[15px]" src="{{ asset('storage/companies/' . $company->icon) }}" />
+                        <img class="max-w-[30px] rounded-md-sm h-[15px]" src="{{ asset('storage/companies/' . $company->icon) }}" />
                     @endif
 
                     {{ $company->name }}
                 </section>
 
                 {{-- @ Cart items --}}
-                <section class="flex flex-col divide-y px-5 py-1 rounded shadow-sm bg-white">
+                <section class="flex flex-col divide-y px-5 py-1 rounded-md shadow-sm bg-white">
                     @foreach ($this->items as $item)
                         @if ($item->product->company_id != $company->id)
                             @continue
                         @endif
 
-                        <div class="flex items-center flex-wrap rounded py-7 md:py-0 md:h-[70px] gap-3">
+                        <div class="flex items-center flex-wrap rounded-md py-7 md:py-0 md:h-[70px] gap-3">
                             <div class="w-10 flex items-center justify-center">
                                 @if ($item->product->image)
-                                    <img class="rounded-sm h-[30px]" src="{{ asset('storage/companies/' . $item->product['company_id'] . '/products/' . $item->product['image']) }}" />
+                                    <img class="rounded-md-sm h-[30px]" src="{{ asset('storage/companies/' . $item->product['company_id'] . '/products/' . $item->product['image']) }}" />
                                 @else 
                                     <span class="material-symbols-outlined text-md text-blue-500">
                                         fullscreen
@@ -45,13 +45,13 @@
                             </p>
             
                             <div class="flex items-center gap-4">
-                                <span wire:click="removeOne({{ $item->id }})" class="material-symbols-outlined border rounded-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                <span wire:click="removeOne({{ $item->id }})" class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     remove
                                 </span>
             
                                 {{ $item->amount }}
             
-                                <span wire:click="addOne({{ $item->id }})" class="material-symbols-outlined border rounded-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                <span wire:click="addOne({{ $item->id }})" class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     add
                                 </span>
                             </div>

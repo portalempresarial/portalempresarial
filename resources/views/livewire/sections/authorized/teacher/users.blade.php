@@ -51,7 +51,7 @@
                     <tr class="bg-white border-b">
                         <td class="py-4 text-ellipsis truncate pl-5 w-[30px]">
                             @if ($user['profile_url'])
-                                <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $user['profile_url']) }}" />
+                                <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $user['profile_url']) }}" />
                             @endif
                         </td>
 
@@ -69,9 +69,9 @@
                         </td>
                         <td class="px-6 py-4 text-ellipsis truncate">
                             @if ($user['status'] == 'active')
-                                <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded border border-green-500">Activo</span>
+                                <span class="text-green-500 lowercase bg-green-100 px-2 py-1 rounded-md border border-green-500">Activo</span>
                             @else
-                                <span class="text-red-500 lowercase bg-red-100 px-2 py-1 rounded border border-red-500">Inactivo</span>
+                                <span class="text-red-500 lowercase bg-red-100 px-2 py-1 rounded-md border border-red-500">Inactivo</span>
                             @endif
                         </td>
                         <td class="px-6 py-4 text-ellipsis truncate">
@@ -80,9 +80,9 @@
                         <td class="px-6 py-4 text-ellipsis truncate"> 
                             @if ($user->role && $user->role->name != 'Profesor')
                                 @if (count($user->companies) > 0)
-                                    <span class="text-blue-500 lowercase bg-blue-100 px-2 py-1 rounded border border-blue-500">{{ count($user->companies) }} empresas</span>
+                                    <span class="text-blue-500 lowercase bg-blue-100 px-2 py-1 rounded-md border border-blue-500">{{ count($user->companies) }} empresas</span>
                                 @else
-                                    <span class="text-orange-500 lowercase bg-orange-100 px-2 py-1 rounded border border-orange-500">en paro</span>
+                                    <span class="text-orange-500 lowercase bg-orange-100 px-2 py-1 rounded-md border border-orange-500">en paro</span>
                                 @endif
                             @endif
                         </td>

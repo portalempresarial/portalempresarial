@@ -54,7 +54,7 @@
                         </p>
     
                         @if (Auth::user()->profile_url)
-                            <img draggable="false" class="w-[35px] rounded-full h-[35px]" src="{{ asset('storage/profile-pictures/' . Auth::user()->profile_url) }}" />
+                            <img draggable="false" class="w-[35px] rounded-md-full h-[35px]" src="{{ asset('storage/profile-pictures/' . Auth::user()->profile_url) }}" />
                         @endif
                     </div>
                 @else 
@@ -81,7 +81,7 @@
     
                 <p class="text-lg font-normal text-white lg:text-xl mt-7">Gestiona de manera integral todas las empresas ficticias para que tus alumnos puedan aprender todo sobre el Marketing, contacta con otros centros a través de las diferentes opciones y vive la experiencia.</p>
             
-                <button class="border border-blue-400 text-blue-400 flex items-center gap-3 px-7 py-3 mt-7 rounded-full">
+                <button class="border border-blue-400 text-blue-400 flex items-center gap-3 px-7 py-3 mt-7 rounded-md-full">
                     <span class="material-symbols-outlined">
                         call
                     </span>
