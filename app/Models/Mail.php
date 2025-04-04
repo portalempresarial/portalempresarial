@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Mails extends Model
+class Mail extends Model
 {
     use HasFactory;
 
@@ -20,6 +20,11 @@ class Mails extends Model
     public function sender(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sender_id');
+    }
+
+    public function  attachments()
+    {
+        return $this->hasMany(MailAttachment::class);
     }
 
     public function recipients(): BelongsToMany

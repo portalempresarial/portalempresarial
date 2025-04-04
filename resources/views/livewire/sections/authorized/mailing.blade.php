@@ -47,8 +47,10 @@
                     <div class="flex flex-row justify-between">
                         <span class="text-gray-600 text-sm">{{ Str::limit($email->body, 100) }}</span>
                         @if ($showDeleted)
-                            <x-button class="material-symbols-outline" wireClick="restoreEmail({{ $email->id }})" icon="restore" content="" />
-                            <x-button class="material-symbols-outline" wireClick="forceDeleteEmail({{ $email->id }})" icon="delete" content="" />
+                           <div class="flex flex-row gap-2">
+                                <x-button class="material-symbols-outline" wireClick="restoreEmail({{ $email->id }})" icon="restore" content="" />
+                                <x-button class="material-symbols-outline" wireClick="forceDeleteEmail({{ $email->id }})" icon="delete" content="" />
+                           </div>
                         @else
                             <x-button class="material-symbols-outlined" wireClick="deleteEmail({{ $email->id }})" icon="delete" content="" />
                         @endif
@@ -73,13 +75,29 @@
             <div class="bg-white shadow-md p-6 rounded-lg mb-4">
                 <h3 class="text-xl font-bold">{{ $selectedEmail->subject }}</h3>
                 <p class="text-gray-600 mt-2">{{ $selectedEmail->body }}</p>
+
+                {{-- Mostrar Archivos Adjuntos --}}
+                @if ($selectedEmail->attachments && $selectedEmail->attachments->count() > 0)
+                    <div class="mt-4">
+                        <h4 class="font-bold mb-2">Archivos Adjuntos:</h4>
+                        <ul>
+                            @foreach ($selectedEmail->attachments as $attachment)
+                                <li>
+                                    <a href="{{ Storage::url($attachment->file_path) }}" target="_blank" class="text-blue-500 hover:underline">
+                                        {{ $attachment->file_name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             </div>
         @endif
         
         {{-- Formulario para nuevo email --}}
         @if ($newEmail)
             <div class="bg-white shadow-md p-6 rounded-lg">
-                <form wire:submit.prevent="submitEmail">
+                <form wire:submit.prevent="submitEmail" enctype="multipart/form-data">
                     <div class="mb-4">
                         <x-labeled-input 
                             label="Para"
@@ -105,12 +123,19 @@
                             placeholder="Escribe tu mensaje aquí..."
                         ></textarea>
                     </div>
+
+                    <div class="mb-4">
+                        <label class="block mb-2 text-sm font-medium text-gray-700">Archivos Adjuntos:</label>
+                        <input 
+                            type="file" 
+                            wire:model="attachments" 
+                            multiple
+                            class="w-full p-2 border border-gray-300 rounded-lg"
+                        >
+                        @error('attachments.*') <span class="error text-red-500">{{ $message }}</span> @enderror
+                    </div>
                     
-                    <x-button 
-                        icon="send"
-                    >
-                        Enviar
-                    </x-button>
+                    <x-button icon="send">Enviar</x-button>
                 </form>
             </div>
         @endif
