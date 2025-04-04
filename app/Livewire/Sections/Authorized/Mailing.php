@@ -10,6 +10,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\Validate;
 
 class Mailing extends Component
 {
@@ -17,15 +18,39 @@ class Mailing extends Component
 
     protected $paginationTheme = 'tailwind';
 
-    public $selectedEmail = null;
+    public $selectedEmail, $modalSelectedEmail = null;
     public $newEmail = false;
     public $showDeleted = false;
 
     public $subject, $body, $recipients = "";
-    public $attachments = [];
+
+    protected $messages = [
+        'subject.required' => 'El asunto es obligatorio.',
+        'subject.min' => 'El asunto debe tener al menos 5 caracteres.',
+        'body.required' => 'El mensaje no puede estar vacío.',
+        'recipients.required' => 'Debe ingresar un destinatario.',
+        'recipients.email' => 'El destinatario debe ser una dirección de correo válida.',
+        'attachments.*.max' => 'El archivo ocupa más de 2 MB',
+        'attachments.*.file' => 'Cada archivo debe ser un archivo válido.',
+    ];
+
+    protected $customMessages = [
+        'upload_failed' => 'El archivo no se pudo cargar. Asegúrate de que sea menor de 2MB y tenga un formato permitido.',
+    ];
+
+    public function closeModal()
+    {
+        $this->selectedEmail = null;
+        $this->modalSelectedEmail = null;
+    }
 
     public function selectEmail($emailId)
     {
+        if ($this->modalSelectedEmail !== null) {
+            $this->closeModal();
+            return;
+        }
+
         $this->selectedEmail = Mail::find($emailId);
         $this->newEmail = false;
 
@@ -37,6 +62,40 @@ class Mailing extends Component
 
             if ($mailUser) {
                 $mailUser->touch('readt_at');
+            }
+        }
+    }
+
+    public function modalSelectEmail($emailId)
+    {
+        $this->modalSelectedEmail = Mail::find($emailId);
+        $this->newEmail = false;
+
+        if ($this->modalSelectedEmail) {
+            $mailUser = MailsUser::where('message_id', $this->modalSelectedEmail->id)
+                ->where('recipient_id', Auth::id())
+                ->whereNull('readt_at')
+                ->first();
+
+            if ($mailUser) {
+                $mailUser->touch('readt_at');
+            }
+        }
+    }
+
+    public function markAsUnread($emailId)
+    {
+        $this->selectedEmail = Mail::find($emailId);
+        $this->newEmail = false;
+
+        if ($this->selectedEmail) {
+            $mailUser = MailsUser::where('message_id', $this->selectedEmail->id)
+                ->where('recipient_id', Auth::id())
+                ->first();
+
+            if ($mailUser) {
+                $mailUser->readt_at = null;
+                $mailUser->save();
             }
         }
     }
@@ -53,14 +112,21 @@ class Mailing extends Component
         $this->reset(['subject', 'body', 'recipients', 'attachments']);
     }
 
+    #[Validate('nullable|max:2048|file')]
+    public $attachments = [];
     public function submitEmail()
     {
+        $attachmentError = $this->getErrorBag()->has('attachments');
         $this->validate([
             'recipients' => 'required|string',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
-            'attachments.*' => 'nullable|file|max:2048',
         ]);
+        if ($attachmentError) {
+            $this->setErrorBag(['attachments.max' => 'Uno o más archivos superan el límite permitido de 2MB. Si los archivos no son eliminados no se enviará ninguno.']);
+            $this->reset(['attachments']);
+            return;
+        };
 
         $email = Mail::create([
             'subject' => $this->subject,
@@ -83,7 +149,7 @@ class Mailing extends Component
 
         if ($this->attachments) {
             foreach ($this->attachments as $file) {
-                $path = $file->store('attachments', 'public');
+                $path = $file->store('attachments', 'public/emailAttachments');
 
                 MailAttachment::create([
                     'mail_id' => $email->id,
@@ -99,7 +165,7 @@ class Mailing extends Component
 
     public function deleteEmail(Mail $email)
     {
-        $this->newEmail = true;
+        $this->newEmail = false;
         $this->selectedEmail = null;
 
         $mailUser = MailsUser::where('message_id', $email->id)
@@ -111,19 +177,28 @@ class Mailing extends Component
         }
     }
 
-    public function forceDeleteEmail(Mail $email)
+    public $showForceDeleteModal, $emailToDelete;
+    public function openForceDeleteEmailModal(Mail $email)
     {
-        $this->newEmail = true;
+        $this->showForceDeleteModal = true;
+        $this->emailToDelete = $email->id;
+    }
+
+    public function forceDeleteEmail()
+    {
+        $this->newEmail = false;
         $this->selectedEmail = null;
 
         $mailUser = MailsUser::withTrashed()
-            ->where('message_id', $email->id)
+            ->where('message_id', $this->emailToDelete)
             ->where('recipient_id', Auth::id())
             ->first();
 
         if ($mailUser) {
             $mailUser->forceDelete();
         }
+
+        $this->reset(['showForceDeleteModal', 'emailToDelete']);
     }
 
     public function toggleDeleted()
