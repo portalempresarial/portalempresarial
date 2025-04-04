@@ -2,17 +2,18 @@
 
 namespace App\Livewire\Sections\Authorized;
 
-use App\Models\Mails;
+use App\Models\MailAttachment;
+use App\Models\Mail;
 use App\Models\MailsUser;
 use App\Models\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
-use Carbon\Carbon;
+use Livewire\WithFileUploads;
 
 class Mailing extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     protected $paginationTheme = 'tailwind';
 
@@ -21,10 +22,11 @@ class Mailing extends Component
     public $showDeleted = false;
 
     public $subject, $body, $recipients = "";
+    public $attachments = [];
 
     public function selectEmail($emailId)
     {
-        $this->selectedEmail = Mails::find($emailId);
+        $this->selectedEmail = Mail::find($emailId);
         $this->newEmail = false;
 
         if ($this->selectedEmail) {
@@ -43,7 +45,7 @@ class Mailing extends Component
     {
         $this->newEmail = true;
         $this->selectedEmail = null;
-        $this->reset(['subject', 'body', 'recipients']);
+        $this->reset(['subject', 'body', 'recipients', 'attachments']);
     }
 
     public function submitEmail()
@@ -52,9 +54,10 @@ class Mailing extends Component
             'recipients' => 'required|string',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
+            'attachments.*' => 'nullable|file|max:2048',
         ]);
 
-        $email = Mails::create([
+        $email = Mail::create([
             'subject' => $this->subject,
             'body' => $this->body,
             'sender_id' => Auth::id(),
@@ -73,11 +76,23 @@ class Mailing extends Component
             }
         }
 
+        if ($this->attachments) {
+            foreach ($this->attachments as $file) {
+                $path = $file->store('attachments', 'public');
+
+                MailAttachment::create([
+                    'mail_id' => $email->id,
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                ]);
+            }
+        }
+
         $this->reset(['subject', 'body', 'newEmail']);
         session()->flash('message', 'El email ha sido enviado correctamente.');
     }
 
-    public function deleteEmail(Mails $email)
+    public function deleteEmail(Mail $email)
     {
         $this->newEmail = true;
         $this->selectedEmail = null;
@@ -91,7 +106,7 @@ class Mailing extends Component
         }
     }
 
-    public function forceDeleteEmail(Mails $email)
+    public function forceDeleteEmail(Mail $email)
     {
         $this->newEmail = true;
         $this->selectedEmail = null;
@@ -111,7 +126,7 @@ class Mailing extends Component
         $this->showDeleted = !$this->showDeleted;
     }
 
-    public function restoreEmail(Mails $email)
+    public function restoreEmail(Mail $email)
     {
         $mailUser = MailsUser::withTrashed()
             ->where('message_id', $email->id)
@@ -125,7 +140,7 @@ class Mailing extends Component
 
     public function render()
     {
-        $query = Mails::whereHas('recipients', function ($query) {
+        $query = Mail::whereHas('recipients', function ($query) {
             $query->where('recipient_id', Auth::id());
         });
 
