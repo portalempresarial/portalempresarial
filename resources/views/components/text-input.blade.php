@@ -6,7 +6,7 @@
     @endif
 
     <input @if ($wireModel ?? false)
-        wire:model.live="{{ $wireModel }}"
+        wire:model.blur="{{ $wireModel }}"
     @endif value="{{ $value ?? false ? $value : '' }}" @if ($disabled ?? false)
         disabled
     @endif @if ($numeric ?? false)

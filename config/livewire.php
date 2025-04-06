@@ -89,6 +89,7 @@ return [
         'max_upload_time' => 5, // Max duration (in minutes) before an upload is invalidated...
         'custom_validation_messages' => [
             'upload_failed' => 'Hubo un problema al subir el archivo. Asegúrate de que sea menor de 2MB y tenga un formato permitido.',
+            'max_upload_filesize' => 'El archivo no puede superar los 12MB'
         ],
     ],
 

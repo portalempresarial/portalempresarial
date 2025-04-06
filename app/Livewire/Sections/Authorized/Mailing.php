@@ -11,82 +11,199 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
+use App\Models\Company;
 
 class Mailing extends Component
 {
     use WithPagination, WithFileUploads;
-
     protected $paginationTheme = 'tailwind';
 
     public $selectedEmail, $modalSelectedEmail = null;
     public $newEmail = false;
-    public $showDeleted = false;
+    #[Validate(['attachments.*' => 'max:10240|nullable'], onUpdate: false)]
+    public $attachments = [];
 
-    public $subject, $body, $recipients = "";
-
+    // Error messages to be presented to the user in the frontend.
     protected $messages = [
-        'subject.required' => 'El asunto es obligatorio.',
-        'subject.min' => 'El asunto debe tener al menos 5 caracteres.',
-        'body.required' => 'El mensaje no puede estar vacío.',
-        'recipients.required' => 'Debe ingresar un destinatario.',
-        'recipients.email' => 'El destinatario debe ser una dirección de correo válida.',
-        'attachments.*.max' => 'El archivo ocupa más de 2 MB',
-        'attachments.*.file' => 'Cada archivo debe ser un archivo válido.',
+        // submitEmail() messages
+        'recipients.required' => 'Los destinatarios son obligatorios',
+        'recipients.string' => 'Los destinatarios se deben especificar con texto',
+        'subject.required' => 'El asunto del correo es obligatorio',
+        'subject.max' => 'El asunto tiene un máximo de 255 caracteres',
+        'body.required' => 'El cuerpo del correo es obligatorio',
+        'body.string' => 'En el cuerpo del mensaje solo puede haber texto'
     ];
 
-    protected $customMessages = [
-        'upload_failed' => 'El archivo no se pudo cargar. Asegúrate de que sea menor de 2MB y tenga un formato permitido.',
-    ];
+    // submitEmail() validation rules
+    public $recipients, $subject, $body, $submitEmailMessages = '';
+    #[Validate([
+        'recipients' => 'required|string',
+        'subject' => 'required|max:255',
+        'body' => 'required|string'
+    ], onUpdate: false)]
+
+    public function submitEmail()
+    {
+        $this->validate();
+        $this->submitEmailMessages = '';
+        $recipientsEmails = array_map('trim', explode(',', $this->recipients));
+
+        // Validate all recipients exists;
+        $notFoundUsersCompanies = [];
+        $usersCompanies = [];
+        foreach ($recipientsEmails as $recipient) {
+            $company = Company::where('name', $recipient)->first();
+            $user = User::where('email', $recipient)->first();
+            
+            if (!$user && !$company) {
+                $notFoundUsersCompanies[] = $recipient;
+            } else {
+                if ($user) {
+                    $usersCompanies[] = $user;
+                } else {
+                    $usersCompanies[] = $company;
+                }
+            }
+        }
+
+        if ($notFoundUsersCompanies) {
+            $this->submitEmailMessages = ['success' => false, 'message' => 'No exite ninguna empresa o usuario con esta dirección de correo: ' . implode(',', $notFoundUsersCompanies)];
+            return;
+        } 
+
+        $email = Mail::create([
+            'subject' => $this->subject,
+            'body' => $this->body,
+            'sender_id' => Auth::id(),
+        ]);
+
+        // Send emails
+        foreach ($usersCompanies as $recipient) {
+            if ($recipient instanceof Company) {
+                foreach ($recipient->employees as $employee) {
+                    MailsUser::create([
+                        'message_id' => $email->id,
+                        'recipient_id' => $employee->user_id,
+                    ]);
+                }
+            } elseif ($recipient instanceof User) {
+                MailsUser::create([
+                    'message_id' => $email->id,
+                    'recipient_id' => $user->id,
+                ]);
+            }
+        }
+
+        if ($this->attachments) {
+            foreach ($this->attachments as $file) {
+                $path = $file->store('attachments', 'public');
+
+                MailAttachment::create([
+                    'mail_id' => $email->id,
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                ]);
+            }
+        }
+
+        $this->submitEmailMessages = ['success' => true, 'message' => 'Correo enviado exitosamente'];
+        $this->reset(['subject', 'body', 'newEmail', 'attachments']);
+
+        /* foreach ($recipientsEmails as $recipient) {
+            $company = Company::where('name', $recipient)->first();
+            $user = User::where('email', $recipient)->first();
+
+            if ($company) {
+                foreach ($company->employees as $employee) {
+                    MailsUser::create([
+                        'message_id' => $email->id,
+                        'recipient_id' => $employee->user_id,
+                    ]);
+                }
+            } elseif ($user) {
+                MailsUser::create([
+                    'message_id' => $email->id,
+                    'recipient_id' => $user->id,
+                ]);
+            } else {
+                $this->submitEmailMessages = ['success' => false, 'message' => 'No exite ningúna empresa o usuario con esta dirección de correo: ' . $recipient];
+                return;
+            }
+        } */
+    }
+
+    /**************************************************************
+
+        Methods to help viewing sended, recibed and deleted emails
+
+    **************************************************************/
+
+    // Sended emails methods
+    public $showSendedEmails = false;
+    public function toggleSendedEmails() 
+    {
+        $this->_resetToggles();
+        $this->showSendedEmails = true;
+    }
+
+    // Recibed emails methods
+    public $showRecibedEmails = true;
+    public function toggleRecibedEmails() {
+        $this->_resetToggles();
+        $this->showRecibedEmails = true;
+    }
+
+    // Deleted emails methods
+    public $showDeletedEmails = false;
+    public function toggleDeletedEmails()
+    {
+        $this->_resetToggles();
+        $this->showDeletedEmails = true;
+    }
 
     public function closeModal()
     {
-        $this->selectedEmail = null;
-        $this->modalSelectedEmail = null;
+        $this->selectedEmail = false;
+        $this->modalSelectedEmail = false;
+    }
+
+    private function _markMailAsRead(Mail $mail)
+    {
+        $mailUser = MailsUser::withTrashed()
+            ->where('message_id', $mail->id)
+            ->where('recipient_id', Auth::id())
+            ->whereNull('readt_at') 
+            ->first();
+
+        if ($mailUser) {
+            $mailUser->touch('readt_at');
+        }
     }
 
     public function selectEmail($emailId)
     {
-        if ($this->modalSelectedEmail !== null) {
+        $this->newEmail = false;
+        if ($this->modalSelectedEmail) {
             $this->closeModal();
             return;
         }
-
+        
         $this->selectedEmail = Mail::find($emailId);
-        $this->newEmail = false;
-
-        if ($this->selectedEmail) {
-            $mailUser = MailsUser::where('message_id', $this->selectedEmail->id)
-                ->where('recipient_id', Auth::id())
-                ->whereNull('readt_at')
-                ->first();
-
-            if ($mailUser) {
-                $mailUser->touch('readt_at');
-            }
-        }
+        $this->_markMailAsRead($this->selectedEmail);
     }
 
     public function modalSelectEmail($emailId)
     {
         $this->modalSelectedEmail = Mail::find($emailId);
-        $this->newEmail = false;
 
         if ($this->modalSelectedEmail) {
-            $mailUser = MailsUser::where('message_id', $this->modalSelectedEmail->id)
-                ->where('recipient_id', Auth::id())
-                ->whereNull('readt_at')
-                ->first();
-
-            if ($mailUser) {
-                $mailUser->touch('readt_at');
-            }
+            $this->_markMailAsRead($this->modalSelectedEmail);
         }
     }
 
     public function markAsUnread($emailId)
     {
         $this->selectedEmail = Mail::find($emailId);
-        $this->newEmail = false;
 
         if ($this->selectedEmail) {
             $mailUser = MailsUser::where('message_id', $this->selectedEmail->id)
@@ -110,57 +227,6 @@ class Mailing extends Component
         $this->newEmail = true;
         $this->selectedEmail = null;
         $this->reset(['subject', 'body', 'recipients', 'attachments']);
-    }
-
-    #[Validate('nullable|max:2048|file')]
-    public $attachments = [];
-    public function submitEmail()
-    {
-        $attachmentError = $this->getErrorBag()->has('attachments');
-        $this->validate([
-            'recipients' => 'required|string',
-            'subject' => 'required|string|max:255',
-            'body' => 'required|string',
-        ]);
-        if ($attachmentError) {
-            $this->setErrorBag(['attachments.max' => 'Uno o más archivos superan el límite permitido de 2MB. Si los archivos no son eliminados no se enviará ninguno.']);
-            $this->reset(['attachments']);
-            return;
-        };
-
-        $email = Mail::create([
-            'subject' => $this->subject,
-            'body' => $this->body,
-            'sender_id' => Auth::id(),
-        ]);
-
-        $recipientsEmails = array_map('trim', explode(',', $this->recipients));
-
-        foreach ($recipientsEmails as $emailAddress) {
-            $user = User::where('email', $emailAddress)->first();
-
-            if ($user) {
-                MailsUser::create([
-                    'message_id' => $email->id,
-                    'recipient_id' => $user->id,
-                ]);
-            }
-        }
-
-        if ($this->attachments) {
-            foreach ($this->attachments as $file) {
-                $path = $file->store('attachments', 'public/emailAttachments');
-
-                MailAttachment::create([
-                    'mail_id' => $email->id,
-                    'file_name' => $file->getClientOriginalName(),
-                    'file_path' => $path,
-                ]);
-            }
-        }
-
-        $this->reset(['subject', 'body', 'newEmail']);
-        session()->flash('message', 'El email ha sido enviado correctamente.');
     }
 
     public function deleteEmail(Mail $email)
@@ -201,11 +267,6 @@ class Mailing extends Component
         $this->reset(['showForceDeleteModal', 'emailToDelete']);
     }
 
-    public function toggleDeleted()
-    {
-        $this->showDeleted = !$this->showDeleted;
-    }
-
     public function restoreEmail(Mail $email)
     {
         $mailUser = MailsUser::withTrashed()
@@ -218,16 +279,28 @@ class Mailing extends Component
         }
     }
 
+    // Helper functions:
+    private function _resetToggles () 
+    { 
+        $this->newEmail = false;
+        $this->showSendedEmails = false;
+        $this->modalSelectedEmail = false;
+        $this->showDeletedEmails = false;
+        $this->showRecibedEmails = false;
+    }
+
     public function render()
     {
         $query = Mail::whereHas('recipients', function ($query) {
             $query->where('recipient_id', Auth::id());
         });
 
-        if ($this->showDeleted) {
+        if ($this->showDeletedEmails) {
             $query->whereHas('recipients', function ($query) {
                 $query->whereNotNull('deleted_at');
             });
+        } elseif ($this->showSendedEmails) {
+            $query->where('sender_id', Auth::id());
         } else {
             $query->whereHas('recipients', function ($query) {
                 $query->whereNull('deleted_at');
