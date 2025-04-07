@@ -173,6 +173,12 @@
                                 placeholder="Escribe tu mensaje aquí..."></textarea>
                             <x-error-message field="body" />
                         </div>
+                        <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-700">Archivos Adjuntos:</label>
+                        <span class="text-sm">Si un archivo supera los 10MB ningún archivo se enviará</span>
+                        <input type="file" wire:model="attachments" multiple
+                            class="w-full bg-white p-2 border border-gray-300 rounded-md" />
+                    </div>
                     </div>
                     <x-button icon="send">Enviar</x-button>
                 </form>

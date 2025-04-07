@@ -67,7 +67,8 @@ class Mailing extends Component
         }
 
         if ($notFoundUsersCompanies) {
-            $this->submitEmailMessages = ['success' => false, 'message' => 'No exite ninguna empresa o usuario con esta dirección de correo: ' . implode(',', $notFoundUsersCompanies)];
+            $this->addError('recipients', 'No exite ninguna empresa o usuario con esta dirección de correo: ' . implode(',', $notFoundUsersCompanies));
+          /*   $this->submitEmailMessages = ['success' => false, 'message' => 'No exite ninguna empresa o usuario con esta dirección de correo: ' . implode(',', $notFoundUsersCompanies)]; */
             return;
         }
 
