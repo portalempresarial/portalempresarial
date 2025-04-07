@@ -36,15 +36,29 @@
                         @endphp
 
                         <li class="relative border-b py-2 rounded-md hover:bg-gray-200 px-2 cursor-pointer transition-all
-                                                                    @if(!$isRead) border-l-4 bg-white border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
-                                                                    @if($isRead) bg-gray-300 @endif"
+                            @if(!$isRead) border-l-4 bg-white border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
+                            @if($isRead) bg-gray-300 @endif"
+                            wire:contextmenu.prevent='modalSelectEmail({{ $email->id }})'
                             wire:click.prevent='selectEmail({{ $email->id }})'>
+                            @if($modalSelectedEmail && !$showSendedEmails && $modalSelectedEmail->id === $email->id)
+                                <div class="absolute -top-20 left-0 right-0 z-50 flex justify-center">
+                                    <div class="bg-white border border-gray-300 rounded shadow-lg p-4 gap-2 flex flex-col">
+                                        <span wire:click.stop='closeModal()' class="material-symbols-outlined">close</span>
+                                        <x-button wireClick="markAsUnread({{ $email->id }})" icon="visibility" content="Marcar como no leído" />
+                                        @if ($showDeletedEmails)
+                                            <x-button wireClick="openForceDeleteEmailModal({{ $email->id }})" icon="remove" content="Eliminar correo" />
+                                        @else
+                                            <x-button wireClick="deleteEmail({{ $email->id }})" icon="remove" content="Eliminar correo" />
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
                             <div class="flex justify-between">
                                 <div class="flex flex-col">
                                     <p class="font-bold">
                                         @if ($showSendedEmails)
                                             @php
-                                                $recipients = $email->recipients()->with('user')->distinct()->get();
+                                                $recipients = $email->messages()->with('user')->distinct()->get();
                                             @endphp
                                             @foreach ($recipients as $recipient)
                                                 {{ $recipient->user->name }}

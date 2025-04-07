@@ -27,9 +27,18 @@ class Mail extends Model
         return $this->hasMany(MailAttachment::class);
     }
 
-    public function recipients()
+     public function recipients()
+        {
+            return $this->belongsToMany(User::class, 'mails_users', 'message_id', 'recipient_id')
+                ->withPivot('readt_at')
+                ->withTimestamps();
+        }
+
+    public function messages()
     {
         return $this->hasMany(MailsUser::class, 'message_id');
+
+
     }
 
 }

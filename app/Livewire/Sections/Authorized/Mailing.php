@@ -183,11 +183,12 @@ class Mailing extends Component
 
     public function selectEmail($emailId)
     {
-        if ($this->selectedEmail && $this->selectedEmail->id === $emailId) {
-            $this->selectedEmail = null;
+        $this->newEmail = false;
+        if ($this->modalSelectedEmail) {
+            $this->closeModal();
             return;
         }
-
+        
         $this->selectedEmail = Mail::find($emailId);
         $this->_markMailAsRead($this->selectedEmail);
     }
@@ -206,7 +207,7 @@ class Mailing extends Component
         $this->selectedEmail = Mail::find($emailId);
 
         if ($this->selectedEmail) {
-            $mailUser = MailsUser::where('message_id', $this->selectedEmail->id)
+            $mailUser = MailsUser::withTrashed()->where('message_id', $this->selectedEmail->id)
                 ->where('recipient_id', Auth::id())
                 ->first();
 
@@ -295,25 +296,28 @@ class Mailing extends Component
 
         if ($this->showSendedEmails) {
             $query->where('sender_id', Auth::id());
+            
         } else {
             $query->whereHas('recipients', function ($query) {
                 $query->where('recipient_id', Auth::id());
             });
         }
 
-        $query->whereHas('recipients', function ($query) {
-            if ($this->showDeletedEmails) {
-                $query->whereNotNull('deleted_at');
-            } elseif ($this->showSendedEmails) {
-                $query->where('sender_id', Auth::id());
-            } else {
-                $query->whereNull('deleted_at');
-            }
-        });
+        if ($this->showDeletedEmails) {
+            $query->whereHas('recipients', function ($query) {
+                $query->where('recipient_id', Auth::id())
+                    ->whereNotNull('mails_users.deleted_at'); 
+            });
+        } else {
+            $query->whereHas('recipients', function ($query) {
+                $query->where('recipient_id', Auth::id())
+                    ->whereNull('mails_users.deleted_at'); 
+            });
+        }
 
         $emails = $query->latest()->paginate(9);
-
         return view('livewire.sections.authorized.mailing', compact('emails'));
     }
+
 
 }
