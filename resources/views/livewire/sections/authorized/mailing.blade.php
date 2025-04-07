@@ -36,13 +36,14 @@
                         @endphp
 
                         <li class="relative border-b py-2 rounded-md hover:bg-gray-200 px-2 cursor-pointer transition-all
-                                @if(!$isRead) border-l-4 bg-white border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
-                                @if($isRead) bg-gray-300 @endif" wire:click.prevent='selectEmail({{ $email->id }})'>
+                                                                    @if(!$isRead) border-l-4 bg-white border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
+                                                                    @if($isRead) bg-gray-300 @endif"
+                            wire:click.prevent='selectEmail({{ $email->id }})'>
                             <div class="flex justify-between">
                                 <div class="flex flex-col">
                                     <p class="font-bold">
                                         @if ($showSendedEmails)
-                                            {{ $email->recipients->pluck('name')->join(', ') }}
+                                            {{ dd($email) }}
                                         @else
                                             {{ $email->sender->name ?? 'Desconocido' }}
                                         @endif
@@ -93,20 +94,20 @@
     </div>
 
     {{-- Panel derecho --}}
-    <div>
+    <div class="transition-all duration-500 transform bg-gray-100 p-4 border border-gray-300 shadow-md rounded-md"
+        style="{{ $selectedEmail || $newEmail ? 'opacity: 1; translateX(0);' : 'opacity: 0; translateX(100%);' }}">
         @if ($submitEmailMessages)
-            <div wire:key="submit-message-{{ Str::random() }}" x-data="{ show: true }"
-                x-init="setTimeout(() => show = false, 1500)" x-show="show"
+            <div wire:key="submit-message-{{ Str::random() }}" x-init="setTimeout(() => show = false, 1500)" x-show="show"
                 x-transition:leave="transition-opacity duration-500" x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0" class="text-white p-3 rounded mb-4 transition-opacity duration-500 ease-out
-                        @if($submitEmailMessages['success']) bg-blue-500 @else bg-red-500 @endif">
+                    @if($submitEmailMessages['success']) bg-blue-500 @else bg-red-500 @endif">
                 {{ $submitEmailMessages['message'] }}
             </div>
         @endif
 
         {{-- Visualización de un correo seleccionado --}}
         @if($selectedEmail && !$newEmail)
-            <div class="bg-gray-100 border border-gray-300 shadow-md p-4 rounded-md mb-4">
+            <div>
                 <h3 class="text-xl font-bold">{{ $selectedEmail->subject }}</h3>
                 <p class="text-gray-600 mt-2">{{ $selectedEmail->body }}</p>
 
@@ -131,7 +132,7 @@
 
         {{-- Formulario para nuevo email --}}
         @if ($newEmail)
-            <div class="bg-gray-100 border border-gray-300 shadow-md p-4 rounded-md">
+            <div>
                 <form wire:submit.prevent="submitEmail" enctype="multipart/form-data">
                     <div class="flex flex-col gap-4 mb-4">
                         <div>
@@ -151,13 +152,6 @@
                                 class="w-full h-64 p-3 border border-gray-300 rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Escribe tu mensaje aquí..."></textarea>
                             <x-error-message field="body" />
-                        </div>
-
-                        <div>
-                            <label class="block mb-2 text-sm font-medium text-gray-700">Archivos Adjuntos:</label>
-                            <span class="text-sm">Si un archivo supera los 10MB ningún archivo se enviará</span>
-                            <input type="file" wire:model="attachments" multiple
-                                class="w-full bg-white p-2 border border-gray-300 rounded-md" />
                         </div>
                     </div>
                     <x-button icon="send">Enviar</x-button>
