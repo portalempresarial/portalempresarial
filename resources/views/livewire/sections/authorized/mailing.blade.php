@@ -43,7 +43,13 @@
                                 <div class="flex flex-col">
                                     <p class="font-bold">
                                         @if ($showSendedEmails)
-                                            {{ dd($email) }}
+                                            @php
+                                                $recipients = $email->recipients()->with('user')->distinct()->get();
+                                            @endphp
+                                            @foreach ($recipients as $recipient)
+                                                {{ $recipient->user->name }}
+                                            @endforeach
+                                    
                                         @else
                                             {{ $email->sender->name ?? 'Desconocido' }}
                                         @endif

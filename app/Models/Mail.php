@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\MailsUser;
 
 class Mail extends Model
 {
@@ -27,10 +27,9 @@ class Mail extends Model
         return $this->hasMany(MailAttachment::class);
     }
 
-    public function recipients(): BelongsToMany
+    public function recipients()
     {
-        return $this->belongsToMany(User::class, 'mails_users', 'message_id', 'recipient_id')
-            ->withPivot('readt_at')
-            ->withTimestamps();
+        return $this->hasMany(MailsUser::class, 'message_id');
     }
+
 }

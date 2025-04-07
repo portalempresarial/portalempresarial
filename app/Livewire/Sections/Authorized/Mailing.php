@@ -89,7 +89,7 @@ class Mailing extends Component
             } elseif ($recipient instanceof User) {
                 MailsUser::create([
                     'message_id' => $email->id,
-                    'recipient_id' => $user->id,
+                    'recipient_id' => $recipient->id,
                 ]);
             }
         }
@@ -291,24 +291,29 @@ class Mailing extends Component
 
     public function render()
     {
-        $query = Mail::whereHas('recipients', function ($query) {
-            $query->where('recipient_id', Auth::id());
-        });
+        $query = Mail::query();
 
-        if ($this->showDeletedEmails) {
-            $query->whereHas('recipients', function ($query) {
-                $query->whereNotNull('deleted_at');
-            });
-        } elseif ($this->showSendedEmails) {
+        if ($this->showSendedEmails) {
             $query->where('sender_id', Auth::id());
         } else {
             $query->whereHas('recipients', function ($query) {
-                $query->whereNull('deleted_at');
+                $query->where('recipient_id', Auth::id());
             });
         }
+
+        $query->whereHas('recipients', function ($query) {
+            if ($this->showDeletedEmails) {
+                $query->whereNotNull('deleted_at');
+            } elseif ($this->showSendedEmails) {
+                $query->where('sender_id', Auth::id());
+            } else {
+                $query->whereNull('deleted_at');
+            }
+        });
 
         $emails = $query->latest()->paginate(9);
 
         return view('livewire.sections.authorized.mailing', compact('emails'));
     }
+
 }
