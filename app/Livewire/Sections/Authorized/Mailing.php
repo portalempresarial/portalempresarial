@@ -54,7 +54,7 @@ class Mailing extends Component
         foreach ($recipientsEmails as $recipient) {
             $company = Company::where('name', $recipient)->first();
             $user = User::where('email', $recipient)->first();
-            
+
             if (!$user && !$company) {
                 $notFoundUsersCompanies[] = $recipient;
             } else {
@@ -69,7 +69,7 @@ class Mailing extends Component
         if ($notFoundUsersCompanies) {
             $this->submitEmailMessages = ['success' => false, 'message' => 'No exite ninguna empresa o usuario con esta dirección de correo: ' . implode(',', $notFoundUsersCompanies)];
             return;
-        } 
+        }
 
         $email = Mail::create([
             'subject' => $this->subject,
@@ -136,11 +136,11 @@ class Mailing extends Component
 
         Methods to help viewing sended, recibed and deleted emails
 
-    **************************************************************/
+     **************************************************************/
 
     // Sended emails methods
     public $showSendedEmails = false;
-    public function toggleSendedEmails() 
+    public function toggleSendedEmails()
     {
         $this->_resetToggles();
         $this->showSendedEmails = true;
@@ -148,7 +148,8 @@ class Mailing extends Component
 
     // Recibed emails methods
     public $showRecibedEmails = true;
-    public function toggleRecibedEmails() {
+    public function toggleRecibedEmails()
+    {
         $this->_resetToggles();
         $this->showRecibedEmails = true;
     }
@@ -172,7 +173,7 @@ class Mailing extends Component
         $mailUser = MailsUser::withTrashed()
             ->where('message_id', $mail->id)
             ->where('recipient_id', Auth::id())
-            ->whereNull('readt_at') 
+            ->whereNull('readt_at')
             ->first();
 
         if ($mailUser) {
@@ -182,12 +183,11 @@ class Mailing extends Component
 
     public function selectEmail($emailId)
     {
-        $this->newEmail = false;
-        if ($this->modalSelectedEmail) {
-            $this->closeModal();
+        if ($this->selectedEmail && $this->selectedEmail->id === $emailId) {
+            $this->selectedEmail = null;
             return;
         }
-        
+
         $this->selectedEmail = Mail::find($emailId);
         $this->_markMailAsRead($this->selectedEmail);
     }
@@ -280,8 +280,8 @@ class Mailing extends Component
     }
 
     // Helper functions:
-    private function _resetToggles () 
-    { 
+    private function _resetToggles()
+    {
         $this->newEmail = false;
         $this->showSendedEmails = false;
         $this->modalSelectedEmail = false;
