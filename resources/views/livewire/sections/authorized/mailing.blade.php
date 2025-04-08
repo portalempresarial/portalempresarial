@@ -58,10 +58,11 @@
                                     <p class="font-bold">
                                         @if ($showSendedEmails)
                                             @php
-                                                $recipients = $email->messages;
+                                                $recipients = $email->recipients()->with('user')->distinct()->get();
+                                                dd($recipients);
                                             @endphp
                                             @foreach ($recipients as $recipient)
-                                                {{ $recipient->name }}
+                                                {{ $recipient->user->name }}
                                             @endforeach
                                     
                                         @else
@@ -157,6 +158,11 @@
                     <div class="flex flex-col gap-4 mb-4">
                         <div>
                             <x-labeled-input label="Para:" wireModel="recipients" type="text" icon=""
+                                placeholder="Separa los destinatarios utilizando comas: ferrea@monlau.com,jsalvador@monlau.com" />
+                            <x-error-message field="recipients" />
+                        </div>
+                        <div>
+                            <x-labeled-input label="CC:" wireModel="recipientsOnCopy" type="text" icon=""
                                 placeholder="Separa los destinatarios utilizando comas: ferrea@monlau.com,jsalvador@monlau.com" />
                             <x-error-message field="recipients" />
                         </div>

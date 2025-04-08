@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('message_id')->constrained('mails')->onDelete('cascade');
             $table->foreignId('recipient_id')->constrained('users')->onDelete('cascade');
             $table->timestamp('readt_at')->nullable();
+            $table->boolean('onCopy')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

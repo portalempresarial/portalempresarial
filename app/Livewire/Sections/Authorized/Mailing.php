@@ -35,9 +35,10 @@ class Mailing extends Component
     ];
 
     // submitEmail() validation rules
-    public $recipients, $subject, $body, $submitEmailMessages = '';
+    public $recipients, $recipientsOnCopy, $subject, $body, $submitEmailMessages = '';
     #[Validate([
         'recipients' => 'required|string',
+        'recipientsOnCopy' => 'nullable|string',
         'subject' => 'required|max:255',
         'body' => 'required|string'
     ], onUpdate: false)]
@@ -47,10 +48,13 @@ class Mailing extends Component
         $this->validate();
         $this->submitEmailMessages = '';
         $recipientsEmails = array_map('trim', explode(',', $this->recipients));
+        $recipientsEmailsOnCopy = array_map('trim', explode(',', $this->recipientsOnCopy));
 
         // Validate all recipients exists;
         $notFoundUsersCompanies = [];
+        $notFoundUsersCompaniesOnCopy = [];
         $usersCompanies = [];
+        $usersCompaniesOnCopy = [];
         foreach ($recipientsEmails as $recipient) {
             $company = Company::where('name', $recipient)->first();
             $user = User::where('email', $recipient)->first();
@@ -62,6 +66,23 @@ class Mailing extends Component
                     $usersCompanies[] = $user;
                 } else {
                     $usersCompanies[] = $company;
+                }
+            }
+        }
+
+        if ($recipientsEmailsOnCopy) {
+            foreach ($recipientsEmailsOnCopy as $recipient) {
+                $company = Company::where('name', $recipient)->first();
+                $user = User::where('email', $recipient)->first();
+
+                if (!$user && !$company) {
+                    $notFoundUsersCompaniesOnCopy[] = $recipient;
+                } else {
+                    if ($user) {
+                        $usersCompaniesOnCopy[] = $user;
+                    } else {
+                        $usersCompaniesOnCopy[] = $company;
+                    }
                 }
             }
         }
@@ -85,12 +106,32 @@ class Mailing extends Component
                     MailsUser::create([
                         'message_id' => $email->id,
                         'recipient_id' => $employee->user_id,
+                        'onCopy' => false
                     ]);
                 }
             } elseif ($recipient instanceof User) {
                 MailsUser::create([
                     'message_id' => $email->id,
                     'recipient_id' => $recipient->id,
+                    'onCopy' => false
+                ]);
+            }
+        }
+
+        foreach ($usersCompaniesOnCopy as $recipient) {
+            if ($recipient instanceof Company) {
+                foreach ($recipient->employees as $employee) {
+                    MailsUser::create([
+                        'message_id' => $email->id,
+                        'recipient_id' => $employee->user_id,
+                        'onCopy' => true
+                    ]);
+                }
+            } elseif ($recipient instanceof User) {
+                MailsUser::create([
+                    'message_id' => $email->id,
+                    'recipient_id' => $recipient->id,
+                    'onCopy' => true
                 ]);
             }
         }
