@@ -58,10 +58,10 @@
                                     <p class="font-bold">
                                         @if ($showSendedEmails)
                                             @php
-                                                $recipients = $email->messages()->with('user')->distinct()->get();
+                                                $recipients = $email->messages;
                                             @endphp
                                             @foreach ($recipients as $recipient)
-                                                {{ $recipient->user->name }}
+                                                {{ $recipient->name }}
                                             @endforeach
                                     
                                         @else

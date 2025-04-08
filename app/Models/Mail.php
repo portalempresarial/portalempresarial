@@ -36,9 +36,8 @@ class Mail extends Model
 
     public function messages()
     {
-        return $this->hasMany(MailsUser::class, 'message_id');
-
-
+        return $this->belongsToMany(User::class, 'mails_users', 'message_id', 'recipient_id');
     }
+
 
 }
