@@ -10,7 +10,7 @@ class MailsUser extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'mails_users'; // Asegúrate de especificar la tabla correcta
+    protected $table = 'mails_users';
 
     protected $fillable = [
         'message_id',
@@ -23,7 +23,7 @@ class MailsUser extends Model
      */
     public function mail()
     {
-        return $this->belongsTo(Mails::class, 'message_id');
+        return $this->belongsTo(Mail::class, 'message_id');
     }
 
     /**
