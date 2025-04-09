@@ -181,7 +181,7 @@ class Mailing extends Component
      **************************************************************/
 
     // Sended emails methods
-    public $showSendedEmails = false;
+    public $showSendedEmails;
     public function toggleSendedEmails()
     {
         $this->_resetToggles();
@@ -197,7 +197,7 @@ class Mailing extends Component
     }
 
     // Deleted emails methods
-    public $showDeletedEmails = false;
+    public $showDeletedEmails;
     public function toggleDeletedEmails()
     {
         $this->_resetToggles();
@@ -338,11 +338,6 @@ class Mailing extends Component
 
         if ($this->showSendedEmails) {
             $query->where('sender_id', Auth::id());
-            
-        } else {
-            $query->whereHas('recipients', function ($query) {
-                $query->where('recipient_id', Auth::id());
-            });
         }
 
         if ($this->showDeletedEmails) {
@@ -350,10 +345,12 @@ class Mailing extends Component
                 $query->where('recipient_id', Auth::id())
                     ->whereNotNull('mails_users.deleted_at'); 
             });
-        } else {
+        } 
+
+        if ($this->showRecibedEmails) {
             $query->whereHas('recipients', function ($query) {
                 $query->where('recipient_id', Auth::id())
-                    ->whereNull('mails_users.deleted_at'); 
+                    ->where('deleted_at', null);
             });
         }
 

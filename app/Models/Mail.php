@@ -34,7 +34,7 @@ class Mail extends Model
 
     public function messages()
     {
-        return $this->belongsToMany(User::class, 'mails_users', 'message_id', 'recipient_id');
+        return $this->belongsToMany(User::class, 'mails_users', 'message_id', 'recipient_id')->withPivot('readt_at', 'onCopy')->withTimestamps();
     }
 
 
