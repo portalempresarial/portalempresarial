@@ -15,7 +15,8 @@ class MailsUser extends Model
     protected $fillable = [
         'message_id',
         'recipient_id',
-        'read_at',
+        'readt_at',
+        'onCopy',
     ];
 
     /**

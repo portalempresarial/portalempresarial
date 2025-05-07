@@ -219,7 +219,8 @@ class Mailing extends Component
             ->first();
 
         if ($mailUser) {
-            $mailUser->touch('readt_at');
+            $mailUser->readt_at = now();
+            $mailUser->save();
         }
     }
 
