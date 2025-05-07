@@ -30,13 +30,16 @@
         <ul class="flex flex-col gap-4">
             @forelse($emails as $email)
                         @php
-                            $isRead = $email->recipients->firstWhere('id', Auth::id())?->pivot->readt_at !== null;
+                            $mailUser = App\Models\MailsUser::where('message_id', $email->id)
+                                ->where('recipient_id', Auth::id())
+                                ->first();
+                            $isRead = $mailUser && $mailUser->readt_at !== null;
                             $titleClass = $isRead ? 'font-normal' : 'text-blue-500 font-bold';
                             $createdDate = \Carbon\Carbon::parse($email->created_at);
                         @endphp
 
                         <li class="relative border-b py-2 rounded-md hover:bg-gray-200 px-2 cursor-pointer transition-all
-                            @if(!$isRead) border-l-4 bg-white border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
+                            @if(!$isRead) border-l-4 border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
                             @if($isRead) bg-gray-300 @endif"
                             wire:contextmenu.prevent='modalSelectEmail({{ $email->id }})'
                             wire:click.prevent='selectEmail({{ $email->id }})'>
