@@ -67,27 +67,39 @@
             <div class="p-5 border border-gray-300 rounded-md shadow-md bg-white lg:mx-24">
                 <div class="flex items-center gap-5">
                     @if ($company->icon)
+            <div class="p-5 border border-gray-300 rounded-md shadow-md bg-white mx-24">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-5">
+                        @if ($company->icon)
                         <img class="max-w-[70px] rounded-md-sm h-[50px]"
                             src="{{ asset('storage/companies/' . $company->icon) }}" />
-                    @endif
-                    <h2>
-                        <a href="/market/company/{{ str_replace(' ', '-', $company->name) }}"
-                            class="text-xl text-blue-500 font-bold hover:text-blue-700 transition-all">
-                            {{ $company->name }}
-                        </a>
-    
-                        @if ($company->sector)
-                            <span class="text-xs text-gray-400 block">
-                                {{ $company->sector }}
-                            </span>
                         @endif
-                    </h2>
+                        <h2>
+                            <a href="/market/company/{{ str_replace(' ', '-', $company->name) }}"
+                                class="text-xl text-blue-500 font-bold hover:text-blue-700 transition-all">
+                                {{ $company->name }}
+                            </a>
+        
+                            @if ($company->sector)
+                                <span class="text-xs text-gray-400 block">
+                                    {{ $company->sector }}
+                                </span>
+                            @endif
+                        </h2>
+                    </div>
+                    <div class="flex items-center">
+                        <a href="/market/company/{{ str_replace(' ', '-', $company->name) }}"
+                            class="text-sm text-blue-500 font-bold hover:text-blue-700 transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined">public</span> <!-- Ícono de Material Icons -->
+                            Visita la página de la empresa
+                        </a>
+                    </div>
                 </div>
     
                 @php
                     $companyProducts = $products->where('company_id', $company->id);
-                    $visibleProducts = $companyProducts->take(8); // Mostrar solo los primeros 8 productos inicialmente
-                    $hiddenProducts = $companyProducts->skip(8); // Productos adicionales
+                    $visibleProducts = $companyProducts->take(8);
+                    $hiddenProducts = $companyProducts->skip(8); 
                 @endphp
     
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
