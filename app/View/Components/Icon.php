@@ -8,12 +8,14 @@ use Illuminate\View\Component;
 
 class Icon extends Component
 { 
-    public $label;
+    public $label, $styles;
 
-    public function __construct($label)
+    public function __construct($label = null, $styles = null)
     {
+        $this->styles = $styles;
         $this->label = $label;
     }
+
 
     public function render(): View|Closure|string
     {
