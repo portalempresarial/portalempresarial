@@ -3,9 +3,9 @@
 @section('content')
     <main class="flex flex-col lg:flex-row h-screen w-full">
         @isset($company) 
-            <x-sidebar-component :company="$company" />
+            <x-sidebarcomponent :company="$company" />
         @else
-            <x-sidebar-component />
+            <x-sidebarcomponent />
         @endisset
 
         <section class="flex-1 overflow-y-scroll">
