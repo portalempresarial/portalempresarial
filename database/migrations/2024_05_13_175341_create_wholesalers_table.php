@@ -27,6 +27,7 @@ return new class extends Migration
             $table->integer('payment_days')->nullable()->default(7);
             $table->string('country', 100)->nullable();
             $table->integer('tax')->nullable()->default(0);
+            $table->string('sector', 70)->nullable()->comment('Sector o especialización del mayorista');
             $table->timestamps();
         });
     }

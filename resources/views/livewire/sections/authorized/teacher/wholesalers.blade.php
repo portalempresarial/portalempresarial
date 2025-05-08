@@ -11,7 +11,7 @@
     </section>
 
     {{-- @ Wholesalers displaying --}}
-    <div class="relative overflow-x-auto mt-10">
+    <div class="relative mt-10">
         <table class="w-full text-sm text-left text-gray-500">
             <thead class="text-xs text-gray-700 uppercase bg-gray-100">
                 <tr>
@@ -26,6 +26,9 @@
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Nombre
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Sector
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Asignaciones
@@ -59,6 +62,9 @@
                         </th>
                         <td class="px-6 py-4 text-ellipsis truncate">
                             {{ $wholesaler['name'] }}
+                        </td>
+                        <td class="px-6 py-4 text-ellipsis truncate">
+                            {{ $wholesaler['sector'] }}
                         </td>
                         <td class="px-6 py-4 text-ellipsis truncate">
                             {{ $wholesaler->companyWholesalers->count() }}
@@ -103,6 +109,45 @@
                 type="text"
                 icon="badge"
                 placeholder="e.g Monlau Group"
+            />
+
+            <?php 
+                $sectors = [
+                    'Tecnología',
+                    'Mobiliario',
+                    'Papelería',
+                    'Seguridad y Salud',
+                    'Electrodomésticos',
+                    'Equipos informáticos',
+                    'Telefonía',
+                    'Mobiliario de oficina',
+                    'Organización',
+                    'Redes y comunicación',
+                    'Alimentación',
+                    'Hogar',
+                    'Electrónica de consumo',
+                    'Ropa y complementos'
+                ];
+
+                $options = []; 
+
+                foreach ($sectors as $sectorOption) {
+                    $options[] = [
+                        "value" => $sectorOption,
+                        "label" => $sectorOption
+                    ];
+                }
+            ?>
+
+            @error('sector')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
+
+            <x-selector 
+                wireModel="sector" 
+                label="Sector"
+                styles="flex-1 mb-3 w-full"
+                :options="$options"
             />
 
             @error('cif')

@@ -343,8 +343,8 @@ class Mailing extends Component
 
         if ($this->showDeletedEmails) {
             $query->whereHas('recipients', function ($query) {
-                $query->where('recipient_id', Auth::id())
-                    ->whereNotNull('mails_users.deleted_at'); 
+                $query->onlyTrashed()
+                    ->where('recipient_id', Auth::id());
             });
         } 
 

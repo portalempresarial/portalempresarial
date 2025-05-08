@@ -12,11 +12,11 @@ class Wholesalers extends Component {
     public $filter, $modal, $editing; 
     protected $wholesalers = [];
 
-    public $name, $cif, $social_denomination, $image, $transport = 0, $location, $city, $icon, $disccount = 0, $payment_days = 7, $country = "España", $tax = 0;
+    public $name, $sector, $cif, $social_denomination, $image, $transport = 0, $location, $city, $icon, $disccount = 0, $payment_days = 7, $country = "España", $tax = 0;
 
     public function restoreParams() {
         $this->editing = false; 
-        $this->reset(['name', 'cif', 'image', 'social_denomination', 'transport', 'location', 'city', 'icon', 'disccount', 'payment_days', 'country', 'tax']);
+        $this->reset(['name', 'sector', 'cif', 'image', 'social_denomination', 'transport', 'location', 'city', 'icon', 'disccount', 'payment_days', 'country', 'tax']);
     }
 
     public function handleCreateModal() {
@@ -33,6 +33,7 @@ class Wholesalers extends Component {
         if($current) {
             $this->editing = $current->id;
             $this->name = $current->name;
+            $this->sector = $current->sector;
             $this->cif = $current->cif;
             $this->social_denomination = $current->social_denomination;
             $this->transport = $current->transport;
@@ -49,6 +50,7 @@ class Wholesalers extends Component {
 
     protected $rules = [
         'name' => 'required|string|min:3|max:255',
+        'sector' => 'nullable|string|min:3|max:255',
         'cif' => 'required|string|min:3|max:255',
         'social_denomination' => 'required|string|min:3|max:255',
         'transport' => 'required|numeric|min:0|max:9999999999',
@@ -65,6 +67,8 @@ class Wholesalers extends Component {
         'name.string' => 'El campo nombre debe ser una cadena de texto.',
         'name.min' => 'El campo nombre debe tener al menos 3 caracteres.',
         'name.max' => 'El campo nombre no debe exceder los 255 caracteres.',
+        'sector.string' => 'El campo sector debe ser una cadena de texto.',
+        'sector.required' => 'El campo sector es requerido.',
         'cif.required' => 'El campo cif es requerido.',
         'cif.string' => 'El campo cif debe ser una cadena de texto.',
         'cif.min' => 'El campo cif debe tener al menos 3 caracteres.',
@@ -111,6 +115,7 @@ class Wholesalers extends Component {
                 if($wholesaler) {
                     $wholesaler->update([
                         'name' => $this->name,
+                        'sector' => $this->sector,
                         'cif' => $this->cif,
                         'social_denomination' => $this->social_denomination,
                         'transport' => $this->transport,
@@ -140,6 +145,7 @@ class Wholesalers extends Component {
             $wholesaler = Wholesaler::create([
                 'center_id' => auth()->user()->center_id,
                 'name' => $this->name,
+                'sector' => $this->sector,
                 'cif' => $this->cif,
                 'social_denomination' => $this->social_denomination,
                 'transport' => $this->transport,
