@@ -37,6 +37,6 @@ class LabeledInput extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.labeledinput');
+        return view('components.labeled-input');
     }
 }

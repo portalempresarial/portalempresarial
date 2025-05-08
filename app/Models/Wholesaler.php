@@ -19,4 +19,13 @@ class Wholesaler extends Model {
     public function companyWholesalers() {
         return $this->hasMany(CompanyWholesaler::class);
     }
+    
+    public function categories() {
+        return $this->belongsToMany(ProductCategory::class, 'wholesaler_product_categories', 'wholesaler_id', 'product_category_id')
+            ->withTimestamps();
+    }
+    
+    public function products() {
+        return $this->hasMany(WholesalerProduct::class);
+    }
 }

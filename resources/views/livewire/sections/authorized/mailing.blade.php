@@ -39,8 +39,8 @@
                         @endphp
 
                         <li class="relative border-b py-2 rounded-md hover:bg-gray-200 px-2 cursor-pointer transition-all
-                            @if(!$isRead) border-l-4 border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
-                            @if($isRead) bg-gray-300 @endif"
+                            @if(!$isRead && !$showDeletedEmails) border-l-4 border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
+                            @if($isRead || $showDeletedEmails) bg-gray-300 @endif"
                             wire:contextmenu.prevent='modalSelectEmail({{ $email->id }})'
                             wire:click.prevent='selectEmail({{ $email->id }})'>
                             @if($modalSelectedEmail && !$showSendedEmails && $modalSelectedEmail->id === $email->id)
