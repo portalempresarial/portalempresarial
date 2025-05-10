@@ -16,6 +16,7 @@ class WholesalerSeeder extends Seeder
     {
         $wholesalers = [
             [
+                'center_id' => 2,
                 'name' => 'TecnoOfficina',
                 'cif' => 'B12345678',
                 'social_denomination' => 'TecnoOfficina S.L.',
@@ -30,6 +31,7 @@ class WholesalerSeeder extends Seeder
                 'sector' => 'Tecnología'
             ],
             [
+                'center_id' => 2,
                 'name' => 'MobiliarioPlus',
                 'cif' => 'B87654321',
                 'social_denomination' => 'MobiliarioPlus S.A.',
@@ -44,6 +46,7 @@ class WholesalerSeeder extends Seeder
                 'sector' => 'Mobiliario'
             ],
             [
+                'center_id' => 2,
                 'name' => 'PapelExpress',
                 'cif' => 'B55443322',
                 'social_denomination' => 'PapelExpress S.L.',
@@ -58,6 +61,7 @@ class WholesalerSeeder extends Seeder
                 'sector' => 'Papelería'
             ],
             [
+                'center_id' => 2,
                 'name' => 'SegurOfficina',
                 'cif' => 'B11223344',
                 'social_denomination' => 'SegurOfficina S.L.',
@@ -72,6 +76,7 @@ class WholesalerSeeder extends Seeder
                 'sector' => 'Seguridad y Salud'
             ],
             [
+                'center_id' => 2,
                 'name' => 'ElectroHogar',
                 'cif' => 'B99887766',
                 'social_denomination' => 'ElectroHogar S.A.',
