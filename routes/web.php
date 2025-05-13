@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function() {
         Route::view('/companies', 'web.sections.authorized.teacher.companies'); 
         Route::view('/invites', 'web.sections.authorized.teacher.links'); 
         Route::view('/wholesalers', 'web.sections.authorized.teacher.wholesalers'); 
+        Route::get('/wholesalers/{id}/products', [App\Http\Controllers\MainController::class, 'wholesalerProducts'])->name('teacher.wholesaler.products');
 
         Route::middleware(doesCompanyExist::class)->prefix('/companies/{company}')->group(function($company) {
             Route::get('/', [App\Http\Controllers\MainController::class, 'company', [

@@ -1,14 +1,29 @@
 <div>
+    
+    {{-- Mostrar mensaje session flash simple --}}
+    @if (session('success'))
+        <div class="mt-2 mb-4 p-4 rounded-md bg-green-100 text-green-800">
+            {{ session('success') }}
+        </div>
+    @endif
+    
+    @if (session('error'))
+        <div class="mt-2 mb-4 p-4 rounded-md bg-red-100 text-red-800">
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- @ Navigator --}}
     <section class="flex mt-5 items-center justify-between gap-5 flex-wrap">
         <div class="flex items-center bg-white gap-3 border border-black transition-all w-full flex-1 rounded-md px-3">
             <x-icon label="search" />
 
-            <input wire:model.live="filter" type="text" class="flex-1 py-2 bg-transparent text-black" placeholder="..." />
+            <input wire:model.live="filter" type="text" class="flex-1 py-2 bg-transparent text-black" placeholder="Buscar mayoristas..." />
         </div>   
 
         <x-button wireClick="handleCreateModal" icon="add" content="Nuevo mayorista" />
     </section>
+    
 
     {{-- @ Wholesalers displaying --}}
     <div class="relative mt-10">
@@ -83,7 +98,9 @@
                             {{ $wholesaler['country'] }}
                         </td>
                         <td class="px-6 py-4 gap-5 flex items-center justify-end"> 
+                            <a href="{{ route('teacher.wholesaler.products', $wholesaler['id']) }}" class="material-symbols-outlined hover:text-green-500 transition-all cursor-pointer mr-2" title="Ver productos">inventory_2</a>
                             <span wire:click="edit('{{ $wholesaler['id'] }}')" class="material-symbols-outlined hover:text-blue-500 transition-all cursor-pointer">edit</span>
+                            <button wire:click="removeWholesaler({{ $wholesaler['id'] }})" class="hover:text-red-500 material-symbols-outlined">Delete</button>
                         </td>
                     </tr>
                 @endforeach
@@ -96,7 +113,14 @@
     </div>  
 
     {{-- @ Create new wholesaler --}}
-    <x-modal wire:model="modal" styles="flex flex-col gap-2">
+    @if ($modal)
+        <x-modal wire:model="modal" wire:key="wholesaler-modal-{{ rand() }}" styles="flex flex-col gap-2">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-bold">{{ $editing ? 'Editar' : 'Nuevo' }} Mayorista</h3>
+            <button type="button" wire:click="closeModal" class="p-2 hover:bg-gray-200 rounded-full">
+                <x-icon label="close" />
+            </button>
+        </div>
         <section class="flex flex-col max-h-[500px] overflow-y-scroll">
             @error('name')
                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -312,6 +336,10 @@
             </div>
         </section>
 
-        <x-button wireClick="saveForm" styles="justify-center" content="Confirmar" />
+        <div class="flex justify-between mt-3">
+            <x-button wireClick="closeModal" styles="justify-center bg-gray-500" content="Salir" />
+            <x-button wireClick="saveForm" styles="justify-center" content="Confirmar" />
+        </div>
     </x-modal>
+    @endif
 </div>

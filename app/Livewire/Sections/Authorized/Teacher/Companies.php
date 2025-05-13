@@ -22,6 +22,7 @@ class Companies extends Component {
         $this->reset(['social_denomination', 'name', 'sector', 'form_level']);
     }
 
+
     protected $rules = [
         'social_denomination' => 'required|string|max:255|regex:/^[a-zA-Z0-9\s]+$/u',
         'name' => 'required|string|max:255|regex:/^[a-zA-Z0-9\s]+$/u',
@@ -67,7 +68,7 @@ class Companies extends Component {
         return view('livewire.sections.authorized.teacher.companies');
     }
 
-    public function deleteCompany(string $id) {
+    public function removeCompany(string $id) {
         $company = Company::findOrFail($id);
 
         $orders = Order::where('buyer_company_id', $company->id)

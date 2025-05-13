@@ -16,7 +16,19 @@ class Wholesalers extends Component {
 
     public function restoreParams() {
         $this->editing = false; 
-        $this->reset(['name', 'sector', 'cif', 'image', 'social_denomination', 'transport', 'location', 'city', 'icon', 'disccount', 'payment_days', 'country', 'tax']);
+        $this->name = '';
+        $this->sector = '';
+        $this->cif = '';
+        $this->social_denomination = '';
+        $this->transport = 0;
+        $this->location = '';
+        $this->city = '';
+        $this->disccount = 0;
+        $this->payment_days = 7;
+        $this->country = 'España';
+        $this->tax = 0;
+        $this->image = null;
+        $this->icon = null;
     }
 
     public function handleCreateModal() {
@@ -48,19 +60,23 @@ class Wholesalers extends Component {
         }
     }
 
-    protected $rules = [
-        'name' => 'required|string|min:3|max:255',
-        'sector' => 'nullable|string|min:3|max:255',
-        'cif' => 'required|string|min:3|max:255',
-        'social_denomination' => 'required|string|min:3|max:255',
-        'transport' => 'required|numeric|min:0|max:9999999999',
-        'location' => 'required|string|min:3|max:255',
-        'city' => 'required|string|min:3|max:255', 
-        'disccount' => 'required|numeric|min:0|max:9999999999',
-        'payment_days' => 'required|numeric|min:0|max:9999999999',
-        'country' => 'required|string|min:3|max:255',
-        'image' => 'nullable|image|max:1024',
-    ]; 
+    protected function rules()
+    {
+        return [
+            'name' => 'required|string|min:3|max:255',
+            'sector' => 'nullable|string|min:3|max:255',
+            'cif' => 'required|string|min:3|max:255',
+            'social_denomination' => 'required|string|min:3|max:255',
+            'transport' => 'required|numeric|min:0|max:9999999999',
+            'location' => 'required|string|min:3|max:255',
+            'city' => 'required|string|min:3|max:255', 
+            'disccount' => 'required|numeric|min:0|max:9999999999',
+            'payment_days' => 'required|numeric|min:0|max:9999999999',
+            'country' => 'required|string|min:3|max:255',
+            'image' => 'nullable|image|max:1024',
+            'tax' => 'required|numeric|min:0|max:9999999999',
+        ];
+    }
 
     protected $messages = [
         'name.required' => 'El campo nombre es requerido.',
@@ -105,33 +121,41 @@ class Wholesalers extends Component {
 
     public function saveForm() {
         $this->validate(); 
-
+        
         try {
-            $this->image->store('wholesalers', 'public');
+            $data = [
+                'name' => $this->name,
+                'sector' => $this->sector,
+                'cif' => $this->cif,
+                'social_denomination' => $this->social_denomination,
+                'transport' => $this->transport,
+                'location' => $this->location,
+                'city' => $this->city,
+                'disccount' => $this->disccount,
+                'payment_days' => $this->payment_days,
+                'country' => $this->country,
+                'tax' => $this->tax,
+            ];
+            
+            if ($this->image && !is_string($this->image)) {
+                $this->image->store('wholesalers', 'public');
+                $data['icon'] = $this->image->hashName();
+            } else if (!$this->editing) {
+                // Asignar un valor por defecto para el campo icon al crear un nuevo registro
+                $data['icon'] = 'default_wholesaler.png'; // Asegúrate de tener este archivo en storage/app/public/wholesalers
+            }
 
             if($this->editing) {
                 $wholesaler = Wholesaler::find($this->editing);
     
                 if($wholesaler) {
-                    $wholesaler->update([
-                        'name' => $this->name,
-                        'sector' => $this->sector,
-                        'cif' => $this->cif,
-                        'social_denomination' => $this->social_denomination,
-                        'transport' => $this->transport,
-                        'location' => $this->location,
-                        'city' => $this->city,
-                        'disccount' => $this->disccount,
-                        'icon' => $this->image->hashName(),
-                        'payment_days' => $this->payment_days,
-                        'country' => $this->country,
-                        'tax' => $this->tax,
-                    ]); 
+                    $wholesaler->update($data); 
 
                     if($wholesaler) {
                         toastr()->success("El mayorista {$wholesaler->name} se ha actualizado correctamente.", '¡Éxito!');
                         $this->restoreParams();
                         $this->modal = false;
+                        $this->dispatch('hideModal');
                     } else {
                         toastr()->error("Ha ocurrido un error al intentar actualizar el mayorista {$wholesaler->name}.");
                     }
@@ -142,34 +166,49 @@ class Wholesalers extends Component {
                 return; 
             }
 
-            $wholesaler = Wholesaler::create([
-                'center_id' => auth()->user()->center_id,
-                'name' => $this->name,
-                'sector' => $this->sector,
-                'cif' => $this->cif,
-                'social_denomination' => $this->social_denomination,
-                'transport' => $this->transport,
-                'location' => $this->location,
-                'city' => $this->city,
-                'icon' => $this->image->hashName(),
-                'disccount' => $this->disccount,
-                'payment_days' => $this->payment_days,
-                'country' => $this->country,
-                'tax' => $this->tax,
-            ]); 
-    
+            // Añadir center_id a los datos para crear un nuevo mayorista
+            $data['center_id'] = auth()->user()->center_id;
+            
+            $wholesaler = Wholesaler::create($data); 
+
             if($wholesaler) {
                 toastr()->success("El mayorista {$wholesaler->name} se ha creado correctamente.", '¡Éxito!');
                 $this->restoreParams();
                 $this->modal = false;
+                $this->dispatch('hideModal');
             } else {
-                toastr()->error("Ha ocurrido un error al intentar crear el mayorista {$wholesaler->name}.");
+                toastr()->error("Ha ocurrido un error al intentar crear el mayorista.");
             }
         } catch (\Throwable $th) { 
-            toastr()->error("Ha ocurrido un error al intentar crear el mayorista {$wholesaler->name}.");
+            toastr()->error("Ha ocurrido un error al intentar crear el mayorista. " . $th->getMessage());
         }
     }
 
+    public function closeModal() {
+        $this->modal = false;
+        $this->restoreParams();
+        $this->dispatch('hideModal');
+    }
+
+    public function removeWholesaler($wholesalerId) {
+        $wholesaler = Wholesaler::findOrFail($wholesalerId);
+        $nombreMayorista = $wholesaler->name;
+        $wholesaler->delete();
+        
+        // Método 1: Usar evento Livewire para notificación de toastr
+        $this->dispatch('wholesaler-removed');
+        
+        // Método 2: Usar el helper flash de PHP-Flasher
+        if (function_exists('flash')) {
+            flash()->success("El mayorista {$nombreMayorista} ha sido eliminado correctamente.");
+        }
+        
+        // También podemos usar session flash como método alternativo
+        session()->flash('success', "El mayorista {$nombreMayorista} ha sido eliminado correctamente.");
+        
+        return;
+    }
+    
     public function render() {
         $this->wholesalers = Wholesaler::where('center_id', auth()->user()->center_id)->where('name', 'like', '%' . $this->filter . '%')->orderBy('id')->paginate(10);
 

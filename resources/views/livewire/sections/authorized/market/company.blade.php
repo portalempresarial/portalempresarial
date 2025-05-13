@@ -111,7 +111,8 @@
                 styles="text-sm flex-1 border-gray-400 text-gray-400" placeholder="Buscador de productos" />
 
             <?php   
-                foreach ($company->productCategories as $option) {
+                $uniqueCategories = $company->productCategories->unique('id');
+                foreach ($uniqueCategories as $option) {
     $options[] = [
         "value" => $option->id,
         "label" => $option->label

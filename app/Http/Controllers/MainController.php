@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\Company; 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Product; 
+use App\Models\Wholesaler;
 
 class MainController extends Controller {
     public function company($company) {
@@ -29,6 +30,19 @@ class MainController extends Controller {
         return view('web.sections.authorized.market.company', [
             'company' => $company,
             'product' => $isCompanyProduct ? $product : false
+        ]);
+    }
+    
+    public function wholesalerProducts($id) {
+        $wholesaler = Wholesaler::findOrFail($id);
+        
+        // Check if user can access this wholesaler (based on center)
+        if ($wholesaler->center_id != auth()->user()->center_id) {
+            return redirect('/teacher/wholesalers')->with('error', 'No tienes acceso a este mayorista');
+        }
+        
+        return view('web.sections.authorized.teacher.wholesaler-products', [
+            'wholesaler' => $wholesaler
         ]);
     }
 }

@@ -78,7 +78,7 @@
                         </td>
 
                         <td class="px-6 py-4 gap-5 flex items-center justify-end">
-                            <x-button wireClick="deleteCompany({{$company['id']}})" icon="remove" content="Eliminar" />
+                            <button wire:click="removeCompany({{ $company['id'] }})" class="hover:text-red-500 material-symbols-outlined">Delete</button>
                             <span onclick="window.location.href = '/teacher/companies/{{ str_replace(' ', '-', $company['name']) }}/'" class="material-symbols-outlined hover:text-blue-500 transition-all cursor-pointer">visibility</span>
                             <span title="Vista alumno" onclick="window.location.href = '/teacher/companies/{{ str_replace(' ', '-', $company['name']) }}/view/dashboard'" class="material-symbols-outlined hover:text-blue-500 transition-all cursor-pointer">person</span>
                         </td>

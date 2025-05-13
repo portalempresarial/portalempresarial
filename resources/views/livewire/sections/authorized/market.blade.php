@@ -55,11 +55,13 @@
             }
         ?>
 
-        <x-selector wireModel="sector" styles="text-sm w-full md:w-[250px] border-gray-400 text-gray-400"
-            :options="$options" />
+        <div class="flex flex-row gap-4">
+            <x-selector wireModel="sector" styles="text-sm md:w-[250px] border-gray-400 text-gray-400"
+                :options="$options" />
 
-        <x-selector wireModel="company" styles="text-sm w-full md:w-[250px] border-gray-400 text-gray-400"
-            :options="$companyOptions" />
+            <x-selector wireModel="company" styles="text-sm md:w-[250px] border-gray-400 text-gray-400"
+                :options="$companyOptions" />
+        </div>
     </div>
 
     <div class="flex-1 flex flex-col gap-10">
