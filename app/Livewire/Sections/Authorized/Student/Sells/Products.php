@@ -96,6 +96,7 @@ class Products extends Component {
                     'reference' => $this->reference,
                     'company_id' => auth()->user()->current_company,
                     'status' => $this->status,
+                    'stock' => 0,  // Iniciar con stock en 0
                     'description' => $this->description
                 ]);
 
@@ -104,6 +105,13 @@ class Products extends Component {
                         'image' => $this->image->hashName()
                     ]);
                 }
+                
+                // Crear el registro de stock para la empresa
+                \App\Models\CompanyProductStock::create([
+                    'company_id' => auth()->user()->current_company,
+                    'product_id' => $product->id,
+                    'stock' => 0
+                ]);
 
                 toastr()->success('¡Producto creado con éxito!');
             }

@@ -23,6 +23,7 @@
         [ "prefix" => "student", "role" => "Estudiante", "icon" => "inventory", "label" => "Productos", "route" => "products" ],
         [ "prefix" => "student", "role" => "Estudiante", "icon" => "attach_money", "label" => "Ventas", "route" => "sells" ],
         [ "prefix" => "student", "role" => "Estudiante", "icon" => "storefront", "label" => "Compras", "route" => "buy" ],
+        [ "prefix" => "student", "role" => "Estudiante", "icon" => "shopping_bag", "label" => "Productos mayoristas", "route" => "wholesaler-products" ],
         [ "prefix" => "student", "role" => "Estudiante", "icon" => "mail", "label" => "Mensajería", "route" => "mailing" ],
     ];
 ?>

@@ -19,4 +19,17 @@ class Product extends Model {
     public function company() {
         return $this->belongsTo(Company::class, 'company_id', 'id'); 
     }
+    
+    public function stocks() {
+        return $this->hasMany(CompanyProductStock::class);
+    }
+    
+    public function stockForCompany($companyId) {
+        return $this->stocks()->where('company_id', $companyId)->first();
+    }
+    
+    public function hasStockForCompany($companyId, $quantity = 1) {
+        $stock = $this->stockForCompany($companyId);
+        return $stock && $stock->stock >= $quantity;
+    }
 }

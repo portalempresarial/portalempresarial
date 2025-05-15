@@ -46,7 +46,16 @@
                         @endif
                     </td>
                     <td class="py-4 text-ellipsis truncate pl-5">
-                        {{ $order->seller->name }}
+                        @if($order->wholesaler_id)
+                            <span class="flex items-center">
+                                {{ $order->wholesaler->name }}
+                                <span class="bg-blue-100 text-xs text-blue-800 ml-2 px-2 py-0.5 rounded-full">
+                                    Mayorista
+                                </span>
+                            </span>
+                        @else
+                            {{ $order->seller ? $order->seller->name : 'Desconocido' }}
+                        @endif
                     </td>
                     <td class="py-4 text-ellipsis truncate pl-5">
                         {{ $order->products->sum('amount') }}
@@ -56,7 +65,11 @@
                             $total = 0; 
 
                             foreach ($order->products as $product) {
-                                $total += $product->amount * $product->product->price;
+                                if($product->product_id) {
+                                    $total += $product->amount * $product->product->price;
+                                } elseif($product->wholesaler_product_id) {
+                                    $total += $product->amount * $product->wholesalerProduct->price;
+                                }
                             }
                         @endphp
 

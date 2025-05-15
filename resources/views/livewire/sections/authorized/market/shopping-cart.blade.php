@@ -3,8 +3,9 @@
 @endphp
 
 <div class="flex-1 gap-7 flex flex-col items-center xl:items-start xl:flex-row overflow-y-scroll my-10 xl:my-0">
-    {{-- @ Companies  --}}
+    {{-- @ Companies & Wholesalers --}}
     <section class="flex flex-col gap-7 xl:p-7 w-[90%] xl:w-full h-full xl:overflow-y-scroll">
+        {{-- Regular products from companies --}}
         @foreach ($this->companies as $company)
             <div class="flex flex-col gap-5 [&:not(:first-child)]:pt-5">
                 {{-- @ Company information --}}
@@ -19,7 +20,7 @@
                 {{-- @ Cart items --}}
                 <section class="flex flex-col divide-y px-5 py-1 rounded-md shadow-sm bg-white">
                     @foreach ($this->items as $item)
-                        @if ($item->product->company_id != $company->id)
+                        @if (!$item->product_id || $item->product->company_id != $company->id)
                             @continue
                         @endif
 
@@ -42,6 +43,68 @@
             
                             <p class="text-xl font-bold text-blue-500 px-5 text-end">
                                 {{ $item->product->price * $item->amount }} €
+                            </p>
+            
+                            <div class="flex items-center gap-4">
+                                <span wire:click="removeOne({{ $item->id }})" class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                    remove
+                                </span>
+            
+                                {{ $item->amount }}
+            
+                                <span wire:click="addOne({{ $item->id }})" class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                    add
+                                </span>
+                            </div>
+            
+                            <button wire:click="deleteElement({{ $item->id }})" class="material-symbols-outlined text-md opacity-20">
+                                delete
+                            </button>
+                        </div>
+                    @endforeach
+                </section>
+            </div>
+        @endforeach
+        
+        {{-- Wholesaler products --}}
+        @foreach ($this->wholesalers as $wholesaler)
+            <div class="flex flex-col gap-5 [&:not(:first-child)]:pt-5">
+                {{-- @ Wholesaler information --}}
+                <section class="flex items-center gap-3">
+                    @if ($wholesaler->icon)
+                        <img class="max-w-[30px] rounded-md-sm h-[15px]" src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" />
+                    @endif
+
+                    <span class="font-medium">{{ $wholesaler->name }}</span>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Mayorista</span>
+                </section>
+
+                {{-- @ Cart items --}}
+                <section class="flex flex-col divide-y px-5 py-1 rounded-md shadow-sm bg-white">
+                    @foreach ($this->items as $item)
+                        @if (!$item->wholesaler_product_id || $item->wholesalerProduct->wholesaler_id != $wholesaler->id)
+                            @continue
+                        @endif
+
+                        <div class="flex items-center flex-wrap rounded-md py-7 md:py-0 md:h-[70px] gap-3">
+                            <div class="w-10 flex items-center justify-center">
+                                @if ($item->wholesalerProduct->image)
+                                    <img class="rounded-md-sm h-[30px]" src="{{ asset('storage/wholesaler-products/' . $item->wholesalerProduct->image) }}" />
+                                @else 
+                                    <span class="material-symbols-outlined text-md text-blue-500">
+                                        inventory_2
+                                    </span>
+                                @endif
+                            </div>
+            
+                            <h2 class="text-lg">
+                                {{ $item->wholesalerProduct->name }}
+                            </h2> 
+                            
+                            <span class="text-xs text-gray-400 flex-1">Stock: {{ $item->wholesalerProduct->stock }}</span>
+            
+                            <p class="text-xl font-bold text-blue-500 px-5 text-end">
+                                {{ $item->wholesalerProduct->price * $item->amount }} €
                             </p>
             
                             <div class="flex items-center gap-4">
@@ -117,7 +180,11 @@
                 $subtotal = 0;
 
                 foreach ($this->items as $key => $value) {
-                    $subtotal += $value->product->price * $value->amount;
+                    if ($value->product_id) {
+                        $subtotal += $value->product->price * $value->amount;
+                    } elseif ($value->wholesaler_product_id) {
+                        $subtotal += $value->wholesalerProduct->price * $value->amount;
+                    }
                 }
             @endphp
 

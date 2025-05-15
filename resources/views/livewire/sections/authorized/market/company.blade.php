@@ -99,9 +99,26 @@
                     <p class="text-2xl font-bold text-blue-500">
                         {{ $selected_product->price * $selected_counter }} €
                     </p>
+                    
+                    <div class="mb-3">
+                        <p class="flex items-center gap-2">
+                            <span class="material-symbols-outlined {{ $selected_product->stock > 5 ? 'text-green-600' : ($selected_product->stock > 0 ? 'text-orange-500' : 'text-red-600') }}">
+                                inventory_2
+                            </span>
+                            <span class="{{ $selected_product->stock > 5 ? 'text-green-600' : ($selected_product->stock > 0 ? 'text-orange-500' : 'text-red-600') }}">
+                                Stock: {{ $selected_product->stock }} unidades
+                            </span>
+                        </p>
+                        
+                        @if($selected_product->stock <= 3 && $selected_product->stock > 0)
+                            <p class="text-xs text-orange-500 ml-6 mt-1">¡Últimas unidades disponibles!</p>
+                        @elseif($selected_product->stock == 0)
+                            <p class="text-xs text-red-600 ml-6 mt-1">Lo sentimos, este producto está fuera de stock.</p>
+                        @endif
+                    </div>
 
                     <x-button wireClick="addToCart" styles="justify-center" styles="w-full md:w-auto" icon="shopping_cart"
-                        content="Añadir a la cesta" />
+                        content="Añadir a la cesta" {{ $selected_product->stock <= 0 ? 'disabled' : '' }} />
                 </section>
             </div>
         @endif
@@ -167,6 +184,18 @@
                             {{ $product->price }} €
                         </p>
                     </section>
+                    
+                    <div class="mt-2 flex items-center justify-between">
+                        <span class="text-sm {{ $product->stock > 5 ? 'text-green-600' : ($product->stock > 0 ? 'text-orange-500' : 'text-red-600') }} group-hover:text-white">
+                            Stock: {{ $product->stock }} unidades
+                        </span>
+                        
+                        @if($product->stock <= 3 && $product->stock > 0)
+                            <span class="text-xs text-orange-500 group-hover:text-yellow-200">¡Últimas unidades!</span>
+                        @elseif($product->stock == 0)
+                            <span class="text-xs text-red-600 group-hover:text-red-200">Sin stock</span>
+                        @endif
+                    </div>
                 </div>
             @endforeach
         </div>

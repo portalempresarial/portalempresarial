@@ -11,7 +11,7 @@ class CompanyWholesaler extends Model {
     public $table = "company_wholesalers";
     public $timestamps = false;
 
-    protected $fillable = []; 
+    protected $fillable = ['company_id', 'wholesaler_id']; 
 
     public function company() {
         return $this->belongsTo(Company::class);

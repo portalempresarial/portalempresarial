@@ -285,14 +285,14 @@ class SingleCompany extends Component {
                 $isWholesaler->delete(); 
                 toastr()->error("El mayorista ya no está asignado a la empresa.");
             } else {
-                $wholesaler = new CompanyWholesaler();
-                $wholesaler->company_id = $this->company->id;
-                $wholesaler->wholesaler_id = $wholesaler_id;
-                $wholesaler->save();
+                CompanyWholesaler::create([
+                    'company_id' => $this->company->id,
+                    'wholesaler_id' => $wholesaler_id
+                ]);
                 toastr()->success("El mayorista ha sido asignado a la empresa.", '¡Éxito!');
             }
         } catch(\Throwable $th) {
-            throw $th;
+            \Log::error($th);
             toastr()->error("¡Vaya! Algo salió mal. Inténtalo de nuevo más tarde.");
         }
     }
@@ -311,7 +311,9 @@ class SingleCompany extends Component {
 
         $this->employees = CompanyEmployee::where('company_id', $this->company->id)->whereRelation('user', 'name', 'like', '%' . $this->employee_filter . '%')->get();
 
-        $this->wholesalers = Wholesaler::where('center_id', $this->company->center_id)->get(); 
+        $this->wholesalers = Wholesaler::where('center_id', $this->company->center_id)
+                           ->where('name', 'like', '%' . $this->wholesaler_filter . '%')
+                           ->get(); 
 
         $studentRole = Role::where('name', 'Estudiante')->first();
         $this->users = User::where('role_id', $studentRole->id)

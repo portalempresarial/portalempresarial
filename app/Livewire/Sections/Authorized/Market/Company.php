@@ -19,6 +19,12 @@ class Company extends Component
 
     public function addToCart()
     {
+        // Verificar que haya stock suficiente
+        if ($this->selected_product->stock < $this->selected_counter) {
+            toastr()->error('No hay suficiente stock disponible. Stock actual: ' . $this->selected_product->stock);
+            return;
+        }
+        
         $onCart = CartProduct::where('user_id', auth()->user()->id)->where('product_id', $this->selected_product->id)->first();
 
         if (!$onCart) {
@@ -28,8 +34,15 @@ class Company extends Component
                 'amount' => $this->selected_counter
             ]);
         } else {
+            // Verificar que no se exceda el stock disponible considerando lo que ya está en el carrito
+            $totalRequestedAmount = $onCart->amount + $this->selected_counter;
+            if ($totalRequestedAmount > $this->selected_product->stock) {
+                toastr()->error('No hay suficiente stock disponible. Ya tienes ' . $onCart->amount . ' en el carrito y solo hay ' . $this->selected_product->stock . ' disponibles.');
+                return;
+            }
+            
             $onCart->update([
-                'amount' => $onCart->amount + $this->selected_counter
+                'amount' => $totalRequestedAmount
             ]);
         }
 
@@ -71,7 +84,11 @@ class Company extends Component
                 $queryBuilder->where('category_id', $this->category);
             }
 
-            $this->products = $queryBuilder->where('company_id', $this->company->id)->get();
+            // Solo mostrar productos con stock
+            $queryBuilder->where('company_id', $this->company->id)
+                         ->where('stock', '>', 0);
+
+            $this->products = $queryBuilder->get();
         }
 
         return view('livewire.sections.authorized.market.company');

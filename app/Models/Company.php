@@ -33,4 +33,20 @@ class Company extends Model {
     public function productCategories() {
         return $this->hasMany(ProductCategory::class);
     }
+
+    public function companyWholesalers() {
+        return $this->hasMany(CompanyWholesaler::class);
+    }
+
+    public function wholesalers() {
+        return $this->belongsToMany(Wholesaler::class, 'company_wholesalers', 'company_id', 'wholesaler_id');
+    }
+    
+    public function productStocks() {
+        return $this->hasMany(CompanyProductStock::class);
+    }
+    
+    public function pendingDeliveries() {
+        return $this->hasMany(PendingWholesalerDelivery::class);
+    }
 }

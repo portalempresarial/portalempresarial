@@ -15,6 +15,10 @@ class OrderProduct extends Model {
     public function product() {
         return $this->belongsTo(Product::class);
     }
+    
+    public function wholesalerProduct() {
+        return $this->belongsTo(WholesalerProduct::class);
+    }
 
     public function order() {
         return $this->belongsTo(Order::class);

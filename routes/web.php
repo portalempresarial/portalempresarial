@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function() {
                 Route::view('/products', 'web.sections.authorized.student.sells.products');
                 Route::view('/sells', 'web.sections.authorized.student.sells.sells');
                 Route::view('/buy', 'web.sections.authorized.student.sells.buy');
+                Route::view('/wholesaler-products', 'web.sections.authorized.student.wholesaler-products')->name('teacher.company.wholesaler-products');
             });
         });
     }); 
@@ -71,6 +72,7 @@ Route::middleware('auth')->group(function() {
             Route::view('/products', 'web.sections.authorized.student.sells.products');
             Route::view('/sells', 'web.sections.authorized.student.sells.sells');
             Route::view('/buy', 'web.sections.authorized.student.sells.buy');
+            Route::view('/wholesaler-products', 'web.sections.authorized.student.wholesaler-products')->name('student.wholesaler-products');
         });
     });
 
