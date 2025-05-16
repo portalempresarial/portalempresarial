@@ -24,6 +24,7 @@
         [ "prefix" => "student", "role" => "Estudiante", "icon" => "attach_money", "label" => "Ventas", "route" => "sells" ],
         [ "prefix" => "student", "role" => "Estudiante", "icon" => "storefront", "label" => "Compras", "route" => "buy" ],
         [ "prefix" => "student", "role" => "Estudiante", "icon" => "shopping_bag", "label" => "Productos mayoristas", "route" => "wholesaler-products" ],
+        [ "prefix" => "student", "role" => "Estudiante", "icon" => "description", "label" => "Albaranes", "route" => "delivery-notes" ],
         [ "prefix" => "student", "role" => "Estudiante", "icon" => "mail", "label" => "Mensajería", "route" => "mailing" ],
     ];
 ?>
@@ -95,8 +96,13 @@
 
                                 if($user_company) {
                                     $name = str_replace(' ', '-', $user_company->name);
-
-                                    $route = "/{$element['prefix']}/$name/{$element['route']}";
+                                    
+                                    // Si es la ruta de albaranes, usar el nombre correcto de ruta
+                                    if ($element['route'] == 'delivery-notes') {
+                                        $route = "/{$element['prefix']}/$name/delivery-notes";
+                                    } else {
+                                        $route = "/{$element['prefix']}/$name/{$element['route']}";
+                                    }
                                 } else $route = "/student/select";
                             } else $route = "/student/select";
                         } else {

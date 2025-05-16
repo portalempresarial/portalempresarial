@@ -1,6 +1,6 @@
-<!-- filepath: c:\xampp\htdocs\resources\views\livewire\sections\authorized\student\add-to-wholesaler-cart.blade.php -->
-<div class="flex flex-col">
-    <div class="flex items-center gap-2 mb-2">        <button 
+<div class="flex flex-col" wire:key="cart-component-{{ $wholesalerProductId }}">
+    <div class="flex items-center gap-2 mb-2">
+        <button 
             wire:click.prevent="decrementQuantity"
             type="button"
             class="w-8 h-8 bg-gray-200 text-gray-700 flex items-center justify-center rounded-md hover:bg-gray-300"
@@ -24,7 +24,8 @@
             <span class="material-symbols-outlined text-sm">add</span>
         </button>
     </div>
-      <button 
+    
+    <button 
         wire:click.prevent="addToCart"
         type="button"
         class="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"

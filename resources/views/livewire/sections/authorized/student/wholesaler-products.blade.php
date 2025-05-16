@@ -65,15 +65,8 @@
                     </p>
                 </div>
             </div>
-        </div>
-    @endif
-        
-    @if(isset($debug_info) && auth()->user()->role->name === 'Profesor')
-    <div class="mt-6 p-4 bg-gray-100 rounded-md text-xs overflow-auto">
-        <h3 class="font-bold mb-2 text-sm">Información de depuración (sólo visible para profesores):</h3>
-        <pre class="whitespace-pre-wrap">{{ json_encode($debug_info, JSON_PRETTY_PRINT) }}</pre>
-    </div>
-    @elseif($products->isEmpty())
+        </div>    @endif
+    @if($products->isEmpty())
         <div class="mt-10 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md">
             <div class="flex">
                 <div class="py-1">
@@ -122,7 +115,7 @@
                             </div>
                         </div>
                         
-                        <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ $product->description }}</p>                          <div class="mt-4">
+                        <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ $product->description }}</p>                  <div class="mt-4" wire:key="container-cart-{{ $product->id }}">
                             @livewire('sections.authorized.student.add-to-wholesaler-cart', ['wholesalerProductId' => $product->id], key('cart-'.$product->id))
                         </div>
                     </div>
@@ -133,32 +126,34 @@
             {{ $products->links() }}
         </div>
     @endif
-      <!-- Mini Cart -->
-    <div id="miniCart" class="fixed top-20 right-5 w-80 bg-white shadow-lg rounded-lg p-4 z-50 transform transition-transform duration-300 ease-in-out {{ $miniCartOpen ? '' : 'translate-x-full' }}">
+    <!-- Mini Cart -->
+    <div id="miniCart" class="fixed top-20 right-5 w-80 bg-white shadow-lg rounded-lg p-4 z-50 transform transition-transform duration-300 ease-in-out overflow-hidden {{ $miniCartOpen ? '' : 'translate-x-full' }}">
         <div class="flex justify-between items-center mb-4">
             <h3 class="font-bold text-lg">Mi Carrito</h3>
             <button wire:click.prevent="toggleMiniCart" type="button" class="text-gray-500 hover:text-gray-700">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-        
-        <div class="max-h-96 overflow-y-auto">
+          <div class="max-h-96 overflow-y-auto">
             @if(count($cartItems) > 0)
                 @foreach($cartItems as $item)
-                    <div class="flex items-center justify-between py-2 border-b">
-                        <div class="flex-1">
-                            <h4 class="font-medium text-sm">{{ $item->wholesalerProduct->name }}</h4>
-                            <p class="text-gray-500 text-xs">{{ $item->amount }} x {{ $item->wholesalerProduct->price }}€</p>
-                        </div>                        <div class="flex items-center gap-2">
-                            <button wire:click.prevent="decrementCartItem({{ $item->id }})" class="text-gray-400 hover:text-gray-600">
-                                <span class="material-symbols-outlined text-sm">remove</span>
-                            </button>
-                            <span class="text-sm">{{ $item->amount }}</span>
-                            <button wire:click.prevent="incrementCartItem({{ $item->id }})" class="text-gray-400 hover:text-gray-600">
-                                <span class="material-symbols-outlined text-sm">add</span>
-                            </button>
+                    <div class="flex flex-col py-2 border-b">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex-1">
+                                <h4 class="font-medium text-sm">{{ $item->wholesalerProduct->name }}</h4>
+                                <p class="text-gray-500 text-xs">{{ $item->amount }} x {{ $item->wholesalerProduct->price }}€</p>
+                            </div>
                             <button wire:click.prevent="removeFromCart({{ $item->id }})" class="text-red-400 hover:text-red-600 ml-2">
                                 <span class="material-symbols-outlined text-sm">delete</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-end gap-2">
+                            <button wire:click.prevent="decrementCartItem({{ $item->id }})" class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-300">
+                                <span class="material-symbols-outlined text-sm">remove</span>
+                            </button>
+                            <span class="text-sm font-medium w-6 text-center">{{ $item->amount }}</span>
+                            <button wire:click.prevent="incrementCartItem({{ $item->id }})" class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-300">
+                                <span class="material-symbols-outlined text-sm">add</span>
                             </button>
                         </div>
                     </div>
