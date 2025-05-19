@@ -66,7 +66,7 @@
 
     <div class="flex-1 flex flex-col gap-10">
         @foreach ($companiesList as $company)
-            <div class="p-5 border border-gray-300 rounded-md shadow-md bg-white mx-24">
+            <div class="p-5 border border-gray-200 rounded-md shadow-md bg-white mx-24">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-5">
                         @if ($company->icon)
@@ -104,7 +104,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
                     <!-- Mostrar los primeros 8 productos -->
                     @foreach ($visibleProducts as $product)
-                        <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'" class="bg-gray-100 border border-gray-300 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
+                        <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'" 
+                            class="bg-gray-50 border border-gray-200 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
                             <div class="flex justify-between w-full">
                                 <div class="flex flex-col">
                                     <!-- Nombre del producto -->
@@ -142,7 +143,7 @@
                             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-hidden">
                             @foreach ($hiddenProducts as $product)
                                 <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'"
-                                    class="bg-gray-100 border border-gray-300 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
+                                    class="bg-gray-50 border border-gray-200 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
                                     <div class="flex justify-between w-full">
                                         <div class="flex flex-col">
                                             <!-- Nombre del producto -->

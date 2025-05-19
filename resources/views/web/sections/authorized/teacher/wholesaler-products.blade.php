@@ -16,53 +16,56 @@
                 </a>
             </div>
 
-            <div class="flex flex-col md:flex-row gap-6 bg-white p-5 rounded-lg shadow-sm mb-6">
-                <div class="md:w-1/4">
-                    <div class="flex flex-col items-center">
-                        @if($wholesaler->icon)
-                            <img class="w-32 h-32 object-cover rounded-lg mb-3" src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" alt="{{ $wholesaler->name }}" />
-                        @else
-                            <div class="w-32 h-32 bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-5xl text-gray-400">store</span>
-                            </div>
-                        @endif
-                        <h3 class="text-lg font-bold">{{ $wholesaler->name }}</h3>
-                        <p class="text-sm text-gray-600">{{ $wholesaler->cif }}</p>
-                    </div>
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-5">
+                <div class="flex flex-col items-center bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-md">
+                    {{-- @ Icon --}}
+                    @if($wholesaler->icon)
+                        <img class="w-32 h-32 object-cover rounded-lg mb-3"
+                            src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" alt="{{ $wholesaler->name }}" />
+                    @else
+                        <div class="w-32 h-32 bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-5xl text-gray-400">store</span>
+                        </div>
+                    @endif
+                    <h3 class="text-lg font-bold">{{ $wholesaler->name }}</h3>
+                    <p class="text-sm text-gray-600">{{ $wholesaler->cif }}</p>
                 </div>
-                <div class="md:w-3/4 md:border-l md:pl-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <h4 class="font-semibold text-gray-700">Información general</h4>
-                            <ul class="mt-2 space-y-1">
-                                <li class="text-sm"><span class="font-medium">Sector:</span> {{ $wholesaler->sector ?? 'N/A' }}</li>
-                                <li class="text-sm"><span class="font-medium">Denominación social:</span> {{ $wholesaler->social_denomination }}</li>
-                                <li class="text-sm"><span class="font-medium">País:</span> {{ $wholesaler->country }}</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-700">Ubicación</h4>
-                            <ul class="mt-2 space-y-1">
-                                <li class="text-sm"><span class="font-medium">Ciudad:</span> {{ $wholesaler->city }}</li>
-                                <li class="text-sm"><span class="font-medium">Dirección:</span> {{ $wholesaler->location }}</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-700">Condiciones comerciales</h4>
-                            <ul class="mt-2 space-y-1">
-                                <li class="text-sm"><span class="font-medium">Transporte:</span> {{ $wholesaler->transport }} €</li>
-                                <li class="text-sm"><span class="font-medium">Descuento:</span> {{ $wholesaler->disccount }}%</li>
-                                <li class="text-sm"><span class="font-medium">Días de pago:</span> {{ $wholesaler->payment_days }}</li>
-                                <li class="text-sm"><span class="font-medium">Impuestos:</span> 
-                                    @if ($wholesaler->tax)
-                                        <span class="text-red-500">Exento</span>
-                                    @else
-                                        <span class="text-green-500">Aplicados</span>
-                                    @endif
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-md">
+                    <h4 class="font-semibold text-gray-700">Información general</h4>
+                    <ul class="mt-2 space-y-1">
+                        <li class="text-sm"><span class="font-medium">Sector:</span>
+                            {{ $wholesaler->sector ?? 'N/A' }}</li>
+                        <li class="text-sm"><span class="font-medium">Denominación social:</span>
+                            {{ $wholesaler->social_denomination }}</li>
+                        <li class="text-sm"><span class="font-medium">País:</span> {{ $wholesaler->country }}</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-md">
+                    <h4 class="font-semibold text-gray-700">Ubicación</h4>
+                    <ul class="mt-2 space-y-1">
+                        <li class="text-sm"><span class="font-medium">Ciudad:</span> {{ $wholesaler->city }}</li>
+                        <li class="text-sm"><span class="font-medium">Dirección:</span> {{ $wholesaler->location }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-md">
+                    <h4 class="font-semibold text-gray-700">Condiciones comerciales</h4>
+                    <ul class="mt-2 space-y-1">
+                        <li class="text-sm"><span class="font-medium">Transporte:</span>
+                            {{ $wholesaler->transport }} €</li>
+                        <li class="text-sm"><span class="font-medium">Descuento:</span>
+                            {{ $wholesaler->disccount }}%</li>
+                        <li class="text-sm"><span class="font-medium">Días de pago:</span>
+                            {{ $wholesaler->payment_days }}</li>
+                        <li class="text-sm"><span class="font-medium">Impuestos:</span>
+                            @if ($wholesaler->tax)
+                                <span class="text-red-500">Exento</span>
+                            @else
+                                <span class="text-green-500">Aplicados</span>
+                            @endif
+                        </li>
+                    </ul>
                 </div>
             </div>
         </section>

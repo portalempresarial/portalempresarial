@@ -25,7 +25,7 @@
     {{-- Products grid --}}
     <div class="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse($products as $product)
-            <div class="bg-white rounded-md overflow-hidden shadow-md hover:shadow-lg transition-all">
+            <div class="bg-gray-50 border border-gray-200 rounded-md overflow-hidden shadow-md hover:shadow-lg transition-all">
                 @if($product->image)
                     <img src="{{ asset('storage/products/'.$product->image) }}" alt="{{ $product->name }}" class="w-full h-40 object-cover">
                 @else
