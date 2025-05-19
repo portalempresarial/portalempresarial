@@ -104,10 +104,22 @@
             </div>
 
             <div class="flex justify-center mt-6">
-                <a href="{{ route('delivery-notes.download', $deliveryNote->id) }}" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-md flex items-center transition-colors">
-                    <span class="material-symbols-outlined mr-2">download</span>
-                    Descargar PDF
-                </a>
+                @php
+                    $company = \App\Models\Company::find(Auth::user()->current_company);
+                    $companySlug = $company ? str_replace(' ', '-', $company->name) : '';
+                @endphp
+                @if($deliveryNote->pdf_path)
+                    <a href="{{ route('delivery-notes.download', ['company' => $companySlug, 'id' => $deliveryNote->id]) }}" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-md flex items-center transition-colors">
+                        <span class="material-symbols-outlined mr-2">download</span>
+                        Descargar PDF
+                    </a>
+                @else
+                    <button disabled class="bg-gray-400 cursor-not-allowed text-white font-medium py-2 px-6 rounded-md flex items-center">
+                        <span class="material-symbols-outlined mr-2">info</span>
+                        PDF no disponible
+                    </button>
+                    <span class="ml-2 text-gray-600 text-sm">El PDF no ha sido generado todavía</span>
+                @endif
             </div>
         </div>
     </div>

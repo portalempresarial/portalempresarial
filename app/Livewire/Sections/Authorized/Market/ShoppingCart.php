@@ -187,11 +187,33 @@ class ShoppingCart extends Component {
             }
             
             // Obtener la imagen del mayorista para el PDF
-            $imagePath = storage_path('app/public/wholesalers/' . $wholesaler->logo);
             $wholesalerLogoBase64 = '';
-            if (file_exists($imagePath)) {
-                $image = file_get_contents($imagePath);
-                $wholesalerLogoBase64 = base64_encode($image);
+            try {
+                // Primero, asegurémonos de que el directorio existe
+                $wholesalersDir = storage_path('app/public/wholesalers');
+                if (!file_exists($wholesalersDir)) {
+                    \Log::info("Creando directorio para logos de mayoristas: $wholesalersDir");
+                    if (!mkdir($wholesalersDir, 0755, true)) {
+                        \Log::error("No se pudo crear el directorio para logos de mayoristas: $wholesalersDir");
+                    }
+                }
+                
+                // Intentar cargar el logo si existe
+                if ($wholesaler->logo && !empty($wholesaler->logo)) {
+                    $imagePath = storage_path('app/public/wholesalers/' . $wholesaler->logo);
+                    if (file_exists($imagePath)) {
+                        $image = file_get_contents($imagePath);
+                        $wholesalerLogoBase64 = base64_encode($image);
+                        \Log::info("Logo del mayorista cargado correctamente: " . $wholesaler->logo);
+                    } else {
+                        \Log::warning("Logo del mayorista no encontrado: $imagePath - Continuando sin logo");
+                    }
+                } else {
+                    \Log::warning("Mayorista no tiene logo especificado - Continuando sin logo");
+                }
+            } catch (\Exception $e) {
+                \Log::error("Error al cargar logo del mayorista: " . $e->getMessage());
+                // Continuamos sin el logo, no detenemos el proceso
             }
             
             // Generar el PDF
@@ -205,20 +227,76 @@ class ShoppingCart extends Component {
                 'icon' => $wholesalerLogoBase64
             ])->setPaper('A4');
             
-            // Asegurarse de que el directorio existe
-            $directory = 'public/delivery_notes';
-            if (!\Storage::exists($directory)) {
-                \Storage::makeDirectory($directory);
+            // Asegurarse de que el directorio existe en ambos lugares
+            $storageDirectory = 'public/delivery_notes';
+            $physicalDirectory = storage_path('app/public/delivery_notes');
+            
+            if (!\Storage::exists($storageDirectory)) {
+                \Storage::makeDirectory($storageDirectory);
+                \Log::info("Directorio de almacenamiento creado: $storageDirectory");
+            } else {
+                \Log::info("Directorio de almacenamiento ya existe: $storageDirectory");
+            }
+            
+            if (!file_exists($physicalDirectory)) {
+                if (mkdir($physicalDirectory, 0755, true)) {
+                    \Log::info("Directorio físico creado: $physicalDirectory");
+                } else {
+                    \Log::error("No se pudo crear el directorio físico: $physicalDirectory");
+                }
+            } else {
+                \Log::info("Directorio físico ya existe: $physicalDirectory");
             }
             
             // Guardar el PDF
             $pdfFileName = 'albaran_' . $deliveryNoteNumber . '.pdf';
             $pdfPath = 'delivery_notes/' . $pdfFileName;
-            \Storage::put('public/' . $pdfPath, $pdf->output());
+            $fullPath = 'public/' . $pdfPath;
+            $absolutePath = storage_path('app/' . $fullPath);
             
-            // Actualizar el registro del albarán con la ruta al PDF
-            $deliveryNote->pdf_path = $pdfPath;
-            $deliveryNote->save();
+            try {
+                // Guardar el PDF de forma forzada usando dos métodos para asegurar que funcione
+                $content = $pdf->output();
+                
+                // Método 1: Usando Storage Facade
+                $bytes = \Storage::put($fullPath, $content);
+                \Log::info("PDF guardado con Storage::put en: $fullPath, bytes escritos: $bytes");
+                
+                // Método 2: Usando file_put_contents directamente (como backup)
+                $bytesWritten = file_put_contents($absolutePath, $content);
+                \Log::info("PDF guardado con file_put_contents en: $absolutePath, bytes escritos: $bytesWritten");
+                
+                $fileExists = false;
+                
+                // Verificar que se haya guardado correctamente
+                if (\Storage::exists($fullPath)) {
+                    $fileExists = true;
+                    \Log::info("Verificado con Storage: el archivo existe, tamaño: " . \Storage::size($fullPath) . " bytes");
+                } else {
+                    \Log::warning("Verificación con Storage falló, comprobando con file_exists...");
+                    if (file_exists($absolutePath)) {
+                        $fileExists = true;
+                        \Log::info("Verificado con file_exists: el archivo existe, tamaño: " . filesize($absolutePath) . " bytes");
+                    } else {
+                        \Log::error("Error: el archivo no existe después de guardarlo ni con Storage ni con file_put_contents");
+                    }
+                }
+                
+                if ($fileExists) {
+                    // Actualizar el registro del albarán con la ruta al PDF
+                    $deliveryNote->pdf_path = $pdfPath;
+                    $deliveryNote->save();
+                    \Log::info("Ruta de PDF actualizada en registro de albarán: $pdfPath");
+                } else {
+                    \Log::error("No se pudo guardar el PDF, no se actualiza la ruta en la base de datos");
+                }
+                
+            } catch (\Exception $e) {
+                \Log::error("Error al guardar el PDF: " . $e->getMessage());
+                \Log::error("Traza: " . $e->getTraceAsString());
+                // No lanzamos la excepción para evitar que se rompa el flujo
+                // Al menos el albarán queda registrado en la base de datos
+            }
             
             // No tratamos de descargar el PDF automáticamente desde un componente Livewire
             // En su lugar, mostrar un mensaje de éxito con enlace
