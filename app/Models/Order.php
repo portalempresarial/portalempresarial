@@ -35,6 +35,11 @@ class Order extends Model {
         return !is_null($this->wholesaler_id);
     }
     
+    // Get all delivery notes associated with this order
+    public function deliveryNotes() {
+        return $this->hasMany(DeliveryNote::class);
+    }
+    
     // Helper method to get the seller name (company or wholesaler)
     public function getSellerNameAttribute() {
         return $this->wholesaler_id 

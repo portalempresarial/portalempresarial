@@ -73,6 +73,13 @@ Route::middleware('auth')->group(function() {
             Route::view('/sells', 'web.sections.authorized.student.sells.sells');
             Route::view('/buy', 'web.sections.authorized.student.sells.buy');
             Route::view('/wholesaler-products', 'web.sections.authorized.student.wholesaler-products')->name('student.wholesaler-products');
+            
+            // Rutas para albaranes de mayorista
+            Route::controller(\App\Http\Controllers\DeliveryNoteController::class)->group(function() {
+                Route::get('/delivery-notes', 'index')->name('delivery-notes.index');
+                Route::get('/delivery-notes/{id}', 'show')->name('delivery-notes.show');
+                Route::get('/delivery-notes/{id}/download', 'download')->name('delivery-notes.download');
+            });
         });
     });
 
