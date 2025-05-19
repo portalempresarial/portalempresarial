@@ -121,7 +121,11 @@
                     @endif
 
                     <div class="mt-4 text-center">
-                        <a href="{{ route('delivery-notes.download', $deliveryNote->id) }}" class="btn btn-primary">
+                        @php
+                            $company = \App\Models\Company::find(Auth::user()->current_company);
+                            $companySlug = $company ? str_replace(' ', '-', $company->name) : '';
+                        @endphp
+                        <a href="{{ route('delivery-notes.download', ['company' => $companySlug, 'id' => $deliveryNote->id]) }}" class="btn btn-primary">
                             <i class="fa fa-download"></i> Descargar PDF
                         </a>
                     </div>

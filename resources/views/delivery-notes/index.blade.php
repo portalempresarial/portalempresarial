@@ -49,10 +49,14 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <a href="{{ route('delivery-notes.show', $note->id) }}" class="btn btn-sm btn-info">
+                                            @php
+                                                $company = \App\Models\Company::find(Auth::user()->current_company);
+                                                $companySlug = $company ? str_replace(' ', '-', $company->name) : '';
+                                            @endphp
+                                            <a href="{{ route('delivery-notes.show', ['company' => $companySlug, 'id' => $note->id]) }}" class="btn btn-sm btn-info">
                                                 <i class="fa fa-eye"></i> Ver
                                             </a>
-                                            <a href="{{ route('delivery-notes.download', $note->id) }}" class="btn btn-sm btn-primary">
+                                            <a href="{{ route('delivery-notes.download', ['company' => $companySlug, 'id' => $note->id]) }}" class="btn btn-sm btn-primary">
                                                 <i class="fa fa-download"></i> Descargar
                                             </a>
                                         </td>

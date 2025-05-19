@@ -12,7 +12,7 @@ class DeliveryNoteController extends Controller
 {    /**
      * Display a listing of delivery notes for the current company
      */
-    public function index($company = null)
+    public function index($company)
     {
         // El middleware isCompanyEmployee ya ha establecido current_company en Auth::user()
         $currentCompany = Auth::user()->current_company;
@@ -26,7 +26,7 @@ class DeliveryNoteController extends Controller
       /**
      * Display a specific delivery note
      */
-    public function show($company = null, $id)
+    public function show($company, $id)
     {
         // El middleware isCompanyEmployee ya ha establecido current_company en Auth::user()
         $currentCompany = Auth::user()->current_company;
@@ -40,19 +40,175 @@ class DeliveryNoteController extends Controller
       /**
      * Download the PDF for a delivery note
      */
-    public function download($company = null, $id)
+    public function download($company, $id)
     {
+        \Log::info("Intentando descargar albarán ID: $id");
+        
         // El middleware isCompanyEmployee ya ha establecido current_company en Auth::user()
         $currentCompany = Auth::user()->current_company;
         $deliveryNote = DeliveryNote::where('id', $id)
             ->where('company_id', $currentCompany)
+            ->with(['order.products.wholesalerProduct', 'wholesaler', 'company'])
             ->firstOrFail();
             
-        if (!$deliveryNote->pdf_path || !Storage::exists('public/' . $deliveryNote->pdf_path)) {
-            return back()->with('error', 'El archivo PDF del albarán no está disponible');
+        \Log::info("Albarán encontrado: " . $deliveryNote->number . ", PDF path: " . $deliveryNote->pdf_path);
+        
+        // Si no hay ruta de PDF, intentar regenerarlo
+        if (!$deliveryNote->pdf_path) {
+            \Log::info("Intentando regenerar el PDF para el albarán ID: $id");
+            try {
+                $this->regeneratePdf($deliveryNote);
+                // Recargar el albarán para obtener la nueva ruta PDF si se ha generado
+                $deliveryNote = DeliveryNote::find($id);
+                
+                if (!$deliveryNote->pdf_path) {
+                    \Log::error("No se pudo regenerar el PDF para el albarán ID: $id");
+                    return back()->with('error', 'No se pudo generar el PDF del albarán. Por favor contacte al soporte técnico.');
+                }
+            } catch (\Exception $e) {
+                \Log::error("Error al regenerar PDF: " . $e->getMessage());
+                \Log::error("Traza: " . $e->getTraceAsString());
+                return back()->with('error', 'Error al regenerar el PDF del albarán: ' . $e->getMessage());
+            }
         }
         
-        return response()->download(storage_path('app/public/' . $deliveryNote->pdf_path), 
-            'albaran_' . $deliveryNote->number . '.pdf');
+        $fullPath = 'public/' . $deliveryNote->pdf_path;
+        $filePath = storage_path('app/' . $fullPath);
+        
+        \Log::info("Verificando archivo en: $fullPath");
+        
+        // Verificar si el archivo existe
+        $fileExists = Storage::exists($fullPath) || file_exists($filePath);
+        
+        if (!$fileExists) {
+            \Log::warning("El archivo no existe, intentando regenerarlo");
+            try {
+                $this->regeneratePdf($deliveryNote);
+                // Recargar la ruta correcta
+                $deliveryNote = DeliveryNote::find($id);
+                $fullPath = 'public/' . $deliveryNote->pdf_path;
+                $filePath = storage_path('app/' . $fullPath);
+                
+                $fileExists = Storage::exists($fullPath) || file_exists($filePath);
+                if (!$fileExists) {
+                    \Log::error("No se pudo regenerar el PDF, sigue sin existir");
+                    return back()->with('error', 'No se pudo generar correctamente el PDF del albarán');
+                }
+            } catch (\Exception $e) {
+                \Log::error("Error al regenerar PDF: " . $e->getMessage());
+                return back()->with('error', 'Error al regenerar el PDF del albarán: ' . $e->getMessage());
+            }
+        }
+        
+        \Log::info("Preparando descarga de PDF desde: " . ($fileExists ? $filePath : "ruta no encontrada"));
+        
+        try {
+            if (file_exists($filePath)) {
+                return response()->download($filePath, 'albaran_' . $deliveryNote->number . '.pdf');
+            } else {
+                // Intento alternativo usando Storage
+                return response()->streamDownload(function() use ($fullPath) {
+                    echo Storage::get($fullPath);
+                }, 'albaran_' . $deliveryNote->number . '.pdf');
+            }
+        } catch (\Exception $e) {
+            \Log::error("Error al descargar PDF: " . $e->getMessage());
+            \Log::error("Traza: " . $e->getTraceAsString());
+            return back()->with('error', 'Error al descargar el PDF: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Regenera el PDF de un albarán
+     * 
+     * @param DeliveryNote $deliveryNote
+     * @return bool
+     */
+    private function regeneratePdf($deliveryNote)
+    {
+        \Log::info("Regenerando PDF para el albarán: " . $deliveryNote->number);
+        
+        // Calcular el total
+        $total = 0;
+        $orderProducts = $deliveryNote->order->products;
+        foreach ($orderProducts as $orderProduct) {
+            if ($orderProduct->wholesalerProduct) {
+                $total += $orderProduct->amount * $orderProduct->wholesalerProduct->price;
+            }
+        }
+        
+        // Preparar el logo
+        $wholesalerLogoBase64 = '';
+        try {
+            // Asegurémonos de que el directorio existe
+            $wholesalersDir = storage_path('app/public/wholesalers');
+            if (!file_exists($wholesalersDir)) {
+                if (!mkdir($wholesalersDir, 0755, true)) {
+                    \Log::error("No se pudo crear el directorio para logos de mayoristas: $wholesalersDir");
+                } else {
+                    \Log::info("Directorio para logos de mayoristas creado: $wholesalersDir");
+                }
+            }
+            
+            // Intentar cargar el logo si existe
+            if ($deliveryNote->wholesaler && $deliveryNote->wholesaler->logo) {
+                $imagePath = storage_path('app/public/wholesalers/' . $deliveryNote->wholesaler->logo);
+                if (file_exists($imagePath)) {
+                    $image = file_get_contents($imagePath);
+                    $wholesalerLogoBase64 = base64_encode($image);
+                } else {
+                    \Log::warning("Logo del mayorista no encontrado: $imagePath - Usando un logo vacío");
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error("Error al cargar logo del mayorista: " . $e->getMessage());
+        }
+        
+        // Generar el PDF
+        try {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.delivery_note', [
+                'delivery_note' => $deliveryNote,
+                'order' => $deliveryNote->order,
+                'products' => $orderProducts,
+                'wholesaler' => $deliveryNote->wholesaler,
+                'company' => $deliveryNote->company,
+                'total' => $total,
+                'icon' => $wholesalerLogoBase64
+            ])->setPaper('A4');
+            
+            // Asegurar que los directorios existen
+            $storageDirectory = 'public/delivery_notes';
+            $physicalDirectory = storage_path('app/public/delivery_notes');
+            
+            if (!\Storage::exists($storageDirectory)) {
+                \Storage::makeDirectory($storageDirectory);
+            }
+            
+            if (!file_exists($physicalDirectory)) {
+                mkdir($physicalDirectory, 0755, true);
+            }
+            
+            // Guardar el PDF
+            $pdfFileName = 'albaran_' . $deliveryNote->number . '.pdf';
+            $pdfPath = 'delivery_notes/' . $pdfFileName;
+            $fullPath = 'public/' . $pdfPath;
+            $absolutePath = storage_path('app/' . $fullPath);
+            
+            // Guardar usando ambos métodos
+            $content = $pdf->output();
+            \Storage::put($fullPath, $content);
+            file_put_contents($absolutePath, $content);
+            
+            // Actualizar el registro
+            $deliveryNote->pdf_path = $pdfPath;
+            $deliveryNote->save();
+            
+            \Log::info("PDF regenerado correctamente para el albarán: " . $deliveryNote->number);
+            return true;
+            
+        } catch (\Exception $e) {
+            \Log::error("Error al regenerar PDF: " . $e->getMessage());
+            throw $e;
+        }
     }
 }
