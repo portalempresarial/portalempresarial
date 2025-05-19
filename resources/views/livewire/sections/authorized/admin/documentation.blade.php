@@ -1,8 +1,6 @@
-<div 
-    class="flex-1 h-screen flex" 
->
+<div class="flex-1 h-screen flex">
     {{-- @ Mobile announce --}}
-    <section class="flex md:hidden flex-1 flex items-center justify-center px-10 text-center">
+    <section class="flex md:hidden flex-1 items-center justify-center px-10 text-center">
         Es necesaria una resolución más grande para poder acceder a este módulo.
     </section>
 
@@ -17,46 +15,56 @@
             <small>
                 Gestiona toda la documentación del aplicativo.
             </small>
+            @if ($directory)
+                <button
+                    class="mt-3 mb-0 px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-all text-sm w-fit"
+                    wire:click="backDirectory">
+                    ← Volver atrás
+                </button>
+            @endif
         </section>
 
         {{-- @ Files & Folders --}}
-        <section class="flex flex-col mt-10 gap-3 flex-1 select-none">
-            @foreach ($folders as $folder)
-                <div wire:click="addDirectory('{{ basename($folder) }}')" class="flex gap-3 items-center text-sm cursor-pointer">
-                    <span class="material-symbols-outlined text-sm">
-                        folder
-                    </span>
-
-                    {{ basename($folder) }}
-                </div>
-            @endforeach
-
-            @foreach ($files as $file)
-                <div wire:click="openFile('{{ basename($file) }}')" class="flex gap-3 items-center text-sm cursor-pointer">
-                    <span class="material-symbols-outlined text-sm">
-                        description
-                    </span>
-
-                    {{ basename($file) }}
-                </div>
-            @endforeach
-        </section>  
+        <section class="flex flex-col mt-10 gap-6 flex-1 select-none">
+            {{-- Directorios --}}
+            <div>
+                <div class="font-bold text-blue-500 mb-2">Carpetas</div>
+                @forelse ($folders as $folder)
+                    <div wire:click="addDirectory('{{ basename($folder) }}')"
+                        class="flex gap-3 items-center text-sm cursor-pointer hover:bg-blue-50 rounded px-2 py-1">
+                        <span class="material-symbols-outlined text-sm">
+                            folder
+                        </span>
+                        {{ basename($folder) }}
+                    </div>
+                @empty
+                    <div class="text-gray-400 text-sm">No hay carpetas</div>
+                @endforelse
+            </div>
+            {{-- Archivos --}}
+            <div>
+                <div class="font-bold text-blue-500 mb-2">Archivos</div>
+                @forelse ($files as $file)
+                    <div wire:click="openFile('{{ basename($file) }}')"
+                        class="flex gap-3 items-center text-sm cursor-pointer hover:bg-blue-50 rounded px-2 py-1">
+                        <span class="material-symbols-outlined text-sm">
+                            description
+                        </span>
+                        {{ basename($file) }}
+                    </div>
+                @empty
+                    <div class="text-gray-400 text-sm">No hay archivos</div>
+                @endforelse
+            </div>
+        </section>
 
         {{-- @ Buttons --}}
         <section class="flex flex-col mt-5 gap-3">
-            <x-button 
-                wireClick="$set('creatingFolder', true)" 
-                icon="folder" 
-                styles="py-0 text-sm"
-                content="Nueva carpeta" 
-            />
+            <x-button wireClick="$set('creatingFolder', true)" icon="folder" styles="py-0 text-sm"
+                content="Nueva carpeta" />
 
-            <x-button 
-                wireClick="$set('creatingFile', true)" 
-                icon="description" 
-                styles="py-0 text-sm"
-                content="Nuevo archivo" 
-            /> 
+            <x-button wireClick="$set('creatingFile', true)" icon="description" styles="py-0 text-sm"
+                content="Nuevo archivo" />
         </section>
     </aside>
 
@@ -66,7 +74,7 @@
             @php
                 $directories = [
                     "Inicio"
-                ]; 
+                ];
 
                 foreach (explode('/', $directory) as $dir) {
                     if ($dir) {
@@ -88,8 +96,15 @@
             @endforeach
 
             @if ($fileView)
-                <div wire:click="saveFileContent" class="flex flex-1 justify-end">
-                    <button>Guardar</button>
+                <div class="flex flex-1 justify-end gap-2">
+                    <button wire:click="saveFileContent"
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-all">
+                        Guardar
+                    </button>
+                    <button wire:click="closeFile"
+                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition-all">
+                        Cerrar archivo
+                    </button>
                 </div>
             @endif
         </section>
@@ -100,11 +115,12 @@
                     <span class="material-symbols-outlined">
                         description
                     </span>
-        
+
                     Selecciona un archivo
                 </div>
-            @else 
-                <textarea wire:model.live="fileContent" class="block flex-1 w-full bg-white rounded-md border-gray-300 shadow-sm p-5 resize-none"></textarea>
+            @else
+                <textarea wire:model.live="fileContent"
+                    class="block flex-1 w-full bg-white rounded-md border-gray-300 shadow-sm p-5 resize-none"></textarea>
             @endif
         </section>
     </main>
@@ -117,19 +133,10 @@
             </span>
         @enderror
 
-        <x-labeled-input 
-            label="Nombre de la carpeta" 
-            wireModel="folderName" 
-            type="text"
-            icon="folder"
-            placeholder="{{ $directory }}.."
-        />
+        <x-labeled-input label="Nombre de la carpeta" wireModel="folderName" type="text" icon="folder"
+            placeholder="{{ $directory }}.." />
 
-        <x-button 
-            wireClick="createFolder" 
-            styles="w-full mt-3 flex items-center justify-center" 
-            content="Confirmar" 
-        /> 
+        <x-button wireClick="createFolder" styles="w-full mt-3 flex items-center justify-center" content="Confirmar" />
     </x-modal>
 
     {{-- @ Create file --}}
@@ -140,18 +147,9 @@
             </span>
         @enderror
 
-        <x-labeled-input 
-            label="Nombre del archivo" 
-            wireModel="fileName" 
-            type="text"
-            icon="description"
-            placeholder="{{ $directory }}.."
-        />
+        <x-labeled-input label="Nombre del archivo" wireModel="fileName" type="text" icon="description"
+            placeholder="{{ $directory }}.." />
 
-        <x-button 
-            wireClick="createFile" 
-            styles="w-full mt-3 flex items-center justify-center" 
-            content="Confirmar" 
-        />
+        <x-button wireClick="createFile" styles="w-full mt-3 flex items-center justify-center" content="Confirmar" />
     </x-modal>
 </div>

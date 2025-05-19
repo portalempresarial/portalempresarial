@@ -1,55 +1,82 @@
 <?php
 
 namespace App\Livewire\Sections\Authorized\Admin;
+
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
 
-class Documentation extends Component {
+class Documentation extends Component
+{
     public $directory = "", $folders = [], $files = [];
 
     public $creatingFolder, $folderName;
     public $creatingFile, $fileName, $fileView, $fileContent;
 
-    public function openFile($name) {
+    public function openFile($name)
+    {
         $fileRoute = "documentation" . $this->directory . '/' . $name;
 
-        if(Storage::exists($fileRoute)) { 
-            $this->fileContent = Storage::get($fileRoute); 
-            $this->fileView = $fileRoute;  
+        if (Storage::exists($fileRoute)) {
+            $this->fileContent = Storage::get($fileRoute);
+            $this->fileView = $fileRoute;
         }
     }
 
-    public function saveFileContent() {
+    public function saveFileContent()
+    {
         Storage::put($this->fileView, $this->fileContent);
     }
 
-    public function addDirectory($string) {
+    public function addDirectory($string)
+    {
         $this->directory = $this->directory . '/' . $string;
     }
 
-    public function setDirectory($string) {
-        if(!$string) {
+    public function setDirectory($string)
+    {
+        if (!$string) {
             $this->directory = "";
             return;
         }
 
-        if($string == 'Inicio') {
+        if ($string == 'Inicio') {
             $this->directory = "";
             return;
         }
 
         $this->directory = $string;
     }
-    
-    public function updatedCreatingFolder() {
+
+    public function closeFile()
+    {
+        $this->fileView = false;
+        $this->fileContent = null;
+    }
+
+    public function backDirectory()
+    {
+        if ($this->fileView) {
+            $this->saveFileContent();
+            $this->closeFile();
+        }
+        // Quitar el último segmento del directorio actual
+        $parts = explode('/', $this->directory);
+        array_pop($parts);
+        $this->directory = implode('/', $parts);
+    }
+
+    public function updatedCreatingFolder()
+    {
         $this->reset(['folderName']);
     }
 
-    public function updatedCreatingFile() {
+    public function updatedCreatingFile()
+    {
         $this->reset(['fileName']);
     }
 
-    public function createFolder() {
+    public function createFolder()
+    {
         $this->validate([
             'folderName' => 'required|min:3|max:30'
         ], [
@@ -63,7 +90,8 @@ class Documentation extends Component {
         $this->reset(['creatingFolder', 'folderName']);
     }
 
-    public function createFile() {
+    public function createFile()
+    {
         $this->validate([
             'fileName' => 'required|min:3|max:30'
         ], [
@@ -77,7 +105,8 @@ class Documentation extends Component {
         $this->reset(['creatingFile', 'fileName']);
     }
 
-    public function render() {
+    public function render()
+    {
         $this->folders = Storage::directories("documentation/" . $this->directory);
         $this->files = Storage::files("documentation/" . $this->directory);
 
