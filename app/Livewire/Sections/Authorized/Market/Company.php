@@ -84,9 +84,12 @@ class Company extends Component
                 $queryBuilder->where('category_id', $this->category);
             }
 
-            // Solo mostrar productos con stock
+            // Solo mostrar productos con stock usando la relación con company_product_stock
             $queryBuilder->where('company_id', $this->company->id)
-                         ->where('stock', '>', 0);
+                        ->whereHas('stocks', function($query) {
+                            $query->where('company_id', $this->company->id)
+                                  ->where('stock', '>', 0);
+                        });
 
             $this->products = $queryBuilder->get();
         }
