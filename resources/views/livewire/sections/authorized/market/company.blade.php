@@ -117,8 +117,10 @@
                         @endif
                     </div>
 
-                    <x-button wireClick="addToCart" styles="justify-center" styles="w-full md:w-auto" icon="shopping_cart"
-                        content="Añadir a la cesta" {{ $selected_product->stock <= 0 ? 'disabled' : '' }} />
+                    <button wire:click="addToCart" class="bg-blue-500 text-white py-2.5 gap-3 hover:bg-blue-700 transition-all px-5 rounded-md flex items-center justify-center w-full md:w-auto">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        Añadir a la cesta
+                    </button>
                 </section>
             </div>
         @endif

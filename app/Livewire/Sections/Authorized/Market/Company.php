@@ -7,6 +7,7 @@ use App\Models\Company as CompanyModel;
 use App\Models\Product;
 use Livewire\Attributes\Url;
 use App\Models\CartProduct;
+use App\Models\CompanyProductStock;
 
 class Company extends Component
 {
@@ -19,13 +20,24 @@ class Company extends Component
 
     public function addToCart()
     {
-        // Verificar que haya stock suficiente
-        if ($this->selected_product->stock < $this->selected_counter) {
-            toastr()->error('No hay suficiente stock disponible. Stock actual: ' . $this->selected_product->stock);
+        // Recargar el producto con sus stocks actualizados para esta compañía
+        $this->selected_product->refresh();
+        $this->selected_product->load(['stocks' => function($query) {
+            $query->where('company_id', $this->company->id);
+        }]);
+        
+        // Obtener el stock actual del producto para esta compañía
+        $productStock = $this->selected_product->stockForCompany($this->company->id);
+        
+        if (!$productStock || $productStock->stock < $this->selected_counter) {
+            $stockAmount = $productStock ? $productStock->stock : 0;
+            toastr()->error('No hay suficiente stock disponible. Stock actual: ' . $stockAmount);
             return;
         }
         
-        $onCart = CartProduct::where('user_id', auth()->user()->id)->where('product_id', $this->selected_product->id)->first();
+        $onCart = CartProduct::where('user_id', auth()->user()->id)
+                            ->where('product_id', $this->selected_product->id)
+                            ->first();
 
         if (!$onCart) {
             CartProduct::create([
@@ -36,8 +48,8 @@ class Company extends Component
         } else {
             // Verificar que no se exceda el stock disponible considerando lo que ya está en el carrito
             $totalRequestedAmount = $onCart->amount + $this->selected_counter;
-            if ($totalRequestedAmount > $this->selected_product->stock) {
-                toastr()->error('No hay suficiente stock disponible. Ya tienes ' . $onCart->amount . ' en el carrito y solo hay ' . $this->selected_product->stock . ' disponibles.');
+            if ($totalRequestedAmount > $productStock->stock) {
+                toastr()->error('No hay suficiente stock disponible. Ya tienes ' . $onCart->amount . ' en el carrito y solo hay ' . $productStock->stock . ' disponibles.');
                 return;
             }
             
@@ -61,19 +73,57 @@ class Company extends Component
         $this->selected_counter = max(1, (int) $this->selected_counter);
     }
 
+    public function debugProductStock($productId = null)
+    {
+        if (!$productId && $this->selected_product) {
+            $productId = $this->selected_product->id;
+        }
+        
+        if (!$productId) {
+            return null;
+        }
+        
+        $product = Product::find($productId);
+        if (!$product) {
+            return ['error' => 'Producto no encontrado'];
+        }
+        
+        $stock = CompanyProductStock::where('product_id', $productId)
+            ->where('company_id', $this->company->id)
+            ->first();
+            
+        return [
+            'product_id' => $productId,
+            'company_id' => $this->company->id,
+            'stock_record' => $stock,
+            'stock_amount' => $stock ? $stock->stock : 0
+        ];
+    }
 
     public function mount($company, $product = false)
     {
         $this->company = CompanyModel::where('name', str_replace('-', ' ', $company))->firstOrFail();
 
         if ($product) {
-            $this->selected_product = Product::where('label', str_replace('-', ' ', $product))->firstOrFail();
+            $this->selected_product = Product::with(['stocks' => function($query) {
+                $query->where('company_id', $this->company->id);
+            }])
+            ->where('label', str_replace('-', ' ', $product))
+            ->firstOrFail();
+            
+            // Asegurar que el stock está correctamente cargado
+            $this->selected_product->load(['stocks' => function($query) {
+                $query->where('company_id', $this->company->id);
+            }]);
         }
     }
 
     public function render()
     {
         if ($this->company) {
+            // Registrar esta instancia para que esté disponible para el accessor stock
+            app()->instance('livewire.instance', $this);
+            
             $queryBuilder = Product::query();
 
             if ($this->filter) {
@@ -85,13 +135,25 @@ class Company extends Component
             }
 
             // Solo mostrar productos con stock usando la relación con company_product_stock
-            $queryBuilder->where('company_id', $this->company->id)
-                        ->whereHas('stocks', function($query) {
-                            $query->where('company_id', $this->company->id)
-                                  ->where('stock', '>', 0);
-                        });
+            $queryBuilder->whereHas('stocks', function($query) {
+                $query->where('company_id', $this->company->id)
+                      ->where('stock', '>', 0);
+            });
+
+            // Cargar eager los stocks relacionados para evitar N+1 queries
+            $queryBuilder->with(['stocks' => function($query) {
+                $query->where('company_id', $this->company->id);
+            }]);
 
             $this->products = $queryBuilder->get();
+            
+            // Asegurar que el accessor de stock tenga acceso al ID de la compañía
+            if ($this->selected_product) {
+                $this->selected_product->refresh();
+                $this->selected_product->load(['stocks' => function($query) {
+                    $query->where('company_id', $this->company->id);
+                }]);
+            }
         }
 
         return view('livewire.sections.authorized.market.company');
