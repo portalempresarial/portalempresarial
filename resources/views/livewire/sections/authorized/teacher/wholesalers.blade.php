@@ -22,6 +22,7 @@
         </div>   
 
         <x-button wireClick="handleCreateModal" icon="add" content="Nuevo mayorista" />
+        <x-button wireClick="handleCreateSectorModal" icon="add" content="Nuevo sector" />
     </section>
     
 
@@ -79,7 +80,7 @@
                             {{ $wholesaler['name'] }}
                         </td>
                         <td class="px-6 py-4 text-ellipsis truncate">
-                            {{ $wholesaler['sector'] }}
+                            {{ $wholesaler->sector ? $wholesaler->sector->sector_name : 'Sin sector' }}
                         </td>
                         <td class="px-6 py-4 text-ellipsis truncate">
                             {{ $wholesaler->companyWholesalers->count() }}
@@ -135,43 +136,15 @@
                 placeholder="e.g Monlau Group"
             />
 
-            <?php 
-                $sectors = [
-                    'Tecnología',
-                    'Mobiliario',
-                    'Papelería',
-                    'Seguridad y Salud',
-                    'Electrodomésticos',
-                    'Equipos informáticos',
-                    'Telefonía',
-                    'Mobiliario de oficina',
-                    'Organización',
-                    'Redes y comunicación',
-                    'Alimentación',
-                    'Hogar',
-                    'Electrónica de consumo',
-                    'Ropa y complementos'
-                ];
-
-                $options = []; 
-
-                foreach ($sectors as $sectorOption) {
-                    $options[] = [
-                        "value" => $sectorOption,
-                        "label" => $sectorOption
-                    ];
-                }
-            ?>
-
             @error('sector')
                 <span class="text-red-500 text-sm">{{ $message }}</span>
             @enderror
 
             <x-selector 
-                wireModel="sector" 
+                wireModel="sector_id" 
                 label="Sector"
                 styles="flex-1 mb-3 w-full"
-                :options="$options"
+                :options="$sectorOptions"
             />
 
             @error('cif')
@@ -341,5 +314,43 @@
             <x-button wireClick="saveForm" styles="justify-center" content="Confirmar" />
         </div>
     </x-modal>
+    @endif
+
+    {{-- @ Create new Wholesaler Sector --}}
+    @if ($sectorModal)
+        <x-modal wire:model="sectorModal" styles="flex flex-col gap-2">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-bold">Nuevo sector de mayorista</h3>
+                <button type="button" wire:click="closeSectorModal" class="p-2 hover:bg-gray-200 rounded-full">
+                    <x-icon label="close" />
+                </button>
+            </div>
+            <section class="flex flex-col gap-3">
+                @error('newSectorName')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <x-labeled-input 
+                    label="Nombre del sector" 
+                    wireModel="newSectorName" 
+                    styles="flex-1 mb-3"
+                    type="text"
+                    icon="category"
+                    placeholder="Ej: Tecnología"
+                />
+
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">Sectores existentes:</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
+                        @foreach($sectorOptions as $sector)
+                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">{{ $sector['label'] }}</span>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
+            <div class="flex justify-end mt-3">
+                <x-button wireClick="saveSector" styles="justify-center" content="Crear sector" />
+            </div>
+        </x-modal>
     @endif
 </div>

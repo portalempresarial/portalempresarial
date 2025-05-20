@@ -35,7 +35,7 @@
                     <h4 class="font-semibold text-gray-700">Información general</h4>
                     <ul class="mt-2 space-y-1">
                         <li class="text-sm"><span class="font-medium">Sector:</span>
-                            {{ $wholesaler->sector ?? 'N/A' }}</li>
+                            {{ $wholesaler->sector ? $wholesaler->sector->sector_name : 'Sin Sector' }}</li>
                         <li class="text-sm"><span class="font-medium">Denominación social:</span>
                             {{ $wholesaler->social_denomination }}</li>
                         <li class="text-sm"><span class="font-medium">País:</span> {{ $wholesaler->country }}</li>

@@ -71,6 +71,12 @@ class WholesalerProducts extends Component
         $this->resetPage();
     }
 
+    public function closeModal()
+    {
+        $this->creating = false;
+        $this->reset(['name', 'reference', 'price', 'stock', 'description', 'category']);
+    }
+
     public function render()
     {
         $query = WholesalerProduct::where('wholesaler_id', $this->wholesalerId)

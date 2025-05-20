@@ -32,4 +32,8 @@ class Wholesaler extends Model {
     public function products() {
         return $this->hasMany(WholesalerProduct::class);
     }
+
+    public function sector() {
+        return $this->belongsTo(WholesalerSector::class, 'sector_id');
+    }
 }

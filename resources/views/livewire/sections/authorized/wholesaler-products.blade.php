@@ -36,6 +36,7 @@
                 @endif
 
                 <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-800">{{ $product->name }}</h3>
                     <div class="flex justify-between items-center">
                         <p class="text-sm text-gray-600 mt-1">
                             Ref: {{ $product->reference }}
@@ -44,7 +45,6 @@
                             Categoría: {{ $product->category ? $product->category->label : 'Sin categoría' }}
                         </p>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-800">{{ $product->name }}</h3>
                     <p class="text-xs text-gray-500 mt-1 line-clamp-2">
                         {{ $product->description }}
                     </p>
@@ -65,7 +65,12 @@
     </div>
 
     <x-modal wire:model="creating" styles="flex flex-col gap-3">
-        <h3 class="text-lg font-bold mb-2">Añadir producto mayorista</h3>
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-bold">Añadir nuevo producto mayorista</h3>
+            <button type="button" wire:click="closeModal" class="p-2 hover:bg-gray-200 rounded-full">
+                <x-icon label="close" />
+            </button>
+        </div>
         <x-labeled-input label="Referencia" wireModel="reference" type="text" icon="qr_code" />
         <x-labeled-input label="Nombre" wireModel="name" type="text" icon="inventory_2" />
         <x-labeled-input label="Precio" wireModel="price" type="number" icon="sell" />
@@ -76,8 +81,10 @@
             placeholder="Descripción del producto"></textarea>
 
         <x-selector wireModel="category" label="Categoría" :options="$categoryOptions" />
-        <x-button wireClick="storeProduct" content="Añadir producto"
+        <div class="flex justify-end">
+            <x-button wireClick="storeProduct" content="Añadir producto"
             styles="bg-blue-500 text-white hover:bg-blue-600 mt-2" />
+        </div>
     </x-modal>
 
     <div class="mt-6">
