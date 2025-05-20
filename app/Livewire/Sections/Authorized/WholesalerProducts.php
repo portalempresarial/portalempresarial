@@ -15,7 +15,11 @@ class WholesalerProducts extends Component
     public $wholesalerId;
     public $filter = '';
     public $categoryFilter = null;
-    public $categories = [];    public function mount($id)
+    public $categories = [];
+    public $creating = false;
+    public $name, $reference, $price, $stock, $description, $category;
+
+    public function mount($id)
     {
         $this->wholesalerId = $id;
         $this->wholesaler = Wholesaler::with('categories')->findOrFail($id);
@@ -35,19 +39,59 @@ class WholesalerProducts extends Component
         $this->resetPage();
     }
 
+    public function openCreateModal()
+    {
+        $this->creating = true;
+        $this->reset(['name', 'reference', 'price', 'stock', 'description', 'category']);
+    }
+
+    public function storeProduct()
+    {
+        $this->validate([
+            'reference' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'description' => 'nullable|string|max:255',
+            'category' => 'nullable|integer|exists:product_categories,id',
+        ]);
+
+        $product = WholesalerProduct::create([
+            'wholesaler_id' => $this->wholesalerId,
+            'category_id' => $this->category,
+            'name' => $this->name,
+            'reference' => $this->reference,
+            'price' => $this->price,
+            'stock' => $this->stock,
+            'description' => $this->description,
+        ]);
+        logger('Producto creado:', $product->toArray());
+
+        $this->creating = false;
+        $this->resetPage();
+    }
+
     public function render()
     {
         $query = WholesalerProduct::where('wholesaler_id', $this->wholesalerId)
             ->where('name', 'like', '%' . $this->filter . '%');
-        
+
         if ($this->categoryFilter) {
             $query->where('category_id', $this->categoryFilter);
         }
-        
+
         $products = $query->orderBy('id')->paginate(12);
-        
+
+        $categoryOptions = collect($this->categories)->map(function ($cat) {
+            return [
+                'value' => $cat->id,
+                'label' => $cat->label
+            ];
+        })->values()->toArray();
+
         return view('livewire.sections.authorized.wholesaler-products', [
-            'products' => $products
+            'products' => $products,
+            'categoryOptions' => $categoryOptions
         ]);
     }
 }

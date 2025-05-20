@@ -11,7 +11,8 @@
                 {{-- @ Company information --}}
                 <section class="flex items-center gap-3">
                     @if ($company->icon)
-                        <img class="max-w-[30px] rounded-md-sm h-[15px]" src="{{ asset('storage/companies/' . $company->icon) }}" />
+                        <img class="max-w-[30px] rounded-md-sm h-[15px]"
+                            src="{{ asset('storage/companies/' . $company->icon) }}" />
                     @endif
 
                     {{ $company->name }}
@@ -27,37 +28,43 @@
                         <div class="flex items-center flex-wrap rounded-md py-7 md:py-0 md:h-[70px] gap-3">
                             <div class="w-10 flex items-center justify-center">
                                 @if ($item->product->image)
-                                    <img class="rounded-md-sm h-[30px]" src="{{ asset('storage/companies/' . $item->product['company_id'] . '/products/' . $item->product['image']) }}" />
-                                @else 
+                                    <img class="rounded-md-sm h-[30px]"
+                                        src="{{ asset('storage/companies/' . $item->product['company_id'] . '/products/' . $item->product['image']) }}" />
+                                @else
                                     <span class="material-symbols-outlined text-md text-blue-500">
                                         fullscreen
                                     </span>
                                 @endif
                             </div>
-            
+
                             <h2 class="text-lg">
                                 {{ $item->product->label }}
-                            </h2> 
-                            
+                            </h2>
+
                             <span class="text-xs text-gray-400 flex-1">#{{ $item->product->reference }}</span>
-            
+
                             <p class="text-xl font-bold text-blue-500 px-5 text-end">
                                 {{ $item->product->price * $item->amount }} €
                             </p>
-            
+
                             <div class="flex items-center gap-4">
-                                <span wire:click="removeOne({{ $item->id }})" class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                <span wire:click="removeOne({{ $item->id }})"
+                                    class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     remove
                                 </span>
-            
-                                {{ $item->amount }}
-            
-                                <span wire:click="addOne({{ $item->id }})" class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+
+                                <input type="number" min="1" wire:model.lazy="items.{{ $loop->parent->index }}.amount"
+                                    wire:change="updateAmount({{ $item->id }}, $event.target.value)"
+                                    class="w-14 text-center border rounded-md p-1" />
+
+                                <span wire:click="addOne({{ $item->id }})"
+                                    class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     add
                                 </span>
                             </div>
-            
-                            <button wire:click="deleteElement({{ $item->id }})" class="material-symbols-outlined text-md opacity-20">
+
+                            <button wire:click="deleteElement({{ $item->id }})"
+                                class="material-symbols-outlined text-md opacity-20">
                                 delete
                             </button>
                         </div>
@@ -65,14 +72,15 @@
                 </section>
             </div>
         @endforeach
-        
+
         {{-- Wholesaler products --}}
         @foreach ($this->wholesalers as $wholesaler)
             <div class="flex flex-col gap-5 [&:not(:first-child)]:pt-5">
                 {{-- @ Wholesaler information --}}
                 <section class="flex items-center gap-3">
                     @if ($wholesaler->icon)
-                        <img class="max-w-[30px] rounded-md-sm h-[15px]" src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" />
+                        <img class="max-w-[30px] rounded-md-sm h-[15px]"
+                            src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" />
                     @endif
 
                     <span class="font-medium">{{ $wholesaler->name }}</span>
@@ -89,37 +97,41 @@
                         <div class="flex items-center flex-wrap rounded-md py-7 md:py-0 md:h-[70px] gap-3">
                             <div class="w-10 flex items-center justify-center">
                                 @if ($item->wholesalerProduct->image)
-                                    <img class="rounded-md-sm h-[30px]" src="{{ asset('storage/wholesaler-products/' . $item->wholesalerProduct->image) }}" />
-                                @else 
+                                    <img class="rounded-md-sm h-[30px]"
+                                        src="{{ asset('storage/wholesaler-products/' . $item->wholesalerProduct->image) }}" />
+                                @else
                                     <span class="material-symbols-outlined text-md text-blue-500">
                                         inventory_2
                                     </span>
                                 @endif
                             </div>
-            
+
                             <h2 class="text-lg">
                                 {{ $item->wholesalerProduct->name }}
-                            </h2> 
-                            
+                            </h2>
+
                             <span class="text-xs text-gray-400 flex-1">Stock: {{ $item->wholesalerProduct->stock }}</span>
-            
+
                             <p class="text-xl font-bold text-blue-500 px-5 text-end">
                                 {{ $item->wholesalerProduct->price * $item->amount }} €
                             </p>
-            
+
                             <div class="flex items-center gap-4">
-                                <span wire:click="removeOne({{ $item->id }})" class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                <span wire:click="removeOne({{ $item->id }})"
+                                    class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     remove
                                 </span>
-            
+
                                 {{ $item->amount }}
-            
-                                <span wire:click="addOne({{ $item->id }})" class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+
+                                <span wire:click="addOne({{ $item->id }})"
+                                    class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     add
                                 </span>
                             </div>
-            
-                            <button wire:click="deleteElement({{ $item->id }})" class="material-symbols-outlined text-md opacity-20">
+
+                            <button wire:click="deleteElement({{ $item->id }})"
+                                class="material-symbols-outlined text-md opacity-20">
                                 delete
                             </button>
                         </div>
@@ -144,29 +156,16 @@
         </div>
 
         <div class="mt-5 flex flex-col gap-5">
-            <x-labeled-input 
-                label="Nombre" 
-                value="{{ Auth::user()->name }}" 
-                type="text"
-                icon="person"
-                disabled="true"
-            />
+            <x-labeled-input label="Nombre" value="{{ Auth::user()->name }}" type="text" icon="person"
+                disabled="true" />
 
-            <x-labeled-input 
-                label="NIF / CIF" 
+            <x-labeled-input label="NIF / CIF"
                 value="{{ Auth::user()->current_company && Company::find(Auth::user()->current_company)->cif ? Company::find(Auth::user()->current_company)->cif : 'No disponible' }}"
-                type="text"
-                icon="home"
-                disabled="true"
-            />
+                type="text" icon="home" disabled="true" />
 
-            <x-labeled-input 
-                label="Domicilio de entrega"  
+            <x-labeled-input label="Domicilio de entrega"
                 value="{{ Auth::user()->current_company && Company::find(Auth::user()->current_company)->location ? Company::find(Auth::user()->current_company)->location : 'No disponible' }}"
-                type="text"
-                icon="home" 
-                disabled="true"
-            />
+                type="text" icon="home" disabled="true" />
         </div>
 
         <div class="bg-gray-100 border mt-7 p-3">
@@ -174,7 +173,8 @@
         </div>
 
         <ul class="mt-5 flex flex-col gap-2">
-            <li class="text-end">Elementos: <span class="text-blue-500 text-xl">{{ $this->items->sum('amount') }}</span></li>
+            <li class="text-end">Elementos: <span class="text-blue-500 text-xl">{{ $this->items->sum('amount') }}</span>
+            </li>
 
             @php
                 $subtotal = 0;
@@ -192,7 +192,8 @@
         </ul>
 
         <div class="flex items-center justify-end">
-            <x-button wireClick="checkout" styles="justify-center mt-5" icon="credit_card" content="Procesar a compras" />
+            <x-button wireClick="checkout" styles="justify-center mt-5" icon="credit_card"
+                content="Procesar a compras" />
         </div>
     </section>
 
