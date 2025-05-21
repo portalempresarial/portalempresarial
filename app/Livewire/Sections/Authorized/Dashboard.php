@@ -86,13 +86,13 @@ class Dashboard extends Component
         /* @ Announcements */
         $this->last_announcements = Announcement::where("status", "published")
             ->where('fixed', 0)
-            ->orderBy("updated_at", "desc")
+            ->orderBy("created_at", "desc")
             ->paginate(7);
 
         $this->fixed_announcements = Announcement::where("status", "published")
             ->where('fixed', 1)
             ->orderBy('level', 'desc')
-            ->orderBy("updated_at", "desc")
+            ->orderBy("created_at", "desc")
             ->get();
 
         /* @ Documentation */

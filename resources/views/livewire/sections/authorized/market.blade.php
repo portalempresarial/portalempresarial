@@ -1,5 +1,18 @@
-<section class="flex-1 p-4 flex flex-wrap flex-col gap-7">
+<section class="flex-1 p-4 flex flex-wrap flex-col gap-7" x-data="{ loading: false }"
+    x-init="$watch('$wire.__instance.serverMemo.loading', value => loading = value.active)">
+     <!-- Overlay de loading -->
+    <div 
+        x-show="loading"
+        style="z-index: 1000;"
+        class="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center transition-all"
+    >
+        <div class="flex flex-col items-center gap-4">
+            <span class="material-symbols-outlined animate-spin text-6xl text-blue-500">progress_activity</span>
+            <span class="text-blue-600 font-bold text-xl">Cargando Market...</span>
+        </div>
+    </div>
     <div class="w-full flex flex-wrap items-center gap-4 justify-between">
+        
         <div class="flex-1 italic text-sm">
             Encontrados {{ count($products) }} resultados...
         </div>
@@ -126,11 +139,15 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="mt-auto flex justify-end">
+                            <div class="mt-auto flex flex-col items-end">
                                 <span class="text-lg font-bold text-blue-500 group-hover:text-white transition-all">
                                     {{ $product->price }} €
                                 </span>
-                            </div>                            
+                                <span class="text-xs font-semibold mt-2
+                                    {{ $product->stock > 5 ? 'text-green-600' : ($product->stock > 0 ? 'text-orange-500' : 'text-red-600') }}">
+                                    {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
+                                </span>
+                            </div>                         
                         </div>
                     @endforeach
     
