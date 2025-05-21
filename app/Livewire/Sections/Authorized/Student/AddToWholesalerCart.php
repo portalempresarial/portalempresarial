@@ -46,13 +46,11 @@ class AddToWholesalerCart extends Component
             return;
         }
         
-        // Verificar si ya existe en el carrito
         $cartItem = CartProduct::where('user_id', Auth::id())
             ->where('wholesaler_product_id', $this->wholesalerProductId)
             ->first();
             
         if ($cartItem) {
-            // Ya existe, actualizar cantidad
             if ($product->stock < ($cartItem->amount + $this->quantity)) {
                 toastr()->error('No hay suficiente stock disponible. Ya tienes ' . $cartItem->amount . ' en el carrito.');
                 return;

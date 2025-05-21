@@ -144,7 +144,7 @@
                                     {{ $product->price }} €
                                 </span>
                                 <span class="text-xs font-semibold mt-2
-                                    {{ $product->stock > 5 ? 'text-green-600' : ($product->stock > 0 ? 'text-orange-500' : 'text-red-600') }}">
+                                    {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
                                     {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
                                 </span>
                             </div>                         
@@ -181,11 +181,15 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="mt-auto flex justify-end">
+                                    <div class="mt-auto flex flex-col items-end">
                                         <span class="text-lg font-bold text-blue-500 group-hover:text-white transition-all">
                                             {{ $product->price }} €
                                         </span>
-                                    </div>
+                                        <span class="text-xs font-semibold mt-2
+                                            {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
+                                            {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
+                                        </span>
+                                    </div>   
                                 </div>
                             @endforeach
                         </div>

@@ -101,7 +101,6 @@ class Dashboard extends Component
 
         return view('livewire.sections.authorized.dashboard', [
             'fileView' => $this->fileView,
-            // ...otras variables si necesitas...
         ]);
     }
 }
