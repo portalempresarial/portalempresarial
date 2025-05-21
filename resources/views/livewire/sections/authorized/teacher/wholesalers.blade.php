@@ -22,7 +22,7 @@
         </div>   
 
         <x-button wireClick="handleCreateModal" icon="add" content="Nuevo mayorista" />
-        <x-button wireClick="handleCreateSectorModal" icon="add" content="Nuevo sector" />
+        <x-button wireClick="handleCreateSectorModal" icon="filter_list" content="Nuevo sector" />
     </section>
     
 
