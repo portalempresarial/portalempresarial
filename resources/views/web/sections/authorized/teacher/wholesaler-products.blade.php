@@ -20,7 +20,7 @@
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-5">
                 <div class="flex flex-col items-center bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-md">
                     {{-- @ Icon --}}
-                    @if($wholesaler->icon)
+                    @if($wholesaler->icon && file_exists(public_path('storage/wholesalers/' . $wholesaler->icon)))
                         <img class="w-32 h-32 object-cover rounded-lg mb-3"
                             src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" alt="{{ $wholesaler->name }}" />
                     @else

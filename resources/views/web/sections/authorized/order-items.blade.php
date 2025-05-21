@@ -1,8 +1,12 @@
 <x-modal wire:model="managing" styles="flex flex-col gap-3">
     <h2 class="text-lg flex items-center gap-3">
-        @if ($current_order && $current_order->seller && $current_order->seller->icon)
-            <img class="max-w-[30px] rounded-md-sm h-[15px]"
+        @if ($current_order && $current_order->seller && $current_order->seller->icon && file_exists(public_path('storage/companies/' . $current_order->seller->icon)))
+            <img class="max-w-[30px] rounded-md h-[15px]"
                 src="{{ asset('storage/companies/' . $current_order->seller->icon) }}" />
+        @else
+            <span class="inline-flex items-center justify-center w-[30px] h-[30px] rounded-full bg-gray-300 text-gray-500">
+                <span class="material-symbols-outlined text-base">business</span>
+            </span>
         @endif
 
         {{ $current_order && $current_order->seller ? $current_order->seller->name : '' }}

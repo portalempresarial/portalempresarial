@@ -82,9 +82,13 @@
             <div class="p-5 border border-gray-200 rounded-md shadow-md bg-white mx-24">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-5">
-                        @if ($company->icon)
-                        <img class="max-w-[70px] rounded-md-sm h-[50px]"
+                        @if ($company->icon && file_exists(public_path('storage/companies/' . $company->icon)))
+                        <img class="max-w-[70px] rounded-md h-[50px]"
                             src="{{ asset('storage/companies/' . $company->icon) }}" />
+                        @else
+                            <span class="inline-flex items-center justify-center w-[50px] h-[50px] rounded-full bg-gray-300 text-gray-500">
+                                <span class="material-symbols-outlined text-2xl">business</span>
+                            </span>
                         @endif
                         <h2>
                             <a href="/market/company/{{ str_replace(' ', '-', $company->name) }}"
@@ -118,36 +122,33 @@
                     <!-- Mostrar los primeros 8 productos -->
                     @foreach ($visibleProducts as $product)
                         <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'" 
-                            class="bg-gray-50 border border-gray-200 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
-                            <div class="flex justify-between w-full">
-                                <div class="flex flex-col">
-                                    <!-- Nombre del producto -->
-                                    <h3 class="text-lg font-semibold">{{ $product->label }}</h3>
-    
-                                    <!-- Descripción del producto con límite de caracteres -->
+                            class="bg-gray-50 border border-gray-200 rounded-md shadow-md cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
+                            @if($product->image && file_exists(storage_path('app/public/products/' . $product->image)))
+                                <img src="{{ asset('storage/products/' . $product->image) }}" alt="{{ $product->name }}"
+                                    class="w-full h-40 object-cover">
+                            @else
+                                <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-gray-400 text-5xl">image</span>
+                                </div>
+                            @endif
+
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold">{{ $product->label }}</h3>
                                     @if ($product->description && strlen($product->description) > 0)
                                         <p class="text-sm text-gray-400 group-hover:text-blue-200 transition-all">
                                             {{ Str::limit($product->description, 100) }}
                                         </p>
                                     @endif
+                                <div class="flex justify-between">
+                                    <span class="text-lg font-bold text-blue-500 group-hover:text-white transition-all">
+                                        {{ $product->price }} €
+                                    </span>
+                                    <span class="text-xs font-semibold mt-2
+                                        {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
+                                        {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
+                                    </span>
                                 </div>
-                                <div>
-                                    <!-- Imagen del producto -->
-                                    @if ($product->image)
-                                        <img class="max-w-[70px] rounded-md-sm h-[50px]"
-                                            src="{{ asset('storage/products/' . $product->image) }}" />
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="mt-auto flex flex-col items-end">
-                                <span class="text-lg font-bold text-blue-500 group-hover:text-white transition-all">
-                                    {{ $product->price }} €
-                                </span>
-                                <span class="text-xs font-semibold mt-2
-                                    {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
-                                    {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
-                                </span>
-                            </div>                         
+                            </div>                    
                         </div>
                     @endforeach
     
@@ -159,37 +160,34 @@
                             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-hidden">
                             @foreach ($hiddenProducts as $product)
-                                <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'"
-                                    class="bg-gray-50 border border-gray-200 flex flex-col gap-4 rounded-md shadow-md p-4 cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
-                                    <div class="flex justify-between w-full">
-                                        <div class="flex flex-col">
-                                            <!-- Nombre del producto -->
-                                            <h3 class="text-lg font-semibold">{{ $product->label }}</h3>
+                                <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'" 
+                                    class="bg-gray-50 border border-gray-200 rounded-md shadow-md cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
+                                    @if($product->image && file_exists(storage_path('app/public/products/' . $product->image)))
+                                        <img src="{{ asset('storage/products/' . $product->image) }}" alt="{{ $product->name }}"
+                                            class="w-full h-40 object-cover">
+                                    @else
+                                        <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-gray-400 text-5xl">image</span>
+                                        </div>
+                                    @endif
 
-                                            <!-- Descripción del producto con límite de caracteres -->
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-semibold">{{ $product->label }}</h3>
                                             @if ($product->description && strlen($product->description) > 0)
                                                 <p class="text-sm text-gray-400 group-hover:text-blue-200 transition-all">
                                                     {{ Str::limit($product->description, 100) }}
                                                 </p>
                                             @endif
+                                        <div class="flex justify-between">
+                                            <span class="text-lg font-bold text-blue-500 group-hover:text-white transition-all">
+                                                {{ $product->price }} €
+                                            </span>
+                                            <span class="text-xs font-semibold mt-2
+                                                {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
+                                                {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
+                                            </span>
                                         </div>
-                                        <div>
-                                            <!-- Imagen del producto -->
-                                            @if ($product->image)
-                                                <img class="max-w-[70px] rounded-md-sm h-[50px]"
-                                                    src="{{ asset('storage/products/' . $product->image) }}" />
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="mt-auto flex flex-col items-end">
-                                        <span class="text-lg font-bold text-blue-500 group-hover:text-white transition-all">
-                                            {{ $product->price }} €
-                                        </span>
-                                        <span class="text-xs font-semibold mt-2
-                                            {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
-                                            {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
-                                        </span>
-                                    </div>   
+                                    </div>                    
                                 </div>
                             @endforeach
                         </div>

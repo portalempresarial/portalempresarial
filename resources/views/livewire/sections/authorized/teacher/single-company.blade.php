@@ -199,13 +199,13 @@
 
         <div class="flex items-center gap-10 mt-3">
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-blue-500 w-[10px] rounded-md-full"></div>
+                <div class="h-[10px] bg-blue-500 w-[10px] rounded-full"></div>
 
                 Docente asignado
             </div>
 
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-gray-300 w-[10px] rounded-md-full"></div>
+                <div class="h-[10px] bg-gray-300 w-[10px] rounded-full"></div>
 
                 Sin asignar
             </div>
@@ -214,8 +214,10 @@
         <div class="flex flex-wrap gap-3 mt-10">
             @foreach ($teachers as $teacher)
                 <div wire:click="toggleTeacher('{{ $teacher->id }}')" class="{{ $this->userIsTeacher($teacher->id) ? 'bg-blue-500 text-white' : 'bg-gray-100' }} px-5 py-2 flex items-center gap-3 rounded-md cursor-pointer">
-                    @if ($teacher['profile_url'])
-                        <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $teacher['profile_url']) }}" />
+                    @if ($teacher['profile_url'] && file_exists(public_path('storage/profile-pictures/' . $teacher['profile_url'])))
+                        <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $teacher['profile_url']) }}" />
+                    @else
+                        <span class="material-symbols-outlined">person</span>
                     @endif
     
                     {{ $teacher->name }}
@@ -338,13 +340,13 @@
 
         <div class="flex items-center gap-10 mt-3">
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-blue-500 w-[10px] rounded-md-full"></div>
+                <div class="h-[10px] bg-blue-500 w-[10px] rounded-full"></div>
 
                 Mayorista asignado
             </div>
 
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-gray-300 w-[10px] rounded-md-full"></div>
+                <div class="h-[10px] bg-gray-300 w-[10px] rounded-full"></div>
 
                 Sin asignar
             </div>
@@ -354,7 +356,7 @@
             @if(count($wholesalers) > 0)
                 @foreach ($wholesalers as $wholesaler)
                     <div wire:click="toggleWholesaler('{{ $wholesaler->id }}')" class="{{ $this->isWholesalerAssigned($wholesaler->id) ? 'bg-blue-500 text-white' : 'bg-gray-100' }} px-5 py-2 flex items-center gap-3 rounded-md cursor-pointer transition-all hover:shadow-md">
-                        @if ($wholesaler->icon)
+                        @if ($wholesaler->icon && file_exists(public_path('storage/wholesalers/' . $wholesaler->icon)))
                             <img class="w-[24px] rounded-full h-[24px] object-cover" src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" alt="{{ $wholesaler->name }}" />
                         @else
                             <span class="material-symbols-outlined">store</span>
@@ -382,7 +384,7 @@
                 @if(count($assignedWholesalers) > 0)
                     @foreach($assignedWholesalers as $assignedWholesaler)
                         <div class="bg-blue-500 text-white px-5 py-2 flex items-center gap-3 rounded-md">
-                            @if ($assignedWholesaler->icon)
+                            @if ($assignedWholesaler->icon && file_exists(public_path('storage/wholesalers/' . $assignedWholesaler->icon)))
                                 <img class="w-[24px] rounded-full h-[24px] object-cover" src="{{ asset('storage/wholesalers/' . $assignedWholesaler->icon) }}" alt="{{ $assignedWholesaler->name }}" />
                             @else
                                 <span class="material-symbols-outlined">store</span>

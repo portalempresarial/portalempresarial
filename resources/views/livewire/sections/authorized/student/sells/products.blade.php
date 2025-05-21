@@ -77,8 +77,12 @@
                     @foreach ($this->products as $product)
                         <tr class="bg-white border-b">
                             <td class="py-4 text-ellipsis truncate pl-5 w-[30px]">
-                                @if ($product['image'])
-                                    <img class="max-w-[50px] rounded-md-sm h-[20px]" src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" />
+                                @if ($product['image'] && file_exists(public_path('storage/companies/' . $product['company_id'] . '/products/' . $product['image'])))
+                                    <img class="max-w-[50px] rounded-md h-[20px]" src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" />
+                                @else
+                                    <span class="inline-flex items-center justify-center w-[50px] h-[20px] rounded-md bg-gray-300 text-gray-500">
+                                        <span class="material-symbols-outlined text-base">image_not_supported</span>
+                                    </span>
                                 @endif
                             </td>
     

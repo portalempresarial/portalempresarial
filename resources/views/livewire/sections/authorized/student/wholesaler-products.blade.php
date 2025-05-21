@@ -83,11 +83,13 @@
             @foreach($products as $product)
                 <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 transition-all hover:shadow-lg">
                     <div class="bg-gray-100 h-48 flex items-center justify-center">
-                        @if($product->image)
+                        @if($product->image && file_exists(public_path('storage/wholesaler-products/' . $product->image)))
                             <img src="{{ asset('storage/wholesaler-products/' . $product->image) }}" alt="{{ $product->name }}"
                                 class="h-full w-full object-cover">
                         @else
-                            <span class="material-symbols-outlined text-gray-400 text-6xl">inventory_2</span>
+                            <span class="material-symbols-outlined text-gray-300 text-6xl">
+                                image_not_supported
+                            </span>
                         @endif
                     </div>
                     <div class="p-4">

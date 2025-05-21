@@ -31,8 +31,12 @@
                 <div class="flex gap-2 flex-col bg-{{ $this->getLevelColor($announce->level) }}-100 border border-{{ $this->getLevelColor($announce->level) }}-500 p-5 rounded-md pb-5">
                     @if ($announce->user)
                         <section class="flex items-center gap-3">
-                            @if ($announce->user['profile_url'])
-                                <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $announce->user['profile_url']) }}" />
+                            @if ($announce->user['profile_url'] && file_exists(public_path('storage/profile-pictures/' . $announce->user['profile_url'])))
+                                <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $announce->user['profile_url']) }}" />
+                            @else
+                                <span class="inline-flex items-center justify-center w-[20px] h-[20px] rounded-full bg-gray-300 text-gray-500">
+                                    <span class="material-symbols-outlined text-base">person</span>
+                                </span>
                             @endif
 
                             <span class="text-sm flex-1">
@@ -77,8 +81,12 @@
                 <div class="flex gap-2 flex-col border-b pb-5">
                     @if ($announce->user)
                         <section class="flex items-center gap-3">
-                            @if ($announce->user['profile_url'])
-                                <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $announce->user['profile_url']) }}" />
+                            @if ($announce->user['profile_url'] && file_exists(public_path('storage/profile-pictures/' . $announce->user['profile_url'])))
+                                <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $announce->user['profile_url']) }}" />
+                            @else
+                                <span class="inline-flex items-center justify-center w-[20px] h-[20px] rounded-full bg-gray-300 text-gray-500">
+                                    <span class="material-symbols-outlined text-base">person</span>
+                                </span>
                             @endif
 
                             <span class="text-sm">

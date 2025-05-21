@@ -44,8 +44,12 @@
                 @foreach ($this->companies as $company)
                     <tr class="bg-white border-b">
                         <td class="py-4 text-ellipsis truncate pl-5 w-[30px]">
-                            @if ($company['icon'])
-                                <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/companies/' . $company['icon']) }}" />
+                            @if ($company['icon'] && file_exists(public_path('storage/companies/' . $company['icon'])))
+                                <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/companies/' . $company['icon']) }}" />
+                            @else
+                                <span class="inline-flex items-center justify-center w-[20px] h-[20px] rounded-full bg-gray-300 text-gray-500">
+                                    <span class="material-symbols-outlined text-base">business</span>
+                                </span>
                             @endif
                         </td>
 

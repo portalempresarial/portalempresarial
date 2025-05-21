@@ -26,7 +26,7 @@
         @forelse($products as $product)
             <div
                 class="bg-gray-50 border border-gray-200 rounded-md overflow-hidden shadow-md hover:shadow-lg transition-all">
-                @if($product->image)
+                @if($product->image && file_exists(storage_path('app/public/products/' . $product->image)))
                     <img src="{{ asset('storage/products/' . $product->image) }}" alt="{{ $product->name }}"
                         class="w-full h-40 object-cover">
                 @else
@@ -50,8 +50,10 @@
                     </p>
                     <div class="mt-3 flex items-center justify-between">
                         <span class="font-bold text-blue-600">{{ number_format($product->price, 2) }} €</span>
-                        <span class="text-sm {{ $product->stock > 0 ? 'text-green-500' : 'text-red-500' }}">
-                            {{ $product->stock > 0 ? 'En stock: ' . $product->stock : 'Sin stock' }}
+                        <span
+                            class="text-sm font-semibold
+                                        {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
+                            {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
                         </span>
                     </div>
                 </div>
@@ -83,7 +85,7 @@
         <x-selector wireModel="category" label="Categoría" :options="$categoryOptions" />
         <div class="flex justify-end">
             <x-button wireClick="storeProduct" content="Añadir producto"
-            styles="bg-blue-500 text-white hover:bg-blue-600 mt-2" />
+                styles="bg-blue-500 text-white hover:bg-blue-600 mt-2" />
         </div>
     </x-modal>
 

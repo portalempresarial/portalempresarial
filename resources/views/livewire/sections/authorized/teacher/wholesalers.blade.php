@@ -66,8 +66,12 @@
                 @foreach ($this->wholesalers as $wholesaler)
                     <tr class="bg-white border-b">
                         <td class="py-4 text-ellipsis truncate pl-5 w-[30px]">
-                            @if ($wholesaler['icon'])
-                                <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/wholesalers/' . $wholesaler['icon']) }}" />
+                            @if ($wholesaler['icon'] && file_exists(public_path('storage/wholesalers/' . $wholesaler['icon'])))
+                                <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/wholesalers/' . $wholesaler['icon']) }}" />
+                            @else
+                                <span class="inline-flex items-center justify-center w-[20px] h-[20px] rounded-full bg-gray-300 text-gray-500">
+                                    <span class="material-symbols-outlined text-base">business</span>
+                                </span>
                             @endif
                         </td>
                         <td class="py-4 text-ellipsis truncate pl-5">

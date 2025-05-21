@@ -10,9 +10,13 @@
             <div class="flex flex-col gap-5 [&:not(:first-child)]:pt-5">
                 {{-- @ Company information --}}
                 <section class="flex items-center gap-3">
-                    @if ($company->icon)
-                        <img class="max-w-[30px] rounded-md-sm h-[15px]"
+                    @if ($company->icon && file_exists(public_path('storage/companies/' . $company->icon)))
+                        <img class="max-w-[30px] rounded-md h-[15px]"
                             src="{{ asset('storage/companies/' . $company->icon) }}" />
+                    @else
+                        <span class="inline-flex items-center justify-center w-[30px] h-[15px] rounded-md bg-gray-300 text-gray-500">
+                            <span class="material-symbols-outlined text-base">business</span>
+                        </span>
                     @endif
 
                     {{ $company->name }}
@@ -27,12 +31,12 @@
 
                         <div class="flex items-center flex-wrap rounded-md py-7 md:py-0 md:h-[70px] gap-3">
                             <div class="w-10 flex items-center justify-center">
-                                @if ($item->product->image)
-                                    <img class="rounded-md-sm h-[30px]"
+                                @if ($item->product->image && file_exists(public_path('storage/companies/' . $item->product['company_id'] . '/products/' . $item->product['image'])))
+                                    <img class="rounded-md h-[30px]"
                                         src="{{ asset('storage/companies/' . $item->product['company_id'] . '/products/' . $item->product['image']) }}" />
                                 @else
                                     <span class="material-symbols-outlined text-md text-blue-500">
-                                        fullscreen
+                                        inventory_2
                                     </span>
                                 @endif
                             </div>
@@ -49,7 +53,7 @@
 
                             <div class="flex items-center gap-4">
                                 <span wire:click="removeOne({{ $item->id }})"
-                                    class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                    class="material-symbols-outlined border rounded-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     remove
                                 </span>
 
@@ -58,7 +62,7 @@
                                     class="w-14 text-center border rounded-md p-1" />
 
                                 <span wire:click="addOne({{ $item->id }})"
-                                    class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                    class="material-symbols-outlined border rounded-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     add
                                 </span>
                             </div>
@@ -78,9 +82,13 @@
             <div class="flex flex-col gap-5 [&:not(:first-child)]:pt-5">
                 {{-- @ Wholesaler information --}}
                 <section class="flex items-center gap-3">
-                    @if ($wholesaler->icon)
-                        <img class="max-w-[30px] rounded-md-sm h-[15px]"
+                    @if ($wholesaler->icon && file_exists(public_path('storage/wholesalers/' . $wholesaler->icon)))
+                        <img class="max-w-[30px] rounded-md h-[15px]"
                             src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" />
+                    @else
+                        <span class="inline-flex items-center justify-center w-[30px] h-[15px] rounded-md bg-gray-300 text-gray-500">
+                            <span class="material-symbols-outlined text-base">business</span>
+                        </span>
                     @endif
 
                     <span class="font-medium">{{ $wholesaler->name }}</span>
@@ -96,8 +104,8 @@
 
                         <div class="flex items-center flex-wrap rounded-md py-7 md:py-0 md:h-[70px] gap-3">
                             <div class="w-10 flex items-center justify-center">
-                                @if ($item->wholesalerProduct->image)
-                                    <img class="rounded-md-sm h-[30px]"
+                                @if ($item->wholesalerProduct->image && file_exists(public_path('storage/wholesaler-products/' . $item->wholesalerProduct['image'])))
+                                    <img class="rounded-md h-[30px]"
                                         src="{{ asset('storage/wholesaler-products/' . $item->wholesalerProduct->image) }}" />
                                 @else
                                     <span class="material-symbols-outlined text-md text-blue-500">
@@ -118,14 +126,14 @@
 
                             <div class="flex items-center gap-4">
                                 <span wire:click="removeOne({{ $item->id }})"
-                                    class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                    class="material-symbols-outlined border rounded-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     remove
                                 </span>
 
                                 {{ $item->amount }}
 
                                 <span wire:click="addOne({{ $item->id }})"
-                                    class="material-symbols-outlined border rounded-md-full p-2 text-sm px-2.5 select-none cursor-pointer">
+                                    class="material-symbols-outlined border rounded-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     add
                                 </span>
                             </div>
