@@ -25,6 +25,8 @@ class SingleCompany extends Component {
     
     public $social_denomination, $name, $image, $cif, $sector, $phone, $location, $cp, $city, $contact_email, $form_level, $status; 
     
+    public $mensaje = null;
+
     public function mount($company) {
         $this->company = $company;
         $this->social_denomination = $company->social_denomination;
@@ -44,11 +46,11 @@ class SingleCompany extends Component {
         $this->validate([
             'social_denomination' => 'required|string',
             'name' => 'required|string|max:255|regex:/^[a-zA-Z0-9\s]+$/u'
-        ]); 
+        ]);
 
         try {
             $this->company->social_denomination = $this->social_denomination;
-            $this->company->name = str_replace(' ', '-', $this->name); 
+            $this->company->name = str_replace(' ', '-', $this->name);
             $this->company->cif = $this->cif;
             $this->company->sector = $this->sector;
             $this->company->phone = $this->phone;
@@ -60,11 +62,10 @@ class SingleCompany extends Component {
             $this->company->status = $this->status;
             $this->company->save();
 
-            toastr()->success('Los datos se han guardado correctamente', '¡Éxito!');
+            $this->mensaje = 'Los datos se han guardado correctamente';
         } catch (\Throwable $th) {
             \Log::error($th);
-
-            toastr()->error('¡Vaya! Algo salió mal. Inténtalo de nuevo más tarde.');
+            $this->mensaje = '¡Vaya! Algo salió mal. Inténtalo de nuevo más tarde.';
         }
     }
 
