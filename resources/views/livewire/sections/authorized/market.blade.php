@@ -86,8 +86,10 @@
 
     <div class="flex-1 flex flex-col gap-10">
         @foreach ($companiesList as $company)
+            @if ($company->id === auth()->user()->current_company)
+                @continue
+            @endif
             @php
-                // Usar $filteredProducts en vez de $products
                 $companyProducts = $filteredProducts->where('company_id', $company->id);
                 $visibleProducts = $companyProducts->take(8);
                 $hiddenProducts = $companyProducts->skip(8); 
