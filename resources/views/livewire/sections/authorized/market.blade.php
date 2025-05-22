@@ -77,8 +77,22 @@
         </div>
     </div>
 
+    @php
+        // Obtener la empresa del usuario autenticado
+        $userCompanyId = auth()->user()->company_id ?? null;
+        // Filtrar productos para que no se muestren los de la empresa del usuario
+        $filteredProducts = $products->where('company_id', '!=', $userCompanyId);
+    @endphp
+
     <div class="flex-1 flex flex-col gap-10">
         @foreach ($companiesList as $company)
+            @php
+                // Usar $filteredProducts en vez de $products
+                $companyProducts = $filteredProducts->where('company_id', $company->id);
+                $visibleProducts = $companyProducts->take(8);
+                $hiddenProducts = $companyProducts->skip(8); 
+            @endphp
+    
             <div class="p-5 border border-gray-200 rounded-md shadow-md bg-white mx-24">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-5">
@@ -113,7 +127,7 @@
                 </div>
     
                 @php
-                    $companyProducts = $products->where('company_id', $company->id);
+                    $companyProducts = $filteredProducts->where('company_id', $company->id);
                     $visibleProducts = $companyProducts->take(8);
                     $hiddenProducts = $companyProducts->skip(8); 
                 @endphp
