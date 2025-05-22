@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DeliveryNote;
 use App\Models\Company;
+use App\Models\Wholesaler;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,6 +18,8 @@ class DeliveryNoteController extends Controller
         // El middleware isCompanyEmployee ya ha establecido current_company en Auth::user()
         $currentCompany = Auth::user()->current_company;
         $deliveryNotes = DeliveryNote::where('company_id', $currentCompany)
+            // De-normalizado para mayor claridad: Se asegura que el albarán esté vinculado a un mayorista
+            ->whereNotNull('wholesaler_id')
             ->with(['wholesaler', 'company', 'order'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -32,6 +35,7 @@ class DeliveryNoteController extends Controller
         $currentCompany = Auth::user()->current_company;
         $deliveryNote = DeliveryNote::where('id', $id)
             ->where('company_id', $currentCompany)
+            ->whereNotNull('wholesaler_id') // Solo albaranes de mayoristas
             ->with(['order.products.wholesalerProduct', 'wholesaler', 'company'])
             ->firstOrFail();
             
@@ -48,6 +52,7 @@ class DeliveryNoteController extends Controller
         $currentCompany = Auth::user()->current_company;
         $deliveryNote = DeliveryNote::where('id', $id)
             ->where('company_id', $currentCompany)
+            ->whereNotNull('wholesaler_id') // Solo albaranes de mayoristas
             ->with(['order.products.wholesalerProduct', 'wholesaler', 'company'])
             ->firstOrFail();
             
@@ -128,10 +133,31 @@ class DeliveryNoteController extends Controller
     {
         \Log::info("Regenerando PDF para el albarán: " . $deliveryNote->number);
         
-        // Calcular el total
+        // Recargamos el delivery note con todas las relaciones necesarias
+        $deliveryNote = DeliveryNote::where('id', $deliveryNote->id)
+            ->with(['order.products.wholesalerProduct', 'wholesaler', 'company'])
+            ->firstOrFail();
+            
+        // Calcular el total, asegurándonos de cargar manualmente los productos si es necesario
         $total = 0;
-        $orderProducts = $deliveryNote->order->products;
+        $order = $deliveryNote->order;
+        if (!$order) {
+            \Log::error("Orden no encontrada para el albarán: " . $deliveryNote->number);
+            return false;
+        }
+        
+        // Cargar explícitamente los productos con sus relaciones
+        $orderProducts = \App\Models\OrderProduct::where('order_id', $order->id)
+            ->with('wholesalerProduct')
+            ->get();
+            
+        \Log::info("Productos cargados para el albarán: " . count($orderProducts));
+        
         foreach ($orderProducts as $orderProduct) {
+            // Imprimir información de depuración para cada producto
+            \Log::info("Producto ID: " . $orderProduct->id . 
+                ", WholesalerProduct: " . ($orderProduct->wholesalerProduct ? $orderProduct->wholesalerProduct->name : 'No encontrado'));
+                
             if ($orderProduct->wholesalerProduct) {
                 $total += $orderProduct->amount * $orderProduct->wholesalerProduct->price;
             }
@@ -164,6 +190,25 @@ class DeliveryNoteController extends Controller
             \Log::error("Error al cargar logo del mayorista: " . $e->getMessage());
         }
         
+        // Asegurarnos de que tenemos los datos necesarios
+        \Log::info("Verificando datos para el PDF: Mayorista - " . 
+            ($deliveryNote->wholesaler ? $deliveryNote->wholesaler->name : 'No encontrado') . 
+            ", Empresa - " . 
+            ($deliveryNote->company ? $deliveryNote->company->name : 'No encontrada') . 
+            ", Productos - " . count($orderProducts));
+            
+        // Si no tenemos el wholesaler, intentar cargarlo
+        if (!$deliveryNote->wholesaler) {
+            \Log::warning("Wholesaler no encontrado en relación directa, intentando cargarlo manualmente");
+            $deliveryNote->wholesaler = Wholesaler::find($deliveryNote->wholesaler_id);
+        }
+        
+        // Si no tenemos la compañía, intentar cargarla
+        if (!$deliveryNote->company) {
+            \Log::warning("Compañía no encontrada en relación directa, intentando cargarla manualmente");
+            $deliveryNote->company = Company::find($deliveryNote->company_id);
+        }
+                
         // Generar el PDF
         try {
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.delivery_note', [
