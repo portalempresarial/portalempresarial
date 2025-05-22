@@ -1,6 +1,6 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 py-4">
     {{-- Bandeja de entrada --}}
-    <div class="bg-gray-100 border border-gray-300 shadow-md p-4 rounded-md overflow-auto">
+    <div class="bg-gray-50 border border-gray-200 shadow-md p-4 rounded-md overflow-auto">
         <div class="flex flex-col justify-between mb-6">
             <h2 class="text-2xl font-bold mb-4">
                 @if ($showDeletedEmails)
@@ -118,7 +118,7 @@
     </div>
 
     {{-- Panel derecho --}}
-    <div class="transition-all duration-500 transform bg-gray-100 p-4 border border-gray-300 shadow-md rounded-md"
+    <div class="transition-all duration-500 transform bg-gray-50 p-4 border border-gray-300 shadow-md rounded-md"
         style="{{ $selectedEmail || $newEmail ? 'opacity: 1; translateX(0);' : 'opacity: 0; translateX(100%);' }}">
         @if ($submitEmailMessages)
             <div wire:key="submit-message-{{ Str::random() }}" x-init="setTimeout(() => show = false, 1500)" x-show="show"

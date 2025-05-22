@@ -123,8 +123,8 @@
                     @foreach ($visibleProducts as $product)
                         <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'" 
                             class="bg-gray-50 border border-gray-200 rounded-md shadow-md cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
-                            @if($product->image && file_exists(storage_path('app/public/products/' . $product->image)))
-                                <img src="{{ asset('storage/products/' . $product->image) }}" alt="{{ $product->name }}"
+                            @if ($product->image && file_exists(public_path('storage/companies/' . $product['company_id'] . '/products/' . $product['image'])))
+                                <img src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" alt="{{ $product->name }}"
                                     class="w-full h-40 object-cover">
                             @else
                                 <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
@@ -162,8 +162,8 @@
                             @foreach ($hiddenProducts as $product)
                                 <div onclick="window.location.href = '/market/company/{{ str_replace(' ', '-', $product->company->name) }}?product={{ str_replace(' ', '-', $product->label) }}'" 
                                     class="bg-gray-50 border border-gray-200 rounded-md shadow-md cursor-pointer group transition-all hover:scale-105 hover:bg-blue-500 hover:text-white">
-                                    @if($product->image && file_exists(storage_path('app/public/products/' . $product->image)))
-                                        <img src="{{ asset('storage/products/' . $product->image) }}" alt="{{ $product->name }}"
+                                    @if ($product->image && file_exists(public_path('storage/companies/' . $product['company_id'] . '/products/' . $product['image'])))
+                                        <img src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" alt="{{ $product->name }}"
                                             class="w-full h-40 object-cover">
                                     @else
                                         <div class="w-full h-40 bg-gray-200 flex items-center justify-center">

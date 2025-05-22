@@ -81,8 +81,6 @@
         <label class="text-sm text-gray-500">Descripción</label>
         <textarea wire:model.live="description" rows="4" class="w-full border border-black rounded-md p-2 text-sm"
             placeholder="Descripción del producto"></textarea>
-
-        <x-selector wireModel="category" label="Categoría" :options="$categoryOptions" />
         <div class="flex justify-end">
             <x-button wireClick="storeProduct" content="Añadir producto"
                 styles="bg-blue-500 text-white hover:bg-blue-600 mt-2" />

@@ -20,24 +20,17 @@ class Company extends Component
 
     public function addToCart()
     {
-        // Recargar el producto con sus stocks actualizados para esta compañía
+        // Recargar el producto con sus stock actualizados para esta compañía
         $this->selected_product->refresh();
-        $this->selected_product->load(['stocks' => function($query) {
-            $query->where('company_id', $this->company->id);
-        }]);
-        
-        // Obtener el stock actual del producto para esta compañía
-        $productStock = $this->selected_product->stockForCompany($this->company->id);
-        
-        if (!$productStock || $productStock->stock < $this->selected_counter) {
-            $stockAmount = $productStock ? $productStock->stock : 0;
-            toastr()->error('No hay suficiente stock disponible. Stock actual: ' . $stockAmount);
+        $this->selected_product->refresh();
+        if ($this->selected_product->stock < $this->selected_counter) {
+            toastr()->error('No hay suficiente stock disponible. Stock actual: ' . $this->selected_product->stock);
             return;
         }
-        
+
         $onCart = CartProduct::where('user_id', auth()->user()->id)
-                            ->where('product_id', $this->selected_product->id)
-                            ->first();
+            ->where('product_id', $this->selected_product->id)
+            ->first();
 
         if (!$onCart) {
             CartProduct::create([
@@ -52,7 +45,7 @@ class Company extends Component
                 toastr()->error('No hay suficiente stock disponible. Ya tienes ' . $onCart->amount . ' en el carrito y solo hay ' . $productStock->stock . ' disponibles.');
                 return;
             }
-            
+
             $onCart->update([
                 'amount' => $totalRequestedAmount
             ]);
@@ -78,20 +71,20 @@ class Company extends Component
         if (!$productId && $this->selected_product) {
             $productId = $this->selected_product->id;
         }
-        
+
         if (!$productId) {
             return null;
         }
-        
+
         $product = Product::find($productId);
         if (!$product) {
             return ['error' => 'Producto no encontrado'];
         }
-        
+
         $stock = CompanyProductStock::where('product_id', $productId)
             ->where('company_id', $this->company->id)
             ->first();
-            
+
         return [
             'product_id' => $productId,
             'company_id' => $this->company->id,
@@ -105,25 +98,17 @@ class Company extends Component
         $this->company = CompanyModel::where('name', str_replace('-', ' ', $company))->firstOrFail();
 
         if ($product) {
-            $this->selected_product = Product::with(['stocks' => function($query) {
-                $query->where('company_id', $this->company->id);
-            }])
-            ->where('label', str_replace('-', ' ', $product))
-            ->firstOrFail();
-            
-            // Asegurar que el stock está correctamente cargado
-            $this->selected_product->load(['stocks' => function($query) {
-                $query->where('company_id', $this->company->id);
-            }]);
+            $this->selected_product = Product::where('label', str_replace('-', ' ', $product))
+                ->where('company_id', $this->company->id)
+                ->firstOrFail();
         }
     }
 
     public function render()
     {
         if ($this->company) {
-            // Registrar esta instancia para que esté disponible para el accessor stock
             app()->instance('livewire.instance', $this);
-            
+
             $queryBuilder = Product::query();
 
             if ($this->filter) {
@@ -136,19 +121,10 @@ class Company extends Component
 
             $queryBuilder->where('company_id', $this->company->id);
 
-            // Cargar eager los stocks relacionados para evitar N+1 queries
-            $queryBuilder->with(['stocks' => function($query) {
-                $query->where('company_id', $this->company->id);
-            }]);
-
             $this->products = $queryBuilder->get();
-            
-            // Asegurar que el accessor de stock tenga acceso al ID de la compañía
+
             if ($this->selected_product) {
                 $this->selected_product->refresh();
-                $this->selected_product->load(['stocks' => function($query) {
-                    $query->where('company_id', $this->company->id);
-                }]);
             }
         }
 

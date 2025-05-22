@@ -88,16 +88,16 @@ class WholesalerProducts extends Component
 
         $products = $query->orderBy('id')->paginate(12);
 
-        $categoryOptions = collect($this->categories)->map(function ($cat) {
-            return [
-                'value' => $cat->id,
-                'label' => $cat->label
-            ];
-        })->values()->toArray();
+        // $categoryOptions = collect($this->categories)->map(function ($cat) {
+        //     return [
+        //         'value' => $cat->id,
+        //         'label' => $cat->label
+        //     ];
+        // })->values()->toArray();
 
         return view('livewire.sections.authorized.wholesaler-products', [
             'products' => $products,
-            'categoryOptions' => $categoryOptions
+            // 'categoryOptions' => $categoryOptions
         ]);
     }
 }

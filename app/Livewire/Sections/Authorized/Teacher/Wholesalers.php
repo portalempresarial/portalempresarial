@@ -223,7 +223,7 @@ class Wholesalers extends Component
     public function saveSector()
     {
         $this->validate([
-            'newSectorName' => 'required|string|min:3|max:100|unique:wholesaler_sectors,sector_name',
+            'newSectorName' => 'required|string|min:3|max:100|unique:wholesaler_sector,sector_name',
         ], [
             'newSectorName.required' => 'El nombre del sector es obligatorio.',
             'newSectorName.unique' => 'Este sector ya existe.',
