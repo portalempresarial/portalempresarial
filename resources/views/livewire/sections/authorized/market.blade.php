@@ -85,15 +85,14 @@
     @endphp
 
     <div class="flex-1 flex flex-col gap-10">
+        @php
+            $hasCompanies = false;
+        @endphp
         @foreach ($companiesList as $company)
             @if ($company->id === auth()->user()->current_company)
                 @continue
             @endif
-            @php
-                $companyProducts = $filteredProducts->where('company_id', $company->id);
-                $visibleProducts = $companyProducts->take(8);
-                $hiddenProducts = $companyProducts->skip(8); 
-            @endphp
+            @php $hasCompanies = true; @endphp
     
             <div class="p-5 border border-gray-200 rounded-md shadow-md bg-white mx-24">
                 <div class="flex justify-between items-center">
@@ -230,9 +229,14 @@
                 </div>
             </div>
         @endforeach
-        
-        <div class="mt-5">
-            {{ $companiesList->links() }}
-        </div>
+
+        @if (!$hasCompanies)
+            <div class="text-center text-gray-400 font-semibold py-10">
+                No se encontraron empresas para mostrar en esta página.
+            </div>
+        @endif
+    </div>
+    <div class="mt-5">
+        {{ $companiesList->links() }}
     </div>
 </section>
