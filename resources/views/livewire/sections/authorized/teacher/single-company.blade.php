@@ -492,6 +492,18 @@
         <x-button wireClick="addEmployee" styles="justify-center" content="{{ $employee_editing ? 'Confirmar cambios' : 'Contratar' }}" />
     </x-modal>
 
+    {{-- Mensaje de éxito o error --}}
+    @if ($mensaje)
+        <div 
+            x-data="{ show: true }" 
+            x-show="show" 
+            x-init="setTimeout(() => show = false, 2000)"
+            class="w-full mb-4 p-3 rounded bg-green-100 text-green-800 text-center transition-all duration-500"
+        >
+            {{ $mensaje }}
+        </div>
+    @endif
+
     <style>
         .fade-enter-active, .fade-leave-active {
             transition: opacity 0.5s;

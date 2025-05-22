@@ -212,9 +212,13 @@ class ShoppingCart extends Component
 
             // Calcular el total
             $total = 0;
-            $orderProducts = OrderProduct::where('order_id', $order->id)->get();
+            $orderProducts = OrderProduct::where('order_id', $order->id)
+                ->with('wholesalerProduct')
+                ->get();
             foreach ($orderProducts as $orderProduct) {
-                $total += $orderProduct->amount * $orderProduct->wholesalerProduct->price;
+                if ($orderProduct->wholesalerProduct) {
+                    $total += $orderProduct->amount * $orderProduct->wholesalerProduct->price;
+                }
             }
 
             // Obtener la imagen del mayorista para el PDF
@@ -247,6 +251,19 @@ class ShoppingCart extends Component
                 // Continuamos sin el logo, no detenemos el proceso
             }
 
+            // Verificar que los datos necesarios están disponibles
+            \Log::info("Verificando datos para el PDF: Mayorista - " . 
+                ($wholesaler ? $wholesaler->name : 'No encontrado') . 
+                ", Empresa - " . 
+                ($buyerCompany ? $buyerCompany->name : 'No encontrada') . 
+                ", Productos - " . count($orderProducts));
+            
+            // Si no tenemos la compañía, intentar cargarla
+            if (!$buyerCompany) {
+                \Log::warning("Compañía no encontrada, intentando cargarla manualmente");
+                $buyerCompany = Company::find(auth()->user()->current_company);
+            }
+            
             // Generar el PDF
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.delivery_note', [
                 'delivery_note' => $deliveryNote,

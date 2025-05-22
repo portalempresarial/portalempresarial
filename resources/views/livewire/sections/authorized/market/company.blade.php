@@ -131,11 +131,15 @@
                         @endif
                     </div>
 
-                    <button wire:click="addToCart"
-                        class="bg-blue-500 text-white py-2.5 gap-3 hover:bg-blue-700 transition-all px-5 rounded-md flex items-center justify-center w-full md:w-auto">
-                        <span class="material-symbols-outlined">shopping_cart</span>
-                        Añadir a la cesta
-                    </button>
+                   @if ($selected_product->stock > 0)
+                        <button wire:click="addToCart" class="bg-blue-500 hover:bg-blue-700 transition-all text-white py-2 px-5 rounded-md">
+                            Añadir al carrito
+                        </button>
+                    @else
+                        <button disabled class="bg-gray-300 cursor-not-allowed text-gray-500 py-2 px-5 rounded-md">
+                            Sin stock
+                        </button>
+                   @endif
                 </section>
             </div>
         @endif

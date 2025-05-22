@@ -2,11 +2,26 @@
 
 @section('body')
 <main class="w-full p-10">
-    <section class="flex flex-col gap-1">
-        <h2 class="text-2xl font-extrabold text-blue-500">
-            Albaranes de Mayoristas
-        </h2>
-        <small>Listado de todos los albaranes generados por compras a mayoristas</small>
+    <section class="flex items-center justify-between">
+        <div class="flex flex-col gap-1">
+            <h2 class="text-2xl font-extrabold text-blue-500">
+                Albaranes de Mayoristas
+            </h2>
+            <small>Listado de todos los albaranes generados por compras a mayoristas</small>
+        </div>
+        <div>
+            @if(request()->is('teacher*'))
+                <a href="{{ url('teacher/companies/'.request()->route('company').'/view/buy') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg flex items-center">
+                    <span class="material-symbols-outlined mr-1">shopping_cart</span>
+                    Ver compras a empresas
+                </a>
+            @else
+                <a href="{{ url('student/'.request()->route('company').'/buy') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg flex items-center">
+                    <span class="material-symbols-outlined mr-1">shopping_cart</span>
+                    Ver compras a empresas
+                </a>
+            @endif
+        </div>
     </section>
 
     <div class="relative overflow-x-auto mt-10">

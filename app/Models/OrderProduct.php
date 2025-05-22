@@ -17,7 +17,11 @@ class OrderProduct extends Model {
     }
     
     public function wholesalerProduct() {
-        return $this->belongsTo(WholesalerProduct::class);
+        return $this->belongsTo(WholesalerProduct::class)->withDefault([
+            'name' => 'Producto no disponible',
+            'sku' => 'SKU no disponible',
+            'price' => 0
+        ]);
     }
 
     public function order() {

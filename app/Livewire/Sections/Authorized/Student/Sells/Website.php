@@ -4,9 +4,12 @@ namespace App\Livewire\Sections\Authorized\Student\Sells;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company; 
+use Livewire\WithFileUploads;
 
 class Website extends Component {
-    public $website, $company; 
+    use WithFileUploads;
+    public $website, $company;
+    public $iconImage;
 
     public function save() {
         $this->validate([
@@ -20,10 +23,25 @@ class Website extends Component {
             $this->company->website = $this->website; 
             $this->company->save(); 
 
-            toastr()->success('La página web se ha guardado correctamente', '¡Éxito!');
+            toastr()->success('La página web se ha guardado correctamente', ['title' => '¡Éxito!']);
         } catch (\Throwable $th) {
-            toastr()->error('Ocurrió un error al guardar la página web', '¡Error!');
+            toastr()->error('Ocurrió un error al guardar la página web', ['title' => '¡Error!']);
         } 
+    }
+
+    public function updatedIconImage() {
+        $this->validate([
+            'iconImage' => 'required|image|max:1024',
+        ], [
+            'iconImage.required' => 'Debes seleccionar una imagen',
+            'iconImage.image' => 'El archivo debe ser una imagen',
+            'iconImage.max' => 'La imagen no debe superar 1MB',
+        ]);
+
+        $this->iconImage->store('companies', 'public');
+        $this->company->icon = $this->iconImage->hashName();
+        $this->company->save();
+        session()->flash('icon_success', 'Icono actualizado correctamente.');
     }
 
     public function mount() {

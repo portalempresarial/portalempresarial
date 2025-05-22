@@ -10,6 +10,7 @@ class Buy extends Component {
 
     public function render() {
         $this->orders = Order::where('buyer_company_id', auth()->user()->current_company)
+            ->whereNull('wholesaler_id') // Solo compras a otras empresas, no a mayoristas
             ->orderBy('created_at', 'desc')
             ->paginate(15); 
             

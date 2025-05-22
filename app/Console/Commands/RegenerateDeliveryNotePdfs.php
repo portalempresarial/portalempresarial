@@ -142,13 +142,32 @@ class RegenerateDeliveryNotePdfs extends Command
 
     /**
      * Regenerate the PDF for a specific delivery note
-     */
-    private function regeneratePdf(DeliveryNote $deliveryNote)
+     */    private function regeneratePdf(DeliveryNote $deliveryNote)
     {
-        // Calculate total
+        // Reload the delivery note with all necessary relationships
+        $deliveryNote = DeliveryNote::where('id', $deliveryNote->id)
+            ->with(['order.products.wholesalerProduct', 'wholesaler', 'company'])
+            ->firstOrFail();
+              // Calculate total, ensuring relationships are loaded
         $total = 0;
-        $orderProducts = $deliveryNote->order->products;
+        $order = $deliveryNote->order;
+        if (!$order) {
+            $this->error("Order not found for delivery note: " . $deliveryNote->number);
+            return false;
+        }
+        
+        // Load products explicitly with relationships
+        $orderProducts = \App\Models\OrderProduct::where('order_id', $order->id)
+            ->with('wholesalerProduct')
+            ->get();
+            
+        $this->info("Products loaded for delivery note: " . count($orderProducts));
+        
         foreach ($orderProducts as $orderProduct) {
+            // Print debug information for each product
+            $this->line("Product ID: " . $orderProduct->id . 
+                ", WholesalerProduct: " . ($orderProduct->wholesalerProduct ? $orderProduct->wholesalerProduct->name : 'Not found'));
+                
             if ($orderProduct->wholesalerProduct) {
                 $total += $orderProduct->amount * $orderProduct->wholesalerProduct->price;
             }
@@ -162,8 +181,17 @@ class RegenerateDeliveryNotePdfs extends Command
                 $image = file_get_contents($imagePath);
                 $wholesalerLogoBase64 = base64_encode($image);
             }
+        }        // Check if wholesaler and company are properly loaded
+        if (!$deliveryNote->wholesaler) {
+            $this->warn("Wholesaler not found for delivery note {$deliveryNote->id}, trying to load manually");
+            $deliveryNote->wholesaler = Wholesaler::find($deliveryNote->wholesaler_id);
         }
-
+        
+        if (!$deliveryNote->company) {
+            $this->warn("Company not found for delivery note {$deliveryNote->id}, trying to load manually");
+            $deliveryNote->company = Company::find($deliveryNote->company_id);
+        }
+        
         // Generate PDF
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.delivery_note', [
             'delivery_note' => $deliveryNote,

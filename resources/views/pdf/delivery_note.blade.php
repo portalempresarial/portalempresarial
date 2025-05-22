@@ -140,15 +140,15 @@
                         <tr>
                             <td>
                                 <strong>Mayorista:</strong><br />
-                                {{ $wholesaler->name }}<br />
-                                {{ $wholesaler->address }}<br />
-                                CIF: {{ $wholesaler->cif }}
+                                {{ $wholesaler ? $wholesaler->name : 'N/A' }}<br />
+                                {{ $wholesaler && $wholesaler->address ? $wholesaler->address : 'N/A' }}<br />
+                                CIF: {{ $wholesaler && $wholesaler->cif ? $wholesaler->cif : 'N/A' }}
                             </td>
                             <td>
                                 <strong>Cliente:</strong><br />
-                                {{ $company->name }}<br />
-                                {{ $company->address }}<br />
-                                CIF: {{ $company->cif }}
+                                {{ $company ? $company->name : 'N/A' }}<br />
+                                {{ $company && $company->address ? $company->address : 'N/A' }}<br />
+                                CIF: {{ $company && $company->cif ? $company->cif : 'N/A' }}
                             </td>
                         </tr>
                     </table>
@@ -164,10 +164,10 @@
 
             @foreach($products as $product)
             <tr class="item">
-                <td>{{ $product->wholesalerProduct->sku }}</td>
-                <td>{{ $product->wholesalerProduct->name }}</td>
+                <td>{{ $product->wholesalerProduct ? $product->wholesalerProduct->sku : 'N/A' }}</td>
+                <td>{{ $product->wholesalerProduct ? $product->wholesalerProduct->name : 'Producto no encontrado' }}</td>
                 <td>{{ $product->amount }}</td>
-                <td>{{ number_format($product->wholesalerProduct->price, 2) }}€</td>
+                <td>{{ $product->wholesalerProduct ? number_format($product->wholesalerProduct->price, 2) : '0.00' }}€</td>
             </tr>
             @endforeach
 

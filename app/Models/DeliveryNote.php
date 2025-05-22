@@ -31,7 +31,11 @@ class DeliveryNote extends Model
      */
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class)->withDefault([
+            'name' => 'Empresa no disponible',
+            'address' => 'Dirección no disponible',
+            'cif' => 'CIF no disponible'
+        ]);
     }
     
     /**
@@ -39,7 +43,11 @@ class DeliveryNote extends Model
      */
     public function wholesaler()
     {
-        return $this->belongsTo(Wholesaler::class);
+        return $this->belongsTo(Wholesaler::class)->withDefault([
+            'name' => 'Mayorista no disponible',
+            'address' => 'Dirección no disponible',
+            'cif' => 'CIF no disponible'
+        ]);
     }
     
     /**

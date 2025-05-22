@@ -56,8 +56,15 @@ Route::middleware('auth')->group(function() {
                 Route::view('/website', 'web.sections.authorized.student.website');
                 Route::view('/products', 'web.sections.authorized.student.sells.products');
                 Route::view('/sells', 'web.sections.authorized.student.sells.sells');
-                Route::view('/buy', 'web.sections.authorized.student.sells.buy');
+                Route::view('/buy', 'web.sections.authorized.student.sells.buy')->name('teacher.company.buy');
                 Route::view('/wholesaler-products', 'web.sections.authorized.student.wholesaler-products')->name('teacher.company.wholesaler-products');
+                
+                // Rutas para albaranes de mayorista (vista profesor)
+                Route::controller(\App\Http\Controllers\DeliveryNoteController::class)->group(function() {
+                    Route::get('/delivery-notes', 'index')->name('teacher.company.delivery-notes.index');
+                    Route::get('/delivery-notes/{id}', 'show')->name('teacher.company.delivery-notes.show');
+                    Route::get('/delivery-notes/{id}/download', 'download')->name('teacher.company.delivery-notes.download');
+                });
             });
         });
     }); 
@@ -71,7 +78,7 @@ Route::middleware('auth')->group(function() {
             Route::view('/website', 'web.sections.authorized.student.website');
             Route::view('/products', 'web.sections.authorized.student.sells.products');
             Route::view('/sells', 'web.sections.authorized.student.sells.sells');
-            Route::view('/buy', 'web.sections.authorized.student.sells.buy');
+            Route::view('/buy', 'web.sections.authorized.student.sells.buy')->name('student.buy');
             Route::view('/wholesaler-products', 'web.sections.authorized.student.wholesaler-products')->name('student.wholesaler-products');
             
             // Rutas para albaranes de mayorista
