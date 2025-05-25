@@ -198,7 +198,7 @@
                                             </span>
                                             <span class="text-xs font-semibold mt-2
                                                 {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
-                                                {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
+                                                {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades! : ' . $product->stock : 'En stock: ' . $product->stock) : 'Sin stock' }}
                                             </span>
                                         </div>
                                     </div>                    

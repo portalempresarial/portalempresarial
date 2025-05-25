@@ -31,13 +31,18 @@ class ShoppingCart extends Component
 
         // Si es un producto normal
         if ($product->product_id) {
-            $product->amount += 1;
-            $product->save();
+            $stock = $product->product ? $product->product->stock : 0;
+            if ($product->amount < $stock) {
+                $product->amount += 1;
+                $product->save();
+            } else {
+                toastr()->error('No hay suficiente stock disponible');
+            }
         }
         // Si es un producto de mayorista, verificar stock
         elseif ($product->wholesaler_product_id) {
             $wholesalerProduct = $product->wholesalerProduct;
-            if ($wholesalerProduct && $wholesalerProduct->stock > $product->amount) {
+            if ($wholesalerProduct && $product->amount < $wholesalerProduct->stock) {
                 $product->amount += 1;
                 $product->save();
             } else {
@@ -115,16 +120,7 @@ class ShoppingCart extends Component
                         $product->stock -= $item->amount;
                         $product->save();
 
-                        // También actualizamos el registro en company_product_stock si existe
-                        $stockRecord = \App\Models\CompanyProductStock::where('company_id', $product->company_id)
-                            ->where('product_id', $product->id)
-                            ->first();
-
-                        if ($stockRecord) {
-                            $stockRecord->stock -= $item->amount;
-                            $stockRecord->save();
-                        }
-
+                        // Eliminar del carrito
                         CartProduct::where('id', $item->id)->delete();
                     }
                 }
@@ -252,18 +248,18 @@ class ShoppingCart extends Component
             }
 
             // Verificar que los datos necesarios están disponibles
-            \Log::info("Verificando datos para el PDF: Mayorista - " . 
-                ($wholesaler ? $wholesaler->name : 'No encontrado') . 
-                ", Empresa - " . 
-                ($buyerCompany ? $buyerCompany->name : 'No encontrada') . 
+            \Log::info("Verificando datos para el PDF: Mayorista - " .
+                ($wholesaler ? $wholesaler->name : 'No encontrado') .
+                ", Empresa - " .
+                ($buyerCompany ? $buyerCompany->name : 'No encontrada') .
                 ", Productos - " . count($orderProducts));
-            
+
             // Si no tenemos la compañía, intentar cargarla
             if (!$buyerCompany) {
                 \Log::warning("Compañía no encontrada, intentando cargarla manualmente");
                 $buyerCompany = Company::find(auth()->user()->current_company);
             }
-            
+
             // Generar el PDF
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.delivery_note', [
                 'delivery_note' => $deliveryNote,

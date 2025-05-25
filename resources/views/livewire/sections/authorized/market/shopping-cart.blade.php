@@ -14,7 +14,8 @@
                         <img class="max-w-[30px] rounded-md h-[15px]"
                             src="{{ asset('storage/companies/' . $company->icon) }}" />
                     @else
-                        <span class="inline-flex items-center justify-center w-[30px] h-[15px] rounded-md bg-gray-300 text-gray-500">
+                        <span
+                            class="inline-flex items-center justify-center w-[30px] h-[15px] rounded-md bg-gray-300 text-gray-500">
                             <span class="material-symbols-outlined text-base">business</span>
                         </span>
                     @endif
@@ -57,10 +58,8 @@
                                     remove
                                 </span>
 
-                                <input type="number" min="1" wire:model.lazy="items.{{ $loop->parent->index }}.amount"
-                                    wire:change="updateAmount({{ $item->id }}, $event.target.value)"
-                                    class="w-14 text-center border rounded-md p-1" />
-
+                                {{ $item->amount }}
+                                
                                 <span wire:click="addOne({{ $item->id }})"
                                     class="material-symbols-outlined border rounded-full p-2 text-sm px-2.5 select-none cursor-pointer">
                                     add
@@ -86,7 +85,8 @@
                         <img class="max-w-[30px] rounded-md h-[15px]"
                             src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" />
                     @else
-                        <span class="inline-flex items-center justify-center w-[30px] h-[15px] rounded-md bg-gray-300 text-gray-500">
+                        <span
+                            class="inline-flex items-center justify-center w-[30px] h-[15px] rounded-md bg-gray-300 text-gray-500">
                             <span class="material-symbols-outlined text-base">business</span>
                         </span>
                     @endif

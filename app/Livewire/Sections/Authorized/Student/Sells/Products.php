@@ -104,13 +104,6 @@ class Products extends Component {
                         'image' => $this->image->hashName()
                     ]);
                 }
-                
-                // Crear el registro de stock para la empresa
-                \App\Models\CompanyProductStock::create([
-                    'company_id' => auth()->user()->current_company,
-                    'product_id' => $product->id,
-                    'stock' => 0
-                ]);
 
                 toastr()->success('¡Producto creado con éxito!');
             }

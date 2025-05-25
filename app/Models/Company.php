@@ -42,10 +42,6 @@ class Company extends Model {
         return $this->belongsToMany(Wholesaler::class, 'company_wholesalers', 'company_id', 'wholesaler_id');
     }
     
-    public function productStocks() {
-        return $this->hasMany(CompanyProductStock::class);
-    }
-    
     public function pendingDeliveries() {
         return $this->hasMany(PendingWholesalerDelivery::class);
     }

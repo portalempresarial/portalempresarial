@@ -110,7 +110,7 @@ class SingleCompany extends Component {
                 $teacher->company_id = $this->company->id;
                 $teacher->user_id = $user_id;
                 $teacher->save();
-                toastr()->success("El usuario ahora es docente de la empresa.", '¡Éxito!');
+                toastr()->success("El usuario ahora es docente de la empresa.");
             }
         } catch(\Throwable $th) {
             throw $th; 

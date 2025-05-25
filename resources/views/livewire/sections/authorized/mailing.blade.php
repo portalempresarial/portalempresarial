@@ -38,7 +38,7 @@
                             $createdDate = \Carbon\Carbon::parse($email->created_at);
                         @endphp
 
-                        <li class="relative border-b py-2 rounded-md hover:bg-gray-200 px-2 cursor-pointer transition-all
+                        <li class="relative bg-white border-b py-2 rounded-md hover:bg-gray-200 px-2 cursor-pointer transition-all
                             @if($selectedEmail && $selectedEmail->id === $email->id && $showSendedEmails) bg-gray-300 @endif
                             @if(!$isRead && !$showDeletedEmails || $isRead && $showSendedEmails) border-l-4 border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
                             @if($isRead || $showDeletedEmails ) bg-gray-300 @endif"

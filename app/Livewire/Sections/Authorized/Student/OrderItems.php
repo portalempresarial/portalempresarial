@@ -12,44 +12,44 @@ class OrderItems extends Component
 {
     public $managing, $current_order, $order, $enableManage;
 
-public function downloadPdf($orderId)
-{
-    try {
-        $order = Order::find($orderId);
+    public function downloadPdf($orderId)
+    {
+        try {
+            $order = Order::find($orderId);
 
-        $total = 0;
+            $total = 0;
 
-        foreach (OrderProduct::where('order_id', $orderId)->get() as $product) {
-            if ($product->product) {
-                $total += $product['amount'] * $product->product->price;
+            foreach (OrderProduct::where('order_id', $orderId)->get() as $product) {
+                if ($product->product) {
+                    $total += $product['amount'] * $product->product->price;
+                }
             }
+
+            $seller = Company::find($order['seller_company_id']);
+            $imagePath = null;
+            $sellerIconBase64 = null;
+
+            if ($seller && $seller->icon) {
+                $imagePath = storage_path('app/public/companies/' . $seller->icon);
+                $sellerIconBase64 = $this->getBase64FromImage($imagePath);
+            }
+
+            $pdf = PDF::loadView('pdf.order', [
+                'order' => $order->toArray(),
+                'products' => OrderProduct::where('order_id', $orderId)->get(),
+                'seller' => $seller,
+                'buyer' => Company::find($order['buyer_company_id']),
+                'total' => $total,
+                'icon' => $sellerIconBase64
+            ])->setPaper('A4');
+
+            return response()->streamDownload(function () use ($pdf) {
+                echo  $pdf->stream();
+            }, 'Portal Empresarial - ' . $order['serial'] . '.pdf');
+        } catch (\Throwable $th) {
+            throw $th;
         }
-
-        $seller = Company::find($order['seller_company_id']);
-        $imagePath = null;
-        $sellerIconBase64 = null;
-
-        if ($seller && $seller->icon) {
-            $imagePath = storage_path('app/public/companies/' . $seller->icon);
-            $sellerIconBase64 = $this->getBase64FromImage($imagePath);
-        }
-
-        $pdf = PDF::loadView('pdf.order', [
-            'order' => $order->toArray(),
-            'products' => OrderProduct::where('order_id', $orderId)->get(),
-            'seller' => $seller,
-            'buyer' => Company::find($order['buyer_company_id']),
-            'total' => $total,
-            'icon' => $sellerIconBase64
-        ])->setPaper('A4');
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo  $pdf->stream();
-        }, 'Portal Empresarial - ' . $order['serial'] . '.pdf');
-    } catch (\Throwable $th) {
-        throw $th;
     }
-}
 
     public function manage($identifier)
     {
@@ -70,13 +70,13 @@ public function downloadPdf($orderId)
             $this->managing = null;
         }
     }
-
     private function getBase64FromImage($imagePath)
     {
+        if (!file_exists($imagePath)) {
+            return null;
+        }
         $image = file_get_contents($imagePath);
-        $base64 = base64_encode($image);
-
-        return $base64;
+        return base64_encode($image);
     }
 
     public function mount($order, $enableManage = true)

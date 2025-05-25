@@ -7,21 +7,18 @@ use App\Models\Company as CompanyModel;
 use App\Models\Product;
 use Livewire\Attributes\Url;
 use App\Models\CartProduct;
-use App\Models\CompanyProductStock;
 
 class Company extends Component
 {
     #[Url]
     public $filter, $category;
 
-    public $company, $selected_product, $selected_counter = 1;
+    public $company, $selected_product, $selected_counter = 1, $successMessage;
 
     protected $products = [];
 
     public function addToCart()
     {
-        // Recargar el producto con sus stock actualizados para esta compañía
-        $this->selected_product->refresh();
         $this->selected_product->refresh();
         if ($this->selected_product->stock < $this->selected_counter) {
             toastr()->error('No hay suficiente stock disponible. Stock actual: ' . $this->selected_product->stock);
@@ -39,21 +36,18 @@ class Company extends Component
                 'amount' => $this->selected_counter
             ]);
         } else {
-            // Verificar que no se exceda el stock disponible considerando lo que ya está en el carrito
             $totalRequestedAmount = $onCart->amount + $this->selected_counter;
-            if ($totalRequestedAmount > $productStock->stock) {
-                toastr()->error('No hay suficiente stock disponible. Ya tienes ' . $onCart->amount . ' en el carrito y solo hay ' . $productStock->stock . ' disponibles.');
+            if ($totalRequestedAmount > $this->selected_product->stock) {
+                toastr()->error('No hay suficiente stock disponible. Ya tienes ' . $onCart->amount . ' en el carrito y solo hay ' . $this->selected_product->stock . ' disponibles.');
                 return;
             }
-
             $onCart->update([
                 'amount' => $totalRequestedAmount
             ]);
         }
 
-        toastr()->success('Producto añadido al carrito.');
-
-        $this->reset(['selected_product', 'selected_counter']);
+        $this->successMessage = '¡Producto añadido correctamente a la cesta!';
+        $this->selected_counter = 1;
     }
 
     public function updatedSelectedCounter($value)
@@ -63,34 +57,15 @@ class Company extends Component
 
     public function validateCounter()
     {
-        $this->selected_counter = max(1, (int) $this->selected_counter);
-    }
-
-    public function debugProductStock($productId = null)
-    {
-        if (!$productId && $this->selected_product) {
-            $productId = $this->selected_product->id;
+        if ($this->selected_product) {
+            $max = $this->selected_product->stock;
+            if ($this->selected_counter > $max) {
+                $this->selected_counter = $max;
+            }
+            if ($this->selected_counter < 1) {
+                $this->selected_counter = 1;
+            }
         }
-
-        if (!$productId) {
-            return null;
-        }
-
-        $product = Product::find($productId);
-        if (!$product) {
-            return ['error' => 'Producto no encontrado'];
-        }
-
-        $stock = CompanyProductStock::where('product_id', $productId)
-            ->where('company_id', $this->company->id)
-            ->first();
-
-        return [
-            'product_id' => $productId,
-            'company_id' => $this->company->id,
-            'stock_record' => $stock,
-            'stock_amount' => $stock ? $stock->stock : 0
-        ];
     }
 
     public function mount($company, $product = false)

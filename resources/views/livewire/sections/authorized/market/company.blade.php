@@ -63,6 +63,12 @@
     </section>
 
     <section class="flex-1 flex flex-col gap-5 order-first lg:order-last">
+        @if ($successMessage)
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2000)"
+                class="w-full mb-4 p-3 rounded bg-green-100 text-green-800 text-center transition-all duration-500">
+                {{ $successMessage }}
+            </div>
+        @endif
         @if ($selected_product)
             <div class="bg-white shadow-sm rounded-md flex-wrap p-5 flex items-center gap-10">
                 @if ($selected_product->image && file_exists(public_path('storage/companies/' . $selected_product['company_id'] . '/products/' . $selected_product['image'])))
@@ -81,7 +87,9 @@
                     </h2>
 
                     <p class="text-sm text-gray-400">
-                        {{ $selected_product->category->label }}
+                        @if ($selected_product->category)
+                            {{ $selected_product->category->label }}
+                        @endif
                     </p>
 
                     @if ($selected_product->description)
@@ -100,7 +108,7 @@
                         </span>
 
                         <input type="number" wire:model="selected_counter" wire:change="validateCounter" min="1"
-                            class="border rounded-md text-center w-10 p-1.5" />
+                            max="{{ $selected_product->stock }}" class="border rounded-md text-center w-10 p-1.5" />
 
                         <span wire:click.prevent="$set('selected_counter', {{ $selected_counter + 1 }})"
                             class="material-symbols-outlined border rounded-md p-2 text-sm px-2.5 select-none cursor-pointer">
@@ -112,8 +120,9 @@
                         {{ $selected_product->price * $selected_counter }} €
                     </p>
 
-                    <div class="mb-3">
-                        <p class="flex items-center gap-2">
+                    <div>
+                        <p
+                            class="flex items-center gap-2 rounded-md px-5 py-2 {{ $selected_product->stock > 5 ? 'bg-green-200 border border-green-600 text-green-600' : ($selected_product->stock > 0 ? 'bg-orange-200 border border-orange-600 text-orange-500' : 'bg-red-200 border border-red-600 text-red-600') }}">
                             <span
                                 class="material-symbols-outlined {{ $selected_product->stock > 5 ? 'text-green-600' : ($selected_product->stock > 0 ? 'text-orange-500' : 'text-red-600') }}">
                                 inventory_2
@@ -123,23 +132,18 @@
                                 Stock: {{ $selected_product->stock }} unidades
                             </span>
                         </p>
-
-                        @if($selected_product->stock <= 3 && $selected_product->stock > 0)
-                            <p class="text-xs text-orange-500 ml-6 mt-1">¡Últimas unidades disponibles!</p>
-                        @elseif($selected_product->stock == 0)
-                            <p class="text-xs text-red-600 ml-6 mt-1">Lo sentimos, este producto está fuera de stock.</p>
-                        @endif
                     </div>
 
-                   @if ($selected_product->stock > 0)
-                        <button wire:click="addToCart" class="bg-blue-500 hover:bg-blue-700 transition-all text-white py-2 px-5 rounded-md">
+                    @if ($selected_product->stock > 0)
+                        <button wire:click="addToCart"
+                            class="bg-blue-500 hover:bg-blue-700 transition-all text-white py-2 px-5 rounded-md">
                             Añadir al carrito
                         </button>
                     @else
                         <button disabled class="bg-gray-300 cursor-not-allowed text-gray-500 py-2 px-5 rounded-md">
                             Sin stock
                         </button>
-                   @endif
+                    @endif
                 </section>
             </div>
         @endif
@@ -197,7 +201,7 @@ foreach ($uniqueCategories as $option) {
 
                         <span
                             class="text-xs font-semibold mt-2
-                                            {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
+                                                        {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
                             {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
                         </span>
                     </div>

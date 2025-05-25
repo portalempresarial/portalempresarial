@@ -12,12 +12,12 @@
         {{ $current_order && $current_order->seller ? $current_order->seller->name : '' }}
     </h2>
 
-    <div class="mb-4">
+    <div class="my-3">
         <span
             class="text-green-500 bg-green-100 text-xs px-2 py-1 rounded-md border border-green-500 uppercase">{{ $current_order ? $current_order->serial : '' }}</span>
     </div>
 
-    <table class="w-full text-sm text-left text-gray-500">
+    <table class="w-full text-sm text-left text-gray-500 my-3">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100">
             <tr>
                 <th scope="col" class="px-6 py-3">
@@ -36,7 +36,6 @@
             <tbody>
                 @foreach ($current_order->products as $product)
                     <tr class="bg-white border-b">
-                        <td class="py-4 text-ellipsis truncate pl-5">
                         <td class="py-4 text-ellipsis truncate pl-5">
                             @if($product->product)
                                 {{ Str::limit($product->product->label, 30, '...') }}

@@ -3,30 +3,32 @@
         use App\Models\Company; 
     @endphp
 
-    <section class="flex gap-3 items-end flex-wrap">
-        <x-labeled-input 
-            styles="flex-1"
-            label="Dirección de la página" 
-            type="text"
-            wireModel="website"
-            icon="public"
-        />
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-gray-50 border border-gray-200 shadow-md rounded-md p-4">
+            <x-labeled-input styles="flex-1" label="Dirección de la página" type="text" wireModel="website"
+                icon="public" />
+        </div>
+        <div class="flex flex-col gap-4 bg-gray-50 border border-gray-200 shadow-md rounded-md p-4">
+            <h2 class="text-sm text-gray-500">Icono de la página</h2>
+            <div class="flex flex-row items-center gap-4 flex-wrap">
+                <input type="file" wire:model="iconImage" accept="image/*"
+                    class="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                @error('iconImage') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                @if ($company && $company->icon)
+                    <img src="{{ asset('storage/companies/' . $company->icon) }}"
+                        class="w-12 h-12 rounded-full mt-2 border" />
+                @endif
+                @if (session('icon_success'))
+                    <span class="text-green-600 text-sm">{{ session('icon_success') }}</span>
+                @endif
+            </div>
 
-        <input type="file" wire:model="iconImage" accept="image/*" class="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
-        @error('iconImage') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-        @if ($company && $company->icon)
-            <img src="{{ asset('storage/companies/' . $company->icon) }}" class="w-12 h-12 rounded-full mt-2 border" />
-        @endif
-        @if (session('icon_success'))
-            <span class="text-green-600 text-xs">{{ session('icon_success') }}</span>
-        @endif
-
-        <button wire:click="save" class="mt-5 bg-blue-500 hover:bg-blue-700 transition-all text-white py-2 px-5 rounded-md">
-            Guardar
-        </button>
+            <button wire:click="save"
+                class="mt-5 bg-blue-500 hover:bg-blue-700 transition-all text-white py-2 px-5 rounded-md">
+                Guardar
+            </button>
+        </div>
     </section>
-
-    
 
     @error('website')
         <p class="text-red-500 text-sm my-2">
