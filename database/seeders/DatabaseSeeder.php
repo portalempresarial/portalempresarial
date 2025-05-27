@@ -23,11 +23,8 @@ class DatabaseSeeder extends Seeder
 
         // Nuevos seeders para mayoristas y productos
         $this->call([
-            ProductCategorySeeder::class,
-            WholesalerSeeder::class,
-            WholesalerProductCategorySeeder::class,
-            WholesalerProductSeeder::class,
-            WholesalerSectorSeeder::class,
+                        WholesalerSeeder::class,
+
         ]);
     }
 }

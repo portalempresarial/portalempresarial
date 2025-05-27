@@ -28,7 +28,6 @@ class WholesalerSeeder extends Seeder
                 'payment_days' => 30,
                 'country' => 'España',
                 'tax' => 1,
-                'sector' => 'Tecnología'
             ],
             [
                 'center_id' => 2,
@@ -43,7 +42,6 @@ class WholesalerSeeder extends Seeder
                 'payment_days' => 45,
                 'country' => 'España',
                 'tax' => 0,
-                'sector' => 'Mobiliario'
             ],
             [
                 'center_id' => 2,
@@ -58,7 +56,6 @@ class WholesalerSeeder extends Seeder
                 'payment_days' => 15,
                 'country' => 'España',
                 'tax' => 1,
-                'sector' => 'Papelería'
             ],
             [
                 'center_id' => 2,
@@ -73,7 +70,6 @@ class WholesalerSeeder extends Seeder
                 'payment_days' => 30,
                 'country' => 'España',
                 'tax' => 0,
-                'sector' => 'Seguridad y Salud'
             ],
             [
                 'center_id' => 2,
@@ -88,7 +84,6 @@ class WholesalerSeeder extends Seeder
                 'payment_days' => 30,
                 'country' => 'España',
                 'tax' => 1,
-                'sector' => 'Electrodomésticos'
             ]
         ];
 
