@@ -3,7 +3,7 @@
         use App\Models\Company; 
     @endphp
 
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         <div class="bg-gray-50 border border-gray-200 shadow-md rounded-md p-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Selecciona tu mayorista</label>
             <select wire:model="selectedWholesaler" class="w-full border rounded-md p-2">
@@ -19,7 +19,7 @@
                 Asignar mayorista
             </button>
         </div>
-        <div class="flex flex-col gap-4 bg-gray-50 border border-gray-200 shadow-md rounded-md p-4">
+        <div class="flex flex-col gap-4 bg-gray-50 border border-gray-200 shadow-md rounded-md p-4 overflow-hidden">
             <h2 class="text-sm text-gray-500">Icono de la empresa</h2>
             <div class="flex flex-row items-center gap-4 flex-wrap">
                 <input type="file" wire:model="iconImage" accept="image/*"
