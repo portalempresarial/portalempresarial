@@ -5,11 +5,15 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company; 
 use Livewire\WithFileUploads;
+use App\Models\Wholesaler;
+use App\Models\CompanyWholesaler;
 
 class Website extends Component {
     use WithFileUploads;
     public $website, $company;
     public $iconImage;
+    public $wholesalers = [];
+    public $selectedWholesaler;
 
     public function save() {
         $this->validate([
@@ -47,6 +51,31 @@ class Website extends Component {
     public function mount() {
         $this->company = Company::find(Auth::user()->current_company); 
         $this->website = $this->company->website; 
+
+        // Obtener todos los mayoristas
+        $this->wholesalers = Wholesaler::with('sector')->get();
+
+        // Obtener el mayorista asignado (si existe)
+        $assigned = CompanyWholesaler::where('company_id', $this->company->id)->first();
+        $this->selectedWholesaler = $assigned ? $assigned->wholesaler_id : null;
+    }
+
+    public function assignWholesaler() {
+        if (!$this->selectedWholesaler) {
+            toastr()->error('Debes seleccionar un mayorista.');
+            return;
+        }
+
+        // Eliminar asignaciones previas
+        CompanyWholesaler::where('company_id', $this->company->id)->delete();
+
+        // Asignar el nuevo mayorista
+        CompanyWholesaler::create([
+            'company_id' => $this->company->id,
+            'wholesaler_id' => $this->selectedWholesaler,
+        ]);
+
+        toastr()->success('Mayorista asignado correctamente.');
     }
 
     public function render() {

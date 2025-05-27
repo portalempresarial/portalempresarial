@@ -104,9 +104,9 @@
 
                         <div class="flex items-center flex-wrap rounded-md py-7 md:py-0 md:h-[70px] gap-3">
                             <div class="w-10 flex items-center justify-center">
-                                @if ($item->wholesalerProduct->image && file_exists(public_path('storage/wholesaler-products/' . $item->wholesalerProduct['image'])))
+                                @if ($item->wholesalerProduct->image && file_exists(public_path(asset('storage/companies/' . $item->wholesalerProduct->company_id . '/products/' . $item->wholesalerProduct->image))))
                                     <img class="rounded-md h-[30px]"
-                                        src="{{ asset('storage/wholesaler-products/' . $item->wholesalerProduct->image) }}" />
+                                        src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" />
                                 @else
                                     <span class="material-symbols-outlined text-md text-blue-500">
                                         inventory_2

@@ -1,15 +1,26 @@
-<main class="w-full p-10 flex h-screen flex-col overflow-y-scroll">
+<div class="flex h-screen flex-col overflow-y-scroll">
     @php
         use App\Models\Company; 
     @endphp
 
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="bg-gray-50 border border-gray-200 shadow-md rounded-md p-4">
-            <x-labeled-input styles="flex-1" label="Dirección de la página" type="text" wireModel="website"
-                icon="public" />
+            <label class="block text-sm font-medium text-gray-700 mb-2">Selecciona tu mayorista</label>
+            <select wire:model="selectedWholesaler" class="w-full border rounded-md p-2">
+                <option value="">-- Selecciona un mayorista --</option>
+                @foreach($wholesalers as $wholesaler)
+                    <option value="{{ $wholesaler->id }}">
+                        {{ $wholesaler->name }} ({{ $wholesaler->sector ? $wholesaler->sector->sector_name : 'Sin sector' }})
+                    </option>
+                @endforeach
+            </select>
+            <button wire:click="assignWholesaler"
+                class="mt-2 bg-blue-500 hover:bg-blue-700 transition-all text-white py-2 px-5 rounded-md">
+                Asignar mayorista
+            </button>
         </div>
         <div class="flex flex-col gap-4 bg-gray-50 border border-gray-200 shadow-md rounded-md p-4">
-            <h2 class="text-sm text-gray-500">Icono de la página</h2>
+            <h2 class="text-sm text-gray-500">Icono de la empresa</h2>
             <div class="flex flex-row items-center gap-4 flex-wrap">
                 <input type="file" wire:model="iconImage" accept="image/*"
                     class="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
@@ -28,6 +39,10 @@
                 Guardar
             </button>
         </div>
+        <div class="bg-gray-50 border border-gray-200 shadow-md rounded-md p-4">
+            <x-labeled-input styles="flex-1" label="Dirección de la página" type="text" wireModel="website"
+                icon="public" />
+        </div>
     </section>
 
     @error('website')
@@ -45,4 +60,4 @@
             </h1>
         </div>
     @endif
-</main>
+</div>

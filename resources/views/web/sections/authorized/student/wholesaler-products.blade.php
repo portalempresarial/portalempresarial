@@ -2,7 +2,7 @@
 
 @section('body')
     <main class="w-full p-10">
-        <section class="flex flex-col gap-1">
+        <section class="flex flex-col gap-1 mb-3">
             <h2 class="text-2xl font-extrabold text-blue-500">
                 Productos de Mayoristas
             </h2>
