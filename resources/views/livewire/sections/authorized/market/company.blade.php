@@ -72,7 +72,7 @@
         @if ($selected_product)
             <div class="bg-white shadow-sm rounded-md flex-wrap p-5 flex items-center gap-10">
                 @if ($selected_product->image && file_exists(public_path('storage/companies/' . $selected_product['company_id'] . '/products/' . $selected_product['image'])))
-                    <img class="sm:max-w-[100px] rounded-md sm:h-[100px]"
+                    <img class="sm:max-w-[100px] rounded-md sm:h-[100px] object-cover"
                         src="{{ asset('storage/companies/' . $selected_product['company_id'] . '/products/' . $selected_product['image']) }}" />
                 @else
                     <span
@@ -178,7 +178,7 @@ foreach ($uniqueCategories as $option) {
                         </p>
 
                         @if ($product->image && file_exists(public_path('storage/companies/' . $product['company_id'] . '/products/' . $product['image'])))
-                            <img class="max-w-[70px] rounded-md h-[50px]"
+                            <img class="max-w-[70px] rounded-md h-[50px] object-cover"
                                 src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" />
                         @else
                             <span

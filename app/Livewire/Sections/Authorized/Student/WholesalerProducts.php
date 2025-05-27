@@ -10,10 +10,11 @@ use App\Models\Company;
 use App\Models\CompanyWholesaler;
 use App\Models\CartProduct;
 use Illuminate\Support\Facades\Auth;
+use Livewire\WithFileUploads;
 
 class WholesalerProducts extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $search = '';
     public $wholesalerFilter = 'all';
@@ -28,6 +29,10 @@ class WholesalerProducts extends Component
     protected $queryString = ['search', 'wholesalerFilter'];
 
     public $quantities = [];
+
+    public $creating = false;
+
+    public $name, $reference, $price, $description, $image;
 
     public function mount()
     {
@@ -62,6 +67,57 @@ class WholesalerProducts extends Component
 
         // Cargar los elementos del carrito
         $this->getCartItems();
+    }
+
+    public function openCreateModal()
+    {
+        $this->creating = true;
+        $this->reset(['name', 'reference', 'price', 'description', 'image']);
+    }
+
+    public function closeCreateModal()
+    {
+        $this->creating = false;
+        $this->reset(['name', 'reference', 'price', 'description', 'image']);
+    }
+
+    public function storeProduct()
+    {
+        $this->validate([
+            'name' => 'required|string|min:3|max:100',
+            'reference' => 'required|string|min:3|max:40|unique:wholesaler_products,reference',
+            'price' => 'required|numeric|min:0.01',
+            'description' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        // Obtener el mayorista asignado (solo uno)
+        $wholesaler = collect($this->wholesalers)->first();
+        if (!$wholesaler || !$this->company) {
+            toastr()->error('No tienes mayoristas asignados o empresa seleccionada.');
+            return;
+        }
+
+        $data = [
+            'name' => $this->name,
+            'reference' => $this->reference,
+            'price' => $this->price,
+            'description' => $this->description,
+            'stock' => 999999,
+            'wholesaler_id' => $wholesaler->id,
+            'company_id' => $this->company->id,
+        ];
+
+        if ($this->image) {
+            $this->image->store("companies/" . auth()->user()->current_company . "/products", 'public');
+            $data['image'] = $this->image->hashName();
+        }
+
+        WholesalerProduct::create($data);
+
+        $this->creating = false;
+        toastr()->success('Producto creado correctamente.');
+        $this->reset(['name', 'reference', 'price', 'description', 'image']);
     }
 
     public function loadWholesalers()
@@ -130,7 +186,7 @@ class WholesalerProducts extends Component
         // Limita la cantidad al stock máximo si se edita manualmente
         if (str_starts_with($propertyName, 'quantities.')) {
             $productId = explode('.', $propertyName)[1];
-            $product = \App\Models\WholesalerProduct::find($productId);
+            $product = WholesalerProduct::find($productId);
             if ($product) {
                 if ($this->quantities[$productId] > $product->stock) {
                     $this->quantities[$productId] = $product->stock;
@@ -244,6 +300,7 @@ class WholesalerProducts extends Component
 
         $query = WholesalerProduct::query()
             ->whereIn('wholesaler_id', $wholesalerIds)
+            ->where('company_id', $this->company->id) // <-- Solo productos creados por la empresa
             ->where('name', 'like', '%' . $this->search . '%');
 
         if ($this->wholesalerFilter !== 'all') {
