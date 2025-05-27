@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('pending_wholesaler_deliveries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('order_id');
-            $table->unsignedBigInteger('company_id');
+            $table->integer('order_id');
+            $table->integer('company_id');
             $table->date('delivery_date');
             $table->boolean('processed')->default(false);
             $table->timestamps();
