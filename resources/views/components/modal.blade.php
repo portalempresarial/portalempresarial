@@ -3,6 +3,7 @@
     x-on:close.stop="show = false"
     x-on:keydown.escape.window="show = false"
     x-show="show"
+    x-on:hideModal.window="show = false"
     class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
     style="display: none;"
 >

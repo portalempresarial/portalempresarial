@@ -1,6 +1,6 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 py-4">
     {{-- Bandeja de entrada --}}
-    <div class="bg-gray-100 border border-gray-300 shadow-md p-4 rounded-md overflow-auto">
+    <div class="bg-gray-50 border border-gray-200 shadow-md p-4 rounded-md overflow-auto">
         <div class="flex flex-col justify-between mb-6">
             <h2 class="text-2xl font-bold mb-4">
                 @if ($showDeletedEmails)
@@ -38,9 +38,10 @@
                             $createdDate = \Carbon\Carbon::parse($email->created_at);
                         @endphp
 
-                        <li class="relative border-b py-2 rounded-md hover:bg-gray-200 px-2 cursor-pointer transition-all
-                            @if(!$isRead && !$showDeletedEmails) border-l-4 border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
-                            @if($isRead || $showDeletedEmails) bg-gray-300 @endif"
+                        <li class="relative bg-white border-b py-2 rounded-md hover:bg-gray-200 px-2 cursor-pointer transition-all
+                            @if($selectedEmail && $selectedEmail->id === $email->id && $showSendedEmails) bg-gray-300 @endif
+                            @if(!$isRead && !$showDeletedEmails || $isRead && $showSendedEmails) border-l-4 border-blue-500 hover:border-l-8 hover:border-blue-600 @endif
+                            @if($isRead || $showDeletedEmails ) bg-gray-300 @endif"
                             wire:contextmenu.prevent='modalSelectEmail({{ $email->id }})'
                             wire:click.prevent='selectEmail({{ $email->id }})'>
                             @if($modalSelectedEmail && !$showSendedEmails && $modalSelectedEmail->id === $email->id)
@@ -117,7 +118,7 @@
     </div>
 
     {{-- Panel derecho --}}
-    <div class="transition-all duration-500 transform bg-gray-100 p-4 border border-gray-300 shadow-md rounded-md"
+    <div class="transition-all duration-500 transform bg-gray-50 p-4 border border-gray-300 shadow-md rounded-md"
         style="{{ $selectedEmail || $newEmail ? 'opacity: 1; translateX(0);' : 'opacity: 0; translateX(100%);' }}">
         @if ($submitEmailMessages)
             <div wire:key="submit-message-{{ Str::random() }}" x-init="setTimeout(() => show = false, 1500)" x-show="show"

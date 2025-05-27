@@ -14,7 +14,14 @@
         </div>
 
         <div class="flex mt-10 gap-5 items-center">
-            <img class="max-w-[50px] rounded-md-sm h-[50px]" src="{{ asset('storage/companies/' . $company->icon) }}" />
+            @if ($company->icon && file_exists(public_path('storage/companies/' . $company->icon)))
+                <img class="max-w-[70px] rounded-md h-[50px]" src="{{ asset('storage/companies/' . $company->icon) }}" />
+            @else
+                <span
+                    class="inline-flex items-center justify-center w-[50px] h-[50px] rounded-full bg-gray-300 text-gray-500">
+                    <span class="material-symbols-outlined text-2xl">business</span>
+                </span>
+            @endif
 
             <section>
                 <h1 class="text-2xl font-bold">{{ $company->name }}</h1>
@@ -56,11 +63,22 @@
     </section>
 
     <section class="flex-1 flex flex-col gap-5 order-first lg:order-last">
+        @if ($successMessage)
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2000)"
+                class="w-full mb-4 p-3 rounded bg-green-100 text-green-800 text-center transition-all duration-500">
+                {{ $successMessage }}
+            </div>
+        @endif
         @if ($selected_product)
             <div class="bg-white shadow-sm rounded-md flex-wrap p-5 flex items-center gap-10">
-                @if ($selected_product->image)
-                    <img class="sm:max-w-[100px] rounded-md-sm sm:h-[100px]"
+                @if ($selected_product->image && file_exists(public_path('storage/companies/' . $selected_product['company_id'] . '/products/' . $selected_product['image'])))
+                    <img class="sm:max-w-[100px] rounded-md sm:h-[100px]"
                         src="{{ asset('storage/companies/' . $selected_product['company_id'] . '/products/' . $selected_product['image']) }}" />
+                @else
+                    <span
+                        class="inline-flex items-center justify-center w-[100px] h-[100px] rounded-md bg-gray-300 text-gray-500">
+                        <span class="material-symbols-outlined text-4xl">inventory_2</span>
+                    </span>
                 @endif
 
                 <section class="flex-1 {{ $selected_product->image ? "md:px-10 md:border-l" : null }}">
@@ -69,7 +87,9 @@
                     </h2>
 
                     <p class="text-sm text-gray-400">
-                        {{ $selected_product->category->label }}
+                        @if ($selected_product->category)
+                            {{ $selected_product->category->label }}
+                        @endif
                     </p>
 
                     @if ($selected_product->description)
@@ -88,7 +108,7 @@
                         </span>
 
                         <input type="number" wire:model="selected_counter" wire:change="validateCounter" min="1"
-                            class="border rounded-md text-center w-10 p-1.5"  />
+                            max="{{ $selected_product->stock }}" class="border rounded-md text-center w-10 p-1.5" />
 
                         <span wire:click.prevent="$set('selected_counter', {{ $selected_counter + 1 }})"
                             class="material-symbols-outlined border rounded-md p-2 text-sm px-2.5 select-none cursor-pointer">
@@ -100,8 +120,30 @@
                         {{ $selected_product->price * $selected_counter }} €
                     </p>
 
-                    <x-button wireClick="addToCart" styles="justify-center" styles="w-full md:w-auto" icon="shopping_cart"
-                        content="Añadir a la cesta" />
+                    <div>
+                        <p
+                            class="flex items-center gap-2 rounded-md px-5 py-2 {{ $selected_product->stock > 5 ? 'bg-green-200 border border-green-600 text-green-600' : ($selected_product->stock > 0 ? 'bg-orange-200 border border-orange-600 text-orange-500' : 'bg-red-200 border border-red-600 text-red-600') }}">
+                            <span
+                                class="material-symbols-outlined {{ $selected_product->stock > 5 ? 'text-green-600' : ($selected_product->stock > 0 ? 'text-orange-500' : 'text-red-600') }}">
+                                inventory_2
+                            </span>
+                            <span
+                                class="{{ $selected_product->stock > 5 ? 'text-green-600' : ($selected_product->stock > 0 ? 'text-orange-500' : 'text-red-600') }}">
+                                Stock: {{ $selected_product->stock }} unidades
+                            </span>
+                        </p>
+                    </div>
+
+                    @if ($selected_product->stock > 0)
+                        <button wire:click="addToCart"
+                            class="bg-blue-500 hover:bg-blue-700 transition-all text-white py-2 px-5 rounded-md">
+                            Añadir al carrito
+                        </button>
+                    @else
+                        <button disabled class="bg-gray-300 cursor-not-allowed text-gray-500 py-2 px-5 rounded-md">
+                            Sin stock
+                        </button>
+                    @endif
                 </section>
             </div>
         @endif
@@ -111,7 +153,8 @@
                 styles="text-sm flex-1 border-gray-400 text-gray-400" placeholder="Buscador de productos" />
 
             <?php   
-                foreach ($company->productCategories as $option) {
+                $uniqueCategories = $company->productCategories->unique('id');
+foreach ($uniqueCategories as $option) {
     $options[] = [
         "value" => $option->id,
         "label" => $option->label
@@ -132,17 +175,16 @@
                     <section class="flex items-center justify-between">
                         <p class="text-xl">
                             {{ $product->label }}
-
-                            @if ($product->company && $product->company->sector)
-                                <span class="text-xs text-gray-400 group-hover:text-blue-200 transition-all block">
-                                    {{ $product->company->sector }}
-                                </span>
-                            @endif
                         </p>
 
-                        @if ($product->image)
-                            <img class="max-w-[70px] rounded-md-sm h-[50px]"
+                        @if ($product->image && file_exists(public_path('storage/companies/' . $product['company_id'] . '/products/' . $product['image'])))
+                            <img class="max-w-[70px] rounded-md h-[50px]"
                                 src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" />
+                        @else
+                            <span
+                                class="inline-flex items-center justify-center w-[70px] h-[50px] rounded-md bg-gray-300 text-gray-500">
+                                <span class="material-symbols-outlined text-4xl">inventory_2</span>
+                            </span>
                         @endif
                     </section>
 
@@ -152,20 +194,17 @@
                         </p>
                     @endif
 
-                    <section class="mt-7 flex items-center gap-3">
-                        @if ($product->company->icon)
-                            <img class="max-w-[30px] rounded-md-sm h-[15px]"
-                                src="{{ asset('storage/companies/' . $product->company->icon) }}" />
-                        @endif
-
-                        <p class="flex-1 text-sm">
-                            {{ $product->company->name }}
-                        </p>
-
+                    <div class="mt-2 flex items-center justify-between">
                         <p class="text-xl font-bold text-blue-500 group-hover:text-white transition-all">
                             {{ $product->price }} €
                         </p>
-                    </section>
+
+                        <span
+                            class="text-xs font-semibold mt-2
+                                                        {{ $product->stock > 5 ? 'text-green-600 bg-green-200 border border-green-600 rounded px-2.5 py-0.5' : ($product->stock > 0 ? 'text-orange-500 bg-orange-200 border border-orange-600 rounded px-2.5 py-0.5' : 'text-red-600 bg-red-200 border border-red-600 rounded px-2.5 py-0.5') }}">
+                            {{ $product->stock > 0 ? ($product->stock <= 5 ? '¡Pocas unidades!' : 'En stock: ' . $product->stock) : 'Sin stock' }}
+                        </span>
+                    </div>
                 </div>
             @endforeach
         </div>

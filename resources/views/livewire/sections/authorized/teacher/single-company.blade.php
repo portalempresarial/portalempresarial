@@ -199,13 +199,13 @@
 
         <div class="flex items-center gap-10 mt-3">
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-blue-500 w-[10px] rounded-md-full"></div>
+                <div class="h-[10px] bg-blue-500 w-[10px] rounded-full"></div>
 
                 Docente asignado
             </div>
 
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-gray-300 w-[10px] rounded-md-full"></div>
+                <div class="h-[10px] bg-gray-300 w-[10px] rounded-full"></div>
 
                 Sin asignar
             </div>
@@ -214,8 +214,10 @@
         <div class="flex flex-wrap gap-3 mt-10">
             @foreach ($teachers as $teacher)
                 <div wire:click="toggleTeacher('{{ $teacher->id }}')" class="{{ $this->userIsTeacher($teacher->id) ? 'bg-blue-500 text-white' : 'bg-gray-100' }} px-5 py-2 flex items-center gap-3 rounded-md cursor-pointer">
-                    @if ($teacher['profile_url'])
-                        <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $teacher['profile_url']) }}" />
+                    @if ($teacher['profile_url'] && file_exists(public_path('storage/profile-pictures/' . $teacher['profile_url'])))
+                        <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $teacher['profile_url']) }}" />
+                    @else
+                        <span class="material-symbols-outlined">person</span>
                     @endif
     
                     {{ $teacher->name }}
@@ -338,28 +340,67 @@
 
         <div class="flex items-center gap-10 mt-3">
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-blue-500 w-[10px] rounded-md-full"></div>
+                <div class="h-[10px] bg-blue-500 w-[10px] rounded-full"></div>
 
                 Mayorista asignado
             </div>
 
             <div class="flex items-center gap-3">
-                <div class="h-[10px] bg-gray-300 w-[10px] rounded-md-full"></div>
+                <div class="h-[10px] bg-gray-300 w-[10px] rounded-full"></div>
 
                 Sin asignar
             </div>
         </div>
 
         <div class="flex flex-wrap gap-3 mt-10">
-            @foreach ($wholesalers as $wholesaler)
-                <div wire:click="toggleWholesaler('{{ $wholesaler->id }}')" class="{{ $this->isWholesalerAssigned($wholesaler->id) ? 'bg-blue-500 text-white' : 'bg-gray-100' }} px-5 py-2 flex items-center gap-3 rounded-md cursor-pointer">
-                    @if ($wholesaler->icon)
-                        <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" />
-                    @endif
-                    
-                    {{ $wholesaler->name }}
+            @if(count($wholesalers) > 0)
+                @foreach ($wholesalers as $wholesaler)
+                    <div wire:click="toggleWholesaler('{{ $wholesaler->id }}')" class="{{ $this->isWholesalerAssigned($wholesaler->id) ? 'bg-blue-500 text-white' : 'bg-gray-100' }} px-5 py-2 flex items-center gap-3 rounded-md cursor-pointer transition-all hover:shadow-md">
+                        @if ($wholesaler->icon && file_exists(public_path('storage/wholesalers/' . $wholesaler->icon)))
+                            <img class="w-[24px] rounded-full h-[24px] object-cover" src="{{ asset('storage/wholesalers/' . $wholesaler->icon) }}" alt="{{ $wholesaler->name }}" />
+                        @else
+                            <span class="material-symbols-outlined">store</span>
+                        @endif
+                        
+                        <span>{{ $wholesaler->name }}</span>
+                    </div>
+                @endforeach
+            @else
+                <div class="w-full p-5 bg-gray-100 rounded-md text-center">
+                    No se encontraron mayoristas. Intente con otro filtro o añada más mayoristas al centro.
                 </div>
-            @endforeach
+            @endif
+        </div>
+        
+        <div class="mt-8 p-4 bg-gray-50 rounded-md">
+            <h3 class="font-semibold mb-2">Mayoristas asignados</h3>
+            <div class="flex flex-wrap gap-3">
+                @php
+                    $assignedWholesalers = $wholesalers->filter(function($item) {
+                        return $this->isWholesalerAssigned($item->id);
+                    });
+                @endphp
+                
+                @if(count($assignedWholesalers) > 0)
+                    @foreach($assignedWholesalers as $assignedWholesaler)
+                        <div class="bg-blue-500 text-white px-5 py-2 flex items-center gap-3 rounded-md">
+                            @if ($assignedWholesaler->icon && file_exists(public_path('storage/wholesalers/' . $assignedWholesaler->icon)))
+                                <img class="w-[24px] rounded-full h-[24px] object-cover" src="{{ asset('storage/wholesalers/' . $assignedWholesaler->icon) }}" alt="{{ $assignedWholesaler->name }}" />
+                            @else
+                                <span class="material-symbols-outlined">store</span>
+                            @endif
+                            {{ $assignedWholesaler->name }}
+                            <button wire:click="toggleWholesaler('{{ $assignedWholesaler->id }}')" class="ml-2 text-white hover:text-red-200 transition-all">
+                                <span class="material-symbols-outlined text-sm">close</span>
+                            </button>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="w-full p-3 bg-gray-100 rounded-md text-center text-gray-500">
+                        Esta empresa no tiene mayoristas asignados todavía.
+                    </div>
+                @endif
+            </div>
         </div>
     </section>
 
@@ -450,6 +491,18 @@
 
         <x-button wireClick="addEmployee" styles="justify-center" content="{{ $employee_editing ? 'Confirmar cambios' : 'Contratar' }}" />
     </x-modal>
+
+    {{-- Mensaje de éxito o error --}}
+    @if ($mensaje)
+        <div 
+            x-data="{ show: true }" 
+            x-show="show" 
+            x-init="setTimeout(() => show = false, 2000)"
+            class="w-full mb-4 p-3 rounded bg-green-100 text-green-800 text-center transition-all duration-500"
+        >
+            {{ $mensaje }}
+        </div>
+    @endif
 
     <style>
         .fade-enter-active, .fade-leave-active {

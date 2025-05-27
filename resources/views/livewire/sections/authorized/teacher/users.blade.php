@@ -50,8 +50,10 @@
                 @foreach ($this->users as $user)
                     <tr class="bg-white border-b">
                         <td class="py-4 text-ellipsis truncate pl-5 w-[30px]">
-                            @if ($user['profile_url'])
-                                <img class="w-[20px] rounded-md-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $user['profile_url']) }}" />
+                            @if ($user['profile_url'] && file_exists(public_path('storage/profile-pictures/' . $user['profile_url'])))
+                                <img class="w-[20px] rounded-full h-[20px]" src="{{ asset('storage/profile-pictures/' . $user['profile_url']) }}" />
+                            @else
+                                <span class="material-symbols-outlined">person</span>
                             @endif
                         </td>
 

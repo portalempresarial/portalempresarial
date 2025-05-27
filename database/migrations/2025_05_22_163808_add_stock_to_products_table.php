@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('wholesalers', function (Blueprint $table) {
-            $table->string('sector', 70)->nullable()->comment('Sector o especialización del mayorista')->after('tax');
+        Schema::table('products', function (Blueprint $table) {
+            $table->integer('stock')->default(0)->next('stock')->after('price');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('wholesalers', function (Blueprint $table) {
-            $table->dropColumn('sector');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('stock');
         });
     }
 };

@@ -10,7 +10,9 @@ class Product extends Model {
 
     public $table = "products"; 
 
-    protected $guarded = []; 
+    protected $guarded = [];
+    
+    protected $appends = ['stock'];
 
     public function category() {
         return $this->belongsTo(ProductCategory::class, 'category_id', 'id'); 
@@ -18,5 +20,10 @@ class Product extends Model {
 
     public function company() {
         return $this->belongsTo(Company::class, 'company_id', 'id'); 
+    }
+
+    public function getStockAttribute()
+    {
+        return $this->attributes['stock'] ?? 0;
     }
 }

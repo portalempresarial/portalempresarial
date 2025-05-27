@@ -41,7 +41,7 @@ class Products extends Component {
             'category' => 'required|integer|exists:product_categories,id',
             'price' => 'required|numeric|min:0.01',
             'reference' => 'required|string|min:3',
-            'label' => 'required|string|min:3|max:40|regex:/^[a-zA-Z0-9\s]+$/u',
+            'label' => 'required|string|min:3|max:40',
             'description' => 'nullable|string|min:3|max:255',
         ], [
             'category.required' => 'La categoría es requerida.',
@@ -56,7 +56,6 @@ class Products extends Component {
             'reference.max' => 'La referencia debe tener máximo 40 caracteres.',
             'label.required' => 'El nombre del producto es requerido.',
             'label.string' => 'El nombre del producto debe ser un texto.',
-            'label.regex' => 'El nombre del producto no puede contener acentos, caracteres especiales ni guiones.',
             'label.min' => 'El nombre del producto debe tener mínimo 3 caracteres.',
             'label.max' => 'El nombre del producto debe tener máximo 40 caracteres.',
             'description.string' => 'La descripción del producto debe ser un texto.',
@@ -96,6 +95,7 @@ class Products extends Component {
                     'reference' => $this->reference,
                     'company_id' => auth()->user()->current_company,
                     'status' => $this->status,
+                    'stock' => 0,  // Iniciar con stock en 0
                     'description' => $this->description
                 ]);
 

@@ -25,6 +25,8 @@ class SingleCompany extends Component {
     
     public $social_denomination, $name, $image, $cif, $sector, $phone, $location, $cp, $city, $contact_email, $form_level, $status; 
     
+    public $mensaje = null;
+
     public function mount($company) {
         $this->company = $company;
         $this->social_denomination = $company->social_denomination;
@@ -44,11 +46,11 @@ class SingleCompany extends Component {
         $this->validate([
             'social_denomination' => 'required|string',
             'name' => 'required|string|max:255|regex:/^[a-zA-Z0-9\s]+$/u'
-        ]); 
+        ]);
 
         try {
             $this->company->social_denomination = $this->social_denomination;
-            $this->company->name = str_replace(' ', '-', $this->name); 
+            $this->company->name = str_replace(' ', '-', $this->name);
             $this->company->cif = $this->cif;
             $this->company->sector = $this->sector;
             $this->company->phone = $this->phone;
@@ -60,11 +62,10 @@ class SingleCompany extends Component {
             $this->company->status = $this->status;
             $this->company->save();
 
-            toastr()->success('Los datos se han guardado correctamente', '¡Éxito!');
+            $this->mensaje = 'Los datos se han guardado correctamente';
         } catch (\Throwable $th) {
             \Log::error($th);
-
-            toastr()->error('¡Vaya! Algo salió mal. Inténtalo de nuevo más tarde.');
+            $this->mensaje = '¡Vaya! Algo salió mal. Inténtalo de nuevo más tarde.';
         }
     }
 
@@ -109,7 +110,7 @@ class SingleCompany extends Component {
                 $teacher->company_id = $this->company->id;
                 $teacher->user_id = $user_id;
                 $teacher->save();
-                toastr()->success("El usuario ahora es docente de la empresa.", '¡Éxito!');
+                toastr()->success("El usuario ahora es docente de la empresa.");
             }
         } catch(\Throwable $th) {
             throw $th; 
@@ -285,14 +286,14 @@ class SingleCompany extends Component {
                 $isWholesaler->delete(); 
                 toastr()->error("El mayorista ya no está asignado a la empresa.");
             } else {
-                $wholesaler = new CompanyWholesaler();
-                $wholesaler->company_id = $this->company->id;
-                $wholesaler->wholesaler_id = $wholesaler_id;
-                $wholesaler->save();
+                CompanyWholesaler::create([
+                    'company_id' => $this->company->id,
+                    'wholesaler_id' => $wholesaler_id
+                ]);
                 toastr()->success("El mayorista ha sido asignado a la empresa.", '¡Éxito!');
             }
         } catch(\Throwable $th) {
-            throw $th;
+            \Log::error($th);
             toastr()->error("¡Vaya! Algo salió mal. Inténtalo de nuevo más tarde.");
         }
     }
@@ -311,7 +312,9 @@ class SingleCompany extends Component {
 
         $this->employees = CompanyEmployee::where('company_id', $this->company->id)->whereRelation('user', 'name', 'like', '%' . $this->employee_filter . '%')->get();
 
-        $this->wholesalers = Wholesaler::where('center_id', $this->company->center_id)->get(); 
+        $this->wholesalers = Wholesaler::where('center_id', $this->company->center_id)
+                           ->where('name', 'like', '%' . $this->wholesaler_filter . '%')
+                           ->get(); 
 
         $studentRole = Role::where('name', 'Estudiante')->first();
         $this->users = User::where('role_id', $studentRole->id)

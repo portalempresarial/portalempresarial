@@ -8,7 +8,6 @@
             placeholder="Buscar producto..." 
         />
 
-        <x-button wireClick="openRegister" icon="add" content="Añadir producto" /> 
         <x-button wireClick="openCreateCategory" icon="filter_list" content="Añadir categoría" /> 
     </section>
 
@@ -64,6 +63,9 @@
                             Precio
                         </th>
                         <th scope="col" class="px-6 py-3">
+                            Stock
+                        </th>
+                        <th scope="col" class="px-6 py-3">
                             Categoría
                         </th>
                         <th scope="col" class="px-6 py-3">
@@ -74,11 +76,15 @@
                 </thead>
     
                 <tbody>
-                    @foreach ($this->products as $product)
+                    @foreach ($this->products->sortByDesc('stock') as $product)
                         <tr class="bg-white border-b">
                             <td class="py-4 text-ellipsis truncate pl-5 w-[30px]">
-                                @if ($product['image'])
-                                    <img class="max-w-[50px] rounded-md-sm h-[20px]" src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" />
+                                @if ($product['image'] && file_exists(public_path('storage/companies/' . $product['company_id'] . '/products/' . $product['image'])))
+                                    <img class="max-w-[50px] rounded-md h-[20px]" src="{{ asset('storage/companies/' . $product['company_id'] . '/products/' . $product['image']) }}" />
+                                @else
+                                    <span class="inline-flex items-center justify-center w-[50px] h-[20px] rounded-md bg-gray-300 text-gray-500">
+                                        <span class="material-symbols-outlined text-base">image_not_supported</span>
+                                    </span>
                                 @endif
                             </td>
     
@@ -93,6 +99,13 @@
                             </td>
                             <td class="px-6 py-4 text-ellipsis truncate">
                                 {{ $product['price'] }}€
+                            </td>
+                            <td class="px-6 py-4 text-ellipsis truncate">
+                                @if ($product['stock'] > 0)
+                                    {{ $product['stock'] }}
+                                @else
+                                    <span class="text-red-500">Sin stock</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-ellipsis truncate">
                                 {{ $product->category ? $product->category->label : 'Sin categoría' }}
@@ -137,6 +150,7 @@
             type="text"
             icon="qr_code"
             placeholder="..."
+            disabled="true"
         />
 
         @error('reference')

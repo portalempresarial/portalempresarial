@@ -20,6 +20,10 @@ class Wholesaler extends Model {
         return $this->hasMany(CompanyWholesaler::class);
     }
     
+    public function companies() {
+        return $this->belongsToMany(Company::class, 'company_wholesalers', 'wholesaler_id', 'company_id');
+    }
+    
     public function categories() {
         return $this->belongsToMany(ProductCategory::class, 'wholesaler_product_categories', 'wholesaler_id', 'product_category_id')
             ->withTimestamps();
@@ -27,5 +31,9 @@ class Wholesaler extends Model {
     
     public function products() {
         return $this->hasMany(WholesalerProduct::class);
+    }
+
+    public function sector() {
+        return $this->belongsTo(WholesalerSector::class, 'sector_id');
     }
 }
